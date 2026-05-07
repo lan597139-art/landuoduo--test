@@ -1,40 +1,51 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>职业性格测试</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "PingFang SC","Microsoft YaHei",sans-serif; background:#f0f2f5; color:#333; }
-    .container { max-width:750px; margin:0 auto; padding:20px; }
-    .header { text-align:center; padding:30px 20px; background:#fff; border-radius:12px; margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
-    .header h1 { font-size:28px; margin-bottom:10px; }
-    .header p { color:#666; font-size:14px; }
-    .btn { display:inline-block; padding:12px 32px; background:#4a6cf7; color:#fff; border:none; border-radius:8px; font-size:16px; cursor:pointer; transition:all .2s; }
-    .btn:hover { background:#3b5de7; }
-    .btn:disabled { background:#bbb; cursor:not-allowed; }
-    .card { background:#fff; border-radius:10px; padding:20px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
-    .card-num { font-size:13px; color:#999; margin-bottom:8px; }
-    .card-text { font-size:16px; margin-bottom:12px; line-height:1.6; }
-    .option { display:block; padding:10px 14px; margin:6px 0; border:1.5px solid #e0e0e0; border-radius:8px; cursor:pointer; transition:all .15s; }
-    .option:hover { border-color:#4a6cf7; background:#f6f8ff; }
-    .option.selected { border-color:#4a6cf7; background:#eef1ff; }
-    .option input { display:none; }
-    .submit-wrap { text-align:center; margin:20px 0; }
-    .report { background:#fff; border-radius:12px; padding:24px; margin-top:20px; box-shadow:0 2px 8px rgba(0,0,0,.06); display:none; }
-    .report h2 { font-size:20px; margin:20px 0 10px; border-bottom:2px solid #4a6cf7; padding-bottom:6px; }
-    .report h2:first-child { margin-top:0; }
-    .report p { margin:8px 0; line-height:1.7; }
-    .progress-wrap { background:#e0e0e0; border-radius:6px; height:8px; margin:20px 0; position:sticky; top:10px; z-index:10; }
-    .progress-bar { height:100%; border-radius:6px; background:#4a6cf7; width:0%; transition:width .3s; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>职业性格测试</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#f0f2f5;color:#333}
+.container{max-width:750px;margin:0 auto;padding:20px}
+.header{text-align:center;padding:30px 20px;background:#fff;border-radius:12px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.header h1{font-size:28px;margin-bottom:10px}
+.header p{color:#666;font-size:14px}
+.btn{display:inline-block;padding:12px 32px;background:#4a6cf7;color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer}
+.btn:hover{background:#3b5de7}
+.btn:disabled{background:#bbb;cursor:not-allowed}
+.card{background:#fff;border-radius:10px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.card-num{font-size:13px;color:#999;margin-bottom:8px}
+.card-text{font-size:16px;margin-bottom:12px;line-height:1.6}
+.option{display:block;padding:10px 14px;margin:6px 0;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer}
+.option:hover{border-color:#4a6cf7;background:#f6f8ff}
+.option.selected{border-color:#4a6cf7;background:#eef1ff}
+.option input{display:none}
+.submit-wrap{text-align:center;margin:20px 0}
+.report{background:#fff;border-radius:12px;padding:24px;margin-top:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);display:none}
+.report h2{font-size:20px;margin:20px 0 10px;border-bottom:2px solid #4a6cf7;padding-bottom:6px}
+.report p{margin:8px 0;line-height:1.7}
+.progress-wrap{background:#e0e0e0;border-radius:6px;height:8px;margin:20px 0}
+.progress-bar{height:100%;border-radius:6px;background:#4a6cf7;width:0%;transition:width .3s}
+</style>
 </head>
 <body>
-
 <div class="container">
-  <div class="header" id="headerBox">
-    <h1>职业性格测试</h1>
+<div class="header" id="headerBox">
+<h1>职业性格测试</h1>
+<p>了解你的心智动力结构、压力弹性与代谢模式<br>共71题，预计用时15-20分钟</p>
+<button class="btn" id="btnStart" style="margin-top:16px">开始测试</button>
+</div>
+<div id="quizArea" style="display:none">
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div id="quizList"></div>
+<div class="submit-wrap"><button class="btn" id="btnSubmit" disabled>提交答案</button></div>
+</div>
+<div class="report" id="reportBox"></div>
+</div>
+<script>
+var ALL_QUESTIONS = 这里放你贴出的完整数组——就是你刚才发的那71道题的JSON数组，从第一个 {"id":"S-C01"... 到最后一个 ..."mapping":{"A":1,"B":2,"C":3,"D":4,"E":5}}。注意不要带最外层的 {"title":..., "questions":...} 包装，只取 questions 里面的纯数组部分。
+</script>    <h1>职业性格测试</h1>
     <p>了解你的心智动力结构、压力弹性与代谢模式<br>共71题，预计用时15-20分钟</p>
     <button class="btn" id="btnStart" style="margin-top:16px;">开始测试</button>
   </div>
