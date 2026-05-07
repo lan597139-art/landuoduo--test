@@ -46,3 +46,1099 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#f0f2f5;c
 <script>
 var ALL_QUESTIONS = 这里放你贴出的完整数组——就是你刚才发的那71道题的JSON数组，从第一个 {"id":"S-C01"... 到最后一个 ..."mapping":{"A":1,"B":2,"C":3,"D":4,"E":5}}。注意不要带最外层的 {"title":..., "questions":...} 包装，只取 questions 里面的纯数组部分。
 </script>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>职业性格测试</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "PingFang SC","Microsoft YaHei",sans-serif; background:#f0f2f5; color:#333; }
+    .container { max-width:750px; margin:0 auto; padding:20px; }
+    .header { text-align:center; padding:30px 20px; background:#fff; border-radius:12px; margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+    .header h1 { font-size:28px; margin-bottom:10px; }
+    .header p { color:#666; font-size:14px; }
+    .btn { display:inline-block; padding:12px 32px; background:#4a6cf7; color:#fff; border:none; border-radius:8px; font-size:16px; cursor:pointer; transition:all .2s; }
+    .btn:hover { background:#3b5de7; }
+    .btn:disabled { background:#bbb; cursor:not-allowed; }
+    .card { background:#fff; border-radius:10px; padding:20px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
+    .card-num { font-size:13px; color:#999; margin-bottom:8px; }
+    .card-text { font-size:16px; margin-bottom:12px; line-height:1.6; }
+    .option { display:block; padding:10px 14px; margin:6px 0; border:1.5px solid #e0e0e0; border-radius:8px; cursor:pointer; transition:all .15s; }
+    .option:hover { border-color:#4a6cf7; background:#f6f8ff; }
+    .option.selected { border-color:#4a6cf7; background:#eef1ff; }
+    .option input { display:none; }
+    .submit-wrap { text-align:center; margin:20px 0; }
+    .report { background:#fff; border-radius:12px; padding:24px; margin-top:20px; box-shadow:0 2px 8px rgba(0,0,0,.06); display:none; }
+    .report h2 { font-size:20px; margin:20px 0 10px; border-bottom:2px solid #4a6cf7; padding-bottom:6px; }
+    .report h2:first-child { margin-top:0; }
+    .report p { margin:8px 0; line-height:1.7; }
+    .progress-wrap { background:#e0e0e0; border-radius:6px; height:8px; margin:20px 0; position:sticky; top:10px; z-index:10; }
+    .progress-bar { height:100%; border-radius:6px; background:#4a6cf7; width:0%; transition:width .3s; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header" id="headerBox">
+    <h1>职业性格测试</h1>
+    <p>了解你的心智动力结构、压力弹性与代谢模式<br>共71题，预计用时15-20分钟</p>
+    <button class="btn" id="btnStart" style="margin-top:16px;">开始测试</button>
+  </div>
+
+  <div id="quizArea" style="display:none;">
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div id="quizList"></div>
+    <div class="submit-wrap">
+      <button class="btn" id="btnSubmit" disabled>提交答案</button>
+    </div>
+  </div>
+
+  <div class="report" id="reportBox"></div>
+</div>
+
+<script>
+// ========== 题库 (内嵌) ==========
+var ALL_QUESTIONS = [
+  {
+    "id": "S-C01",
+    "text": "当你的身体/空间/资源要长期稳定运转时，你最需要的是什么？",
+    "options": [
+      {"label": "A", "text": "清晰的秩序、规则和整理结构"},
+      {"label": "B", "text": "熟悉的环境、足够的储备和安全边界"},
+      {"label": "C", "text": "能主动调整和打破僵住状态的动力"},
+      {"label": "D", "text": "更多可调用的资源、空间和余量"},
+      {"label": "E", "text": "能抽离理解身体和现实限制的视角"}
+    ],
+    "mapping": {"A": "O", "B": "V", "C": "D", "D": "E", "E": "T"}
+  },
+  {
+    "id": "S-C02",
+    "text": "当你的成长路径要长期稳定推进时，你最需要的是什么？",
+    "options": [
+      {"label": "A", "text": "清晰规划、阶段目标和复盘结构"},
+      {"label": "B", "text": "一个稳定方向或身份锚点"},
+      {"label": "C", "text": "持续突破和对抗瓶颈的动能"},
+      {"label": "D", "text": "更多机会、资源和路径入口"},
+      {"label": "E", "text": "能重新定义成长意义和底层方向的视角"}
+    ],
+    "mapping": {"A": "O", "B": "V", "C": "D", "D": "E", "E": "T"}
+  },
+  {
+    "id": "S-C03",
+    "text": "当一段关系要长期稳定运转时，你最需要的是什么？",
+    "options": [
+      {"label": "A", "text": "明确边界、分工和相处规则"},
+      {"label": "B", "text": "稳定回应、陪伴和情感依托"},
+      {"label": "C", "text": "能把冲突说开并推动关系变化的动能"},
+      {"label": "D", "text": "更多连接、资源和互动空间"},
+      {"label": "E", "text": "能跳出情绪看懂关系本质的视角"}
+    ],
+    "mapping": {"A": "O", "B": "V", "C": "D", "D": "E", "E": "T"}
+  },
+  {
+    "id": "S-C04",
+    "text": "当你要在一个群体里稳定存在时，你最需要的是什么？",
+    "options": [
+      {"label": "A", "text": "清楚规则、角色边界和行动规范"},
+      {"label": "B", "text": "稳定位置、归属感和关键连接"},
+      {"label": "C", "text": "能表达、争取和改变位置的行动力"},
+      {"label": "D", "text": "更多人脉、曝光和可进入的圈层"},
+      {"label": "E", "text": "能看懂群体结构和评价机制的视角"}
+    ],
+    "mapping": {"A": "O", "B": "V", "C": "D", "D": "E", "E": "T"}
+  },
+  {
+    "id": "S-C05",
+    "text": "当你的意义系统要长期稳定时，你最需要的是什么？",
+    "options": [
+      {"label": "A", "text": "一套清晰、自洽、可执行的信念结构"},
+      {"label": "B", "text": "一个能长期确认自我认同的意义锚点"},
+      {"label": "C", "text": "不断质疑、打破和更新旧信念的动力"},
+      {"label": "D", "text": "让观念被传播、影响更多人的机会"},
+      {"label": "E", "text": "能从更高层重构意义和世界模型的视角"}
+    ],
+    "mapping": {"A": "O", "B": "V", "C": "D", "D": "E", "E": "T"}
+  },
+  {
+    "id": "S-C06",
+    "text": "当一套机制要长期稳定运行时，你最需要的是什么？",
+    "options": [
+      {"label": "A", "text": "清晰流程、标准和反馈闭环"},
+      {"label": "B", "text": "固定习惯、稳定模板和可依赖支点"},
+      {"label": "C", "text": "能打破旧流程、推动重构的动力"},
+      {"label": "D", "text": "可复制、可放大、可接入更多资源的结构"},
+      {"label": "E", "text": "能理解底层逻辑并重构模型的能力"}
+    ],
+    "mapping": {"A": "O", "B": "V", "C": "D", "D": "E", "E": "T"}
+  },
+  {
+    "id": "N-C01",
+    "text": "当你最想“把一切理顺、稳定下来”时，这股力量最常落在哪个现实域？",
+    "options": [
+      {"label": "A", "text": "身体/空间/资源：先整理生活底盘"},
+      {"label": "B", "text": "成长/能力/路径：先规划成长路径"},
+      {"label": "C", "text": "关系/亲密/协作：先明确关系边界和分工"},
+      {"label": "D", "text": "群体/评价/位置：先搞清群体规则和角色"},
+      {"label": "E", "text": "意义/信念/目标：先整理信念和价值体系"},
+      {"label": "F", "text": "机制/流程/系统：先搭流程、机制和反馈闭环"}
+    ],
+    "mapping": {"A": "PN", "B": "AN", "C": "RN", "D": "IN", "E": "MN", "F": "FN"}
+  },
+  {
+    "id": "N-C02",
+    "text": "当你最想“让自己不悬空、有落点”时，这股力量最常落在哪个现实域？",
+    "options": [
+      {"label": "A", "text": "靠熟悉环境、稳定作息、物资储备来稳住"},
+      {"label": "B", "text": "靠固定目标、持续路径、身份定位来稳住"},
+      {"label": "C", "text": "靠亲密关系、陪伴、回应来稳住"},
+      {"label": "D", "text": "靠群体归属、固定位置、社会身份来稳住"},
+      {"label": "E", "text": "靠信念、价值、人生坐标来稳住"},
+      {"label": "F", "text": "靠固定方法、习惯模板、可依赖系统来稳住"}
+    ],
+    "mapping": {"A": "PN", "B": "AN", "C": "RN", "D": "IN", "E": "MN", "F": "FN"}
+  },
+  {
+    "id": "N-C03",
+    "text": "当你最想“把卡住的东西冲开”时，这股力量最常落在哪个现实域？",
+    "options": [
+      {"label": "A", "text": "先改变身体状态、作息、运动强度"},
+      {"label": "B", "text": "先冲击能力瓶颈、学习瓶颈、职业瓶颈"},
+      {"label": "C", "text": "先把关系里的沉默、误会、拉扯说开"},
+      {"label": "D", "text": "先表达、竞争、争取位置或挑战规则"},
+      {"label": "E", "text": "先质疑旧信念、打破旧意义、重写目标"},
+      {"label": "F", "text": "先拆掉低效流程、重构机制、推动系统改版"}
+    ],
+    "mapping": {"A": "PN", "B": "AN", "C": "RN", "D": "IN", "E": "MN", "F": "FN"}
+  },
+  {
+    "id": "N-C04",
+    "text": "当你最想“把版图打开、把资源做大”时，这股力量最常落在哪个现实域？",
+    "options": [
+      {"label": "A", "text": "扩大金钱、物资、空间、生活资源"},
+      {"label": "B", "text": "扩大机会、技能、履历、成长可能性"},
+      {"label": "C", "text": "扩大关系连接、合作对象、支持网络"},
+      {"label": "D", "text": "扩大人脉、曝光、圈层入口、话语权"},
+      {"label": "E", "text": "扩大观念影响、价值传播、信念共同体"},
+      {"label": "F", "text": "扩大流程规模、工具链、商业系统"}
+    ],
+    "mapping": {"A": "PN", "B": "AN", "C": "RN", "D": "IN", "E": "MN", "F": "FN"}
+  },
+  {
+    "id": "N-C05",
+    "text": "当你最想“跳出来重新理解这一切”时，这股力量最常落在哪个现实域？",
+    "options": [
+      {"label": "A", "text": "跳出身体、环境、物质限制"},
+      {"label": "B", "text": "跳出原有成长路径，重新定义能力"},
+      {"label": "C", "text": "跳出情绪和依附，重新理解关系本质"},
+      {"label": "D", "text": "跳出群体评价，观察权力结构和社会运行"},
+      {"label": "E", "text": "跳出现有信念，重构意义系统和人生方向"},
+      {"label": "F", "text": "跳出具体流程，抽象出底层机制和第一性原理"}
+    ],
+    "mapping": {"A": "PN", "B": "AN", "C": "RN", "D": "IN", "E": "MN", "F": "FN"}
+  },
+  {
+    "id": "N-C06",
+    "text": "当你的“第二股力量”启动时，它最常落在哪个现实域？",
+    "options": [
+      {"label": "A", "text": "身体、作息、空间、钱、物资、生活资源"},
+      {"label": "B", "text": "成长、学习、能力、履历、职业路径"},
+      {"label": "C", "text": "亲密关系、朋友、伴侣、合作、长期连接"},
+      {"label": "D", "text": "群体位置、评价、圈层、人脉、社会身份"},
+      {"label": "E", "text": "信念、意义、价值、人生目标、精神方向"},
+      {"label": "F", "text": "方法、流程、机制、工具、系统运行"}
+    ],
+    "mapping": {"A": "PN", "B": "AN", "C": "RN", "D": "IN", "E": "MN", "F": "FN"}
+  },
+  {
+    "id": "C01",
+    "text": "什么最容易让你进入“真来电”状态？",
+    "options": [
+      {"label": "A", "text": "混乱被理顺，结构清楚，步骤闭合"},
+      {"label": "B", "text": "有人/环境给了稳定回音，让自己不悬空"},
+      {"label": "C", "text": "阻力被冲开，节奏被带起来"},
+      {"label": "D", "text": "资源、空间、机会或连接被打开"},
+      {"label": "E", "text": "突然看懂了底层逻辑、意义或本质"}
+    ],
+    "mapping": {"A": "O", "B": "V", "C": "D", "D": "E", "E": "T"}
+  },
+  {
+    "id": "C02",
+    "text": "什么最容易让你系统“掉线”？",
+    "options": [
+      {"label": "A", "text": "规则混乱、流程失控、没有预案"},
+      {"label": "B", "text": "没有回应、没有依托、没有归属"},
+      {"label": "C", "text": "一切太慢、太钝、太温吞，推进感被磨掉"},
+      {"label": "D", "text": "手脚被绑住，资源受限，空间被压缩"},
+      {"label": "E", "text": "事情变成纯粹重复、表演或流水线，找不到意义"}
+    ],
+    "mapping": {"A": "O", "B": "V", "C": "D", "D": "E", "E": "T"}
+  },
+  {
+    "id": "C03",
+    "text": "你最本能的回稳动作是什么？",
+    "options": [
+      {"label": "A", "text": "整理房间、列清单、重排计划"},
+      {"label": "B", "text": "找懂你的人聊、回到熟悉环境"},
+      {"label": "C", "text": "运动、出门、换节奏"},
+      {"label": "D", "text": "抢回空间、拉开距离、减少干扰"},
+      {"label": "E", "text": "抽离现实噪声，去看书、自然、哲学等"}
+    ],
+    "mapping": {"A": "O", "B": "V", "C": "D", "D": "E", "E": "T"}
+  },
+  {
+    "id": "C04",
+    "text": "重大选择时你优先稳住什么？",
+    "options": [
+      {"label": "A", "text": "把信息、风险、步骤、后果先建模清楚"},
+      {"label": "B", "text": "确认有没有人、环境或底线能兜住结果"},
+      {"label": "C", "text": "看它能不能打破现状、激活自己"},
+      {"label": "D", "text": "看它能不能打开更大空间、资源和机会"},
+      {"label": "E", "text": "看它是否契合更深层的意义和人生底层判断"}
+    ],
+    "mapping": {"A": "O", "B": "V", "C": "D", "D": "E", "E": "T"}
+  },
+  {
+    "id": "F01",
+    "text": "过去一两年，你的精力最像怎么聚集？",
+    "options": [
+      {"label": "A", "text": "问题很集中，处理方式也比较固定"},
+      {"label": "B", "text": "问题集中，但处理时经常有两股力量一起出现"},
+      {"label": "C", "text": "处理方式很固定，但会反复用在两类事情上"},
+      {"label": "D", "text": "长期同时经营两条主线，每条都有不止一种力量"},
+      {"label": "E", "text": "精力比较散，阶段性哪里出事就处理哪里"}
+    ],
+    "mapping": {
+      "A": {"Single_N": 2, "Single_S": 2},
+      "B": {"Single_N": 2, "Dual_S": 2},
+      "C": {"Dual_N": 2, "Single_S": 2},
+      "D": {"Dual_N": 2, "Dual_S": 2},
+      "E": {"Chaotic": 2}
+    }
+  },
+  {
+    "id": "F02",
+    "text": "卡住时，你通常是“单招”还是“双招”？",
+    "options": [
+      {"label": "A", "text": "基本用同一种招数反复处理"},
+      {"label": "B", "text": "同时用两种招数处理同一个卡点"},
+      {"label": "C", "text": "平时一招为主，压力一上来就切到另一种招数"},
+      {"label": "D", "text": "经常在两种招数之间拉扯"},
+      {"label": "E", "text": "没有固定招数，多数时候先把眼前损耗降下来"}
+    ],
+    "mapping": {
+      "A": {"Single_S": 2},
+      "B": {"Dual_S": 2},
+      "C": {"Dual_S": 1, "Single_S": 1},
+      "D": {"Dual_S": 2},
+      "E": {"Chaotic": 2}
+    }
+  },
+  {
+    "id": "F03",
+    "text": "你的同一种模式会不会跨场景复用？",
+    "options": [
+      {"label": "A", "text": "主要只用在一类事情上"},
+      {"label": "B", "text": "会稳定用在两类事情上"},
+      {"label": "C", "text": "会用到很多事情上，但不算稳定"},
+      {"label": "D", "text": "平时不外溢，但压力很大或机会很多时会扩散"},
+      {"label": "E", "text": "没有特别稳定的处理模式"}
+    ],
+    "mapping": {
+      "A": {"Single_N": 2},
+      "B": {"Dual_N": 2},
+      "C": {"Dual_N": 1, "Chaotic": 1},
+      "D": {"Dual_N": 1, "Chaotic": 1},
+      "E": {"Chaotic": 2}
+    }
+  },
+  {
+    "id": "F04",
+    "text": "你是否长期同时维护“两件事 + 两套力量”？",
+    "options": [
+      {"label": "A", "text": "没这么复杂，主要是一类事情 + 一种处理方式"},
+      {"label": "B", "text": "两种处理方式，但主要都用在同一类事情上"},
+      {"label": "C", "text": "一种处理方式，但会稳定覆盖两类事情"},
+      {"label": "D", "text": "长期同时维护两类事情，每类都有两种力量"},
+      {"label": "E", "text": "同时操心很多事，但不像固定组合"}
+    ],
+    "mapping": {
+      "A": {"Single_S": 2, "Single_N": 2},
+      "B": {"Dual_S": 2, "Single_N": 2},
+      "C": {"Single_S": 2, "Dual_N": 2},
+      "D": {"Dual_S": 2, "Dual_N": 2},
+      "E": {"Chaotic": 2}
+    }
+  },
+  {
+    "id": "st-O01",
+    "text": "你发现一个没有明确监管、几乎不会留证据的暴利机会。坚持原规则不会受罚但会错过暴利，绕开规则收益立刻放大但系统进入不可审计的灰区。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "拒绝绕开规则，即使错过暴利"},
+      {"label": "B", "text": "不直接吃灰利，尝试改造成合规通道，不行就降低参与"},
+      {"label": "C", "text": "窗口很短，先获取收益，之后补结构"},
+      {"label": "D", "text": "不再优先考虑原规则，只要风险够低就跟随有利做法"}
+    ],
+    "mapping": {"A": "σ0", "B": "σ1", "C": "σ2_switch", "D": "σ2_collapse"}
+  },
+  {
+    "id": "st-V01",
+    "text": "你面前有一个机会可以迅速获得更大自由和上升空间，但要求你短期内切断最稳定的依托（那个人或系统）。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "保留核心依托，不为扩张速度切断安全底座"},
+      {"label": "B", "text": "不彻底切断，减少依赖但保留关键连接"},
+      {"label": "C", "text": "判断窗口更重要，先切断依托进入扩张"},
+      {"label": "D", "text": "把没有兜底当刺激，直接冲进去"}
+    ],
+    "mapping": {"A": "σ0", "B": "σ1", "C": "σ2_switch", "D": "σ2_collapse"}
+  },
+  {
+    "id": "st-D01",
+    "text": "你正在推进一个很有突破感的目标，但阻力越来越大，身体和心理都开始报警。有一条低耗稳定路线可保健康。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "继续推进，只要还有突破机会就不退回低耗路线"},
+      {"label": "B", "text": "保留突破目标，但重设节奏、检查点和恢复窗口"},
+      {"label": "C", "text": "暂停突破，优先恢复秩序、安全和稳定输出"},
+      {"label": "D", "text": "时冲时停，直到身体或结果强行结算"}
+    ],
+    "mapping": {"A": "σ0", "B": "σ1", "C": "σ2_switch", "D": "σ2_collapse"}
+  },
+  {
+    "id": "st-E01",
+    "text": "你处在一个资源窗口里，新机会大量出现。但系统承载已接近上限，继续铺开收益可能放大也可能失控。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "继续扩张，优先抓住资源窗口"},
+      {"label": "B", "text": "保留扩张方向，设定上限、止损线和回撤机制"},
+      {"label": "C", "text": "暂停扩张，先稳住现有结构和安全底座"},
+      {"label": "D", "text": "跟着机会流动，暂时不设明确主线和回撤规则"}
+    ],
+    "mapping": {"A": "σ0", "B": "σ1", "C": "σ2_switch", "D": "σ2_collapse"}
+  },
+  {
+    "id": "st-T01",
+    "text": "你有两个方向：一个很现实，收益快但与你底层意义不一致；另一个更接近你认为重要的东西，但短期很难解释清楚也不一定带来可见成果。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "选择更符合底层意义的方向，即使短期收益低"},
+      {"label": "B", "text": "保留底层意义，拆成阶段目标让意义进入可执行结构"},
+      {"label": "C", "text": "当前更需要现实收益，先选择更能落地的方向"},
+      {"label": "D", "text": "继续讲意义和愿景，但既不承担代价也没有转成路径"}
+    ],
+    "mapping": {"A": "σ0", "B": "σ1", "C": "σ2_switch", "D": "σ2_collapse"}
+  },
+  {
+    "id": "SL-01",
+    "text": "一个人按固定流程行动很稳定，但遇到新变量就卡住。最大死穴在哪里？",
+    "options": [
+      {"label": "A", "text": "缺少面对意外变量时的缓冲空间（锚定）"},
+      {"label": "B", "text": "缺少和未知阻力持续拉扯的训练（动力）"},
+      {"label": "C", "text": "固定流程没有形成处理例外情况的拆解步骤（结构）"},
+      {"label": "D", "text": "输入样本和资源来源太窄（扩张）"},
+      {"label": "E", "text": "把稳定执行流程误当成真正具备处理能力（超越）"}
+    ],
+    "mapping": {"A": "V", "B": "D", "C": "O", "D": "E", "E": "T"}
+  },
+  {
+    "id": "SL-02",
+    "text": "高绑定协作前期顺畅，后期出现分歧无法处理，从互助变成争吵。最大死穴在哪里？",
+    "options": [
+      {"label": "A", "text": "绑定太紧，缺少各自独立判断的安全空间（锚定）"},
+      {"label": "B", "text": "没有把分歧转化为推动理解的动力（动力）"},
+      {"label": "C", "text": "缺少处理分歧的规则和评判标准（结构）"},
+      {"label": "D", "text": "系统太封闭，没有引入外部信息打破循环（扩张）"},
+      {"label": "E", "text": "默认关系亲近就应该判断一致，强求同步（超越）"}
+    ],
+    "mapping": {"A": "V", "B": "D", "C": "O", "D": "E", "E": "T"}
+  },
+  {
+    "id": "SL-03",
+    "text": "引入明确指标后大家只做能带来指标收益的事，系统长期健康的行为减少。最大死穴在哪里？",
+    "options": [
+      {"label": "A", "text": "指标化削弱了底层关系安全和信任（锚定）"},
+      {"label": "B", "text": "外部指标替代了内在动能（动力）"},
+      {"label": "C", "text": "指标规则留下大量空白，大家专挑容易得分的事做（结构）"},
+      {"label": "D", "text": "机制没有让额外投入连接到真实成长收益（扩张）"},
+      {"label": "E", "text": "用过低维度的指标替代了复杂现实（超越）"}
+    ],
+    "mapping": {"A": "V", "B": "D", "C": "O", "D": "E", "E": "T"}
+  },
+  {
+    "id": "SL-04",
+    "text": "一个人投入大量时间做整理、记录、包装，结果漂亮规范，但一到真实问题面前无法稳定解决。最大死穴在哪里？",
+    "options": [
+      {"label": "A", "text": "表面整理消耗了精力，面对问题时缺少余量（锚定）"},
+      {"label": "B", "text": "表面整理绕开了真正困难的部分（动力）"},
+      {"label": "C", "text": "只有记录整理，缺少独立重做、检验和修正机制（结构）"},
+      {"label": "D", "text": "输入样本太窄，没有扩展到变式和外部反馈（扩张）"},
+      {"label": "E", "text": "把形式完成误当成了能力形成（超越）"}
+    ],
+    "mapping": {"A": "V", "B": "D", "C": "O", "D": "E", "E": "T"}
+  },
+  {
+    "id": "SL-05",
+    "text": "一个人长期按外部给定目标努力，接近关键节点时突然觉得空、失去动力。最大死穴在哪里？",
+    "options": [
+      {"label": "A", "text": "目标一直是外部支撑点，内在安稳开始松动（锚定）"},
+      {"label": "B", "text": "长期完成外部任务，内部自发动力不足（动力）"},
+      {"label": "C", "text": "目标没有形成自洽的逻辑链条和反馈闭环（结构）"},
+      {"label": "D", "text": "路线太单一，无法打开足够广的未来选项（扩张）"},
+      {"label": "E", "text": "外部目标只是工具，不能回答个人存在价值（超越）"}
+    ],
+    "mapping": {"A": "V", "B": "D", "C": "O", "D": "E", "E": "T"}
+  },
+  {
+    "id": "SL-06",
+    "text": "一个小系统制定了非常细、非常严格的规则，短期更可控，但很快成员紧绷、互相不满。最大死穴在哪里？",
+    "options": [
+      {"label": "A", "text": "过细规则让每个人都处在被检查状态，稳定底座下降（锚定）"},
+      {"label": "B", "text": "额外监督制造了新摩擦，动能转成抵触（动力）"},
+      {"label": "C", "text": "有惩罚条款但缺少客观判定和反馈机制（结构）"},
+      {"label": "D", "text": "只在内部互相惩罚，没有引入外部资源和解决方案（扩张）"},
+      {"label": "E", "text": "试图用静态细碎规则控制动态生活系统（超越）"}
+    ],
+    "mapping": {"A": "V", "B": "D", "C": "O", "D": "E", "E": "T"}
+  }
+];
+// 注意：上面只包含了前35题，下半部分将继续包含剩余36题以及完整的计分和报告逻辑。
+</script>
+</body>
+</html>
+  {
+    "id": "Γ-N01",
+    "text": "他人要求你按统一节奏完成要检查的任务，但你知道真正问题在另一个更需要修补的漏洞。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "优先完成统一任务，保证可见合规"},
+      {"label": "B", "text": "先完成必要检查部分，再转向真实漏洞"},
+      {"label": "C", "text": "直接处理真实漏洞，承担偏离代价"},
+      {"label": "D", "text": "在两边反复切换，只维持最低推进"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-N02",
+    "text": "一个与你有持续绑定关系的人反复制造低强度消耗，还没到必须切断关系但持续影响你。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "先配合对方，自己调整位置或节奏"},
+      {"label": "B", "text": "保留关系互动，但设置替代机制或固定规则"},
+      {"label": "C", "text": "直接说明影响并提出边界，接受关系短期降温"},
+      {"label": "D", "text": "不说明原因，逐渐减少互动或降低回应"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-N03",
+    "text": "一个有影响力的人对你给出强烈评价，其中包含部分事实但也夹带了标签和扩大化解释。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "接受评价，通过补偿行动证明自己"},
+      {"label": "B", "text": "先降低冲突，拆成可改和不可吸收部分，只针对可改项行动"},
+      {"label": "C", "text": "只承认具体事实，不接受评价扩大成自我定义"},
+      {"label": "D", "text": "暂时停止处理评价内容，从互动中撤出"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-N04",
+    "text": "外部系统要求你按统一格式完成一项任务，格式能降低被批评风险但消耗大量时间。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "按要求完整完成格式，优先保证合规"},
+      {"label": "B", "text": "保留必要格式，简化低效重复部分"},
+      {"label": "C", "text": "用自己判断中更有效的方式替代格式，承担不合规评价"},
+      {"label": "D", "text": "只保留能通过检查的表面部分，其他最低限度处理"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-N05",
+    "text": "你所在的群体评价系统持续关注你，且评价标准不完全一致。当你再次被盯住或贴标签时，你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "先降低可见度，避免继续被记录或放大"},
+      {"label": "B", "text": "不扩大冲突，转向其他更稳定的评价源建立信用"},
+      {"label": "C", "text": "指出评价标准不一致，要求按同一规则处理"},
+      {"label": "D", "text": "不再主动处理标签，只维持最低限度参与"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-N06",
+    "text": "与你有重要关系的人持续用失望、牺牲、冷战或愧疚感向你施压。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "先顺着对方情绪给出回应或承诺，让冲突降下来"},
+      {"label": "B", "text": "先让情绪降温，把可承担和不可变成自己责任的部分分开"},
+      {"label": "C", "text": "承认对方有情绪，但说明自己能承担的范围，停止收超出边界的情绪"},
+      {"label": "D", "text": "不继续争论，也不说明边界，先从互动中撤出"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-N07",
+    "text": "你所在的环境持续出现低质量输入：闲言碎语、标签化评价、错误归因等。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "当成需要优先处理的风险信号，反复回想并调整表现"},
+      {"label": "B", "text": "只提取可验证、可改进的部分，对标签化内容不投入注意力"},
+      {"label": "C", "text": "判断该输入源整体质量低，减少接触"},
+      {"label": "D", "text": "杂音持续占用注意力，但没有形成具体修正点"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-N08",
+    "text": "一个问题已经存在且拖下去会增加成本，完整解决会消耗较多精力，最小修复动作可行。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "先放到一边，等外部检查或截止点靠近时再集中做"},
+      {"label": "B", "text": "不要求一次解决全部，先完成一个最小可执行动作"},
+      {"label": "C", "text": "暂停其他动作，直接处理根部问题，承担短期不完整"},
+      {"label": "D", "text": "暂时不继续看这个问题，转去做别的事"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-N09",
+    "text": "你已经出现明显疲劳、注意力下降，但继续推进可以保住眼前任务。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "继续按原任务推进，先压住疲劳"},
+      {"label": "B", "text": "保留任务主线，调整节奏让身体成本降到可承受范围"},
+      {"label": "C", "text": "停止透支，减少或推迟任务，接受短期损失"},
+      {"label": "D", "text": "继续撑一会儿，但状态已影响行动，只能断续处理"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-N10",
+    "text": "你面对一套规则存在漏洞，利用它可以省成本、保资源，但可能损害长期信任。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "按规则最低标准完成，不额外补充未要求的部分"},
+      {"label": "B", "text": "按规则完成，同时补充说明或边界降低长期风险"},
+      {"label": "C", "text": "不用漏洞，按更一致的标准完成，接受短期成本上升"},
+      {"label": "D", "text": "处理成表面过得去的样子，不主动说明关键缺口"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-N11",
+    "text": "你处在资源有限或不稳定的环境里，先占住更多资源会更安全，但占位过多会挤压别人。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "优先把资源让出或共享，保全协作关系和外部评价"},
+      {"label": "B", "text": "保留自己确实需要的部分，说清共享规则和归还方式"},
+      {"label": "C", "text": "优先锁定自己系统必须的资源底盘，明确拒绝不合理共享"},
+      {"label": "D", "text": "资源先按方便的方式用着，边界不先说清"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-N12",
+    "text": "你遇到一件让你停滞或挫败的事。解释它、复盘它可以让你稳定下来，但一直停留在解释里现实不会改变。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "顺着外界或他人的说法，接受能让自己舒服的解释"},
+      {"label": "B", "text": "提取解释中能说服自己的部分安抚情绪，但立刻转成能验证的小动作"},
+      {"label": "C", "text": "拒绝只提供情绪价值的解释，强行切断叙事，直接做能改变现实的动作"},
+      {"label": "D", "text": "反复解释和复盘，情绪暂时缓解但没有形成下一步行动"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-P01",
+    "text": "你突然获得了一段额外的自由资源（时间、精力、金钱等）。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "用于休息、恢复或处理当下想做的事"},
+      {"label": "B", "text": "留一部分恢复状态，剩余部分投入长期结构"},
+      {"label": "C", "text": "优先投入长期目标或底层结构，即使短期不舒服"},
+      {"label": "D", "text": "在休息和投入之间反复犹豫，资源在空转中消耗"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-P02",
+    "text": "你因为某个表现获得了明显认可。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "继续沿着获得认可的方向投入"},
+      {"label": "B", "text": "接住动力，分析具体哪里有效，沉淀可复用部分"},
+      {"label": "C", "text": "不把认可作为主要方向依据，继续推进更重要的事"},
+      {"label": "D", "text": "既想追认可又想自我校准，反复拉扯"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-P03",
+    "text": "你和某个人/团队目前相处很顺，几乎没有摩擦，但未来责任变重可能制造隐性冲突。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "继续按当前顺畅方式相处，不急着讨论边界"},
+      {"label": "B", "text": "保持轻松互动，在自然时机说清一两个具体规则"},
+      {"label": "C", "text": "主动把重要边界和责任谈清楚，接受气氛短暂变严肃"},
+      {"label": "D", "text": "意识到该设边界但一直拖着没说"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-P04",
+    "text": "你突然获得了一段较完整、较少被打扰的时间。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "用于休息、恢复或处理轻任务，不进入深层修复"},
+      {"label": "B", "text": "先恢复状态，再投入一个明确的长期短板"},
+      {"label": "C", "text": "直接处理最长期、最底层的问题，接受短期不轻松"},
+      {"label": "D", "text": "在“该休息”和“该做事”之间反复拉扯"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-P05",
+    "text": "你获得了更大的权限、自由度或资源调度权。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "先按自己的判断直接调用权限，资源调到方便推进的方向"},
+      {"label": "B", "text": "使用权限推进关键事项，同时说明资源分配和责任边界"},
+      {"label": "C", "text": "先暂停直接调用，把边界、责任、退出条件说清楚再调度"},
+      {"label": "D", "text": "一边想推进一边担心后续混乱，反复纠结"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-P06",
+    "text": "你持续获得很高的外部评价（夸奖、追捧、奖项等）。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "接受高评价，把它们当成能力和方向已被证明的信号"},
+      {"label": "B", "text": "接住动力，只提取可验证可复用的部分来校准"},
+      {"label": "C", "text": "不把高评价作为主要判断依据，继续按内部标准检查"},
+      {"label": "D", "text": "被好评推着关注外部反馈，隐隐觉得被期待绑架"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-P07",
+    "text": "你突然拥有了一部分超出最低运行需求的冗余资源。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "用于改善当前状态、降低压力或增加安全感"},
+      {"label": "B", "text": "保留一部分作为安全缓冲，剩余投入能降低未来成本的改进"},
+      {"label": "C", "text": "优先投入会降低未来运行成本的系统升级"},
+      {"label": "D", "text": "想改善又想升级，反复权衡后资源在犹豫中消耗"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-P08",
+    "text": "你和某个人或某段关系正在明显升温，对方开始期待更多回应。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "顺着关系变近的节奏，增加互动和共享"},
+      {"label": "B", "text": "继续增加亲近，但说清一两个具体边界"},
+      {"label": "C", "text": "不让关系升温扩大到所有生活区域，明确保留自我边界"},
+      {"label": "D", "text": "心里清楚该设边界但行动上一直顺着走"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-P09",
+    "text": "你刚刚获得一次顺利结果（成绩提升、项目成功等）。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "继续沿用这次有效的做法，不急着拆解"},
+      {"label": "B", "text": "复盘哪些动作和能力真正起作用，记录可复用部分"},
+      {"label": "C", "text": "用另一个小场景验证关键做法是否可迁移"},
+      {"label": "D", "text": "沉浸在成功的兴奋感里不断回放，没有真正拆解"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-P10",
+    "text": "你获得了一条低成本通道（模板、工具、AI辅助等），能让结果更快出来。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "先使用现成通道完成任务，底层能力之后再补"},
+      {"label": "B", "text": "使用通道完成主要任务，同时留时间拆解原理"},
+      {"label": "C", "text": "不主要依赖通道，先自己拆原理、练基础"},
+      {"label": "D", "text": "一边用通道觉得省力，一边担心能力退化"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-P11",
+    "text": "你进入了一段相对稳定、舒适、低波动的状态。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "充分享受这段稳定，把舒适和安全感拉到最满"},
+      {"label": "B", "text": "维持稳定节奏，同时固定加入一个小范围轻探索"},
+      {"label": "C", "text": "主动选择一个带来明显学习成本的探索方向"},
+      {"label": "D", "text": "觉得该探索但又舍不得舒适，反复想没迈出第一步"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "Γ-P12",
+    "text": "你突然对一件事产生了很强的意义感、愿景感或使命感。你会怎么处理？",
+    "options": [
+      {"label": "A", "text": "继续整理愿景、价值和想象，获得更强的动力和确认感"},
+      {"label": "B", "text": "把意义拆成一个阶段目标、一个最小验证动作和需要调用的资源"},
+      {"label": "C", "text": "不继续扩写愿景，先做一个能验证这份意义是否成立的现实动作"},
+      {"label": "D", "text": "不断扩展愿景和表达，但具体目标和验证动作始终不清楚"}
+    ],
+    "mapping": {"A": "W", "B": "W+N", "C": "N", "D": "D"}
+  },
+  {
+    "id": "ε-01",
+    "text": "过去24小时里，我的身体状态更接近：",
+    "options": [
+      {"label": "A", "text": "只是维持基本运转，很多动作都需要硬撑"},
+      {"label": "B", "text": "有明显疲劳感，但还能完成必要事务"},
+      {"label": "C", "text": "常规运转，没有明显不适或额外精力"},
+      {"label": "D", "text": "精力较稳，能处理日常任务之外的小额外事务"},
+      {"label": "E", "text": "精力明显溢出，主动想增加任务量或运动量"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-02",
+    "text": "如果现在突然多出一个不紧急但需要集中注意力的小任务，我的身体第一反应更像：",
+    "options": [
+      {"label": "A", "text": "明显抗拒，身体已经不想再动"},
+      {"label": "B", "text": "可以硬撑一点，但会消耗很大"},
+      {"label": "C", "text": "可以正常处理，做完再休息"},
+      {"label": "D", "text": "能较轻松处理，并保持状态不明显下滑"},
+      {"label": "E", "text": "会觉得正好有地方释放精力"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-03",
+    "text": "一次普通消耗之后，我目前的恢复速度更接近：",
+    "options": [
+      {"label": "A", "text": "很难恢复，休息后仍像没充上电"},
+      {"label": "B", "text": "恢复很慢，需要明显减少事务才能缓过来"},
+      {"label": "C", "text": "正常恢复，睡眠或短休后能回到常规状态"},
+      {"label": "D", "text": "恢复较快，短暂调整后可以继续稳定行动"},
+      {"label": "E", "text": "恢复很快，消耗后反而更容易进入行动状态"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-04",
+    "text": "面对今天剩余事务，我的身体余量更接近：",
+    "options": [
+      {"label": "A", "text": "已经接近停机，只想立刻停止输入和行动"},
+      {"label": "B", "text": "勉强能撑完必要事项，但不想再增加任何负载"},
+      {"label": "C", "text": "可以按常规节奏完成，不明显多也不明显少"},
+      {"label": "D", "text": "除了必要事项，还能主动处理一个额外小问题"},
+      {"label": "E", "text": "明显有余量，可以主动推进额外任务或高强度处理"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-05",
+    "text": "如果今天突然多出一个麻烦变量（计划被打断、要求变化或小冲突），我的心理系统更像：",
+    "options": [
+      {"label": "A", "text": "很可能直接失控、停住或想切断所有事情"},
+      {"label": "B", "text": "能表面撑住，但内在已经接近警戒线"},
+      {"label": "C", "text": "有压力，但可以纳入现有机制正常消化"},
+      {"label": "D", "text": "能拆解变量，重新安排优先级"},
+      {"label": "E", "text": "可以把它当成可利用变量，顺势重组局面"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-06",
+    "text": "面对不确定性时，我此刻更接近：",
+    "options": [
+      {"label": "A", "text": "一点变化都可能压垮我"},
+      {"label": "B", "text": "不想再接收新变量，只想维持现状"},
+      {"label": "C", "text": "可以处理常规变化"},
+      {"label": "D", "text": "能主动吸收变化，并调整计划"},
+      {"label": "E", "text": "甚至想主动制造一点变化来推进局面"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-07",
+    "text": "当多个小问题同时存在时，我更接近：",
+    "options": [
+      {"label": "A", "text": "感觉问题堆成一团，完全不知道从哪里开始"},
+      {"label": "B", "text": "能勉强处理最急的一个，但其他问题会持续压着我"},
+      {"label": "C", "text": "可以按顺序处理，虽然有压力但不失控"},
+      {"label": "D", "text": "能把问题分层，先处理关键节点"},
+      {"label": "E", "text": "会自然进入统筹状态，把多个问题整合成推进方案"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-08",
+    "text": "当我正在做事却被打断时，我的心理恢复更接近：",
+    "options": [
+      {"label": "A", "text": "很容易直接断线，原来的事也很难再接上"},
+      {"label": "B", "text": "会明显烦躁，需要较久才能重新进入状态"},
+      {"label": "C", "text": "会受影响，但还能回到原任务"},
+      {"label": "D", "text": "能较快重排节奏，继续推进"},
+      {"label": "E", "text": "可以顺手把打断变量纳入整体安排"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-09",
+    "text": "我此刻面对外界接触时，第一底色更接近：",
+    "options": [
+      {"label": "A", "text": "很容易感到被冒犯、被攻击或被消耗"},
+      {"label": "B", "text": "有排斥感，不太想接触人或事"},
+      {"label": "C", "text": "中性，只是接收和处理信息"},
+      {"label": "D", "text": "基本平稳，能给外界一点理解空间"},
+      {"label": "E", "text": "有明显善意，愿意主动释放支持或共情"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-10",
+    "text": "如果有人现在向我提出一个不算严重但有点打扰的请求，我的第一反应更像：",
+    "options": [
+      {"label": "A", "text": "觉得对方在消耗我、压迫我或冒犯我"},
+      {"label": "B", "text": "有烦躁感，想尽快拒绝或结束"},
+      {"label": "C", "text": "中性判断，看请求是否合理"},
+      {"label": "D", "text": "能理解对方为什么来找我，再决定边界"},
+      {"label": "E", "text": "愿意主动提供一点支持，甚至多想一步怎么帮"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-11",
+    "text": "当别人做出一个模糊行为（没有及时回复、语气一般、临时改变安排），我更容易：",
+    "options": [
+      {"label": "A", "text": "先理解成针对、轻视或恶意"},
+      {"label": "B", "text": "倾向于觉得对方很烦或不可靠"},
+      {"label": "C", "text": "暂时不下判断，等更多信息"},
+      {"label": "D", "text": "会先给一个中性或温和解释"},
+      {"label": "E", "text": "会主动考虑对方是否也有压力或困难"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-12",
+    "text": "当我现在需要和外界互动时，我更可能释放出的情绪质地是：",
+    "options": [
+      {"label": "A", "text": "敌意、防御、刺感或攻击性"},
+      {"label": "B", "text": "冷淡、抗拒、烦躁或不耐烦"},
+      {"label": "C", "text": "平直、中性、就事论事"},
+      {"label": "D", "text": "温和、稳定、可沟通"},
+      {"label": "E", "text": "主动友善、支持、鼓励或共情"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-13",
+    "text": "我此刻对行动的倾向更接近：",
+    "options": [
+      {"label": "A", "text": "想切断、逃离、掀桌或结束连接"},
+      {"label": "B", "text": "只想退回最小安全区，不想新增任何动作"},
+      {"label": "C", "text": "按原计划维持，不主动扩张也不主动改变"},
+      {"label": "D", "text": "想修补、优化或推进一个具体问题"},
+      {"label": "E", "text": "很想扩大行动范围，建立新结构、新秩序或新局面"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-14",
+    "text": "如果现在给我一个没有人强迫的自由行动窗口，我更可能：",
+    "options": [
+      {"label": "A", "text": "直接远离当前任务、关系或环境"},
+      {"label": "B", "text": "什么都不新增，先保安全和安静"},
+      {"label": "C", "text": "按惯性做原来的事"},
+      {"label": "D", "text": "用它修补一个具体问题"},
+      {"label": "E", "text": "用它发起一个更大的计划或扩张动作"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-15",
+    "text": "当我看到一个可以优化、但没人要求我处理的问题时，我更接近：",
+    "options": [
+      {"label": "A", "text": "不想管，甚至想远离这个系统"},
+      {"label": "B", "text": "看见也先不动，避免给自己增加负担"},
+      {"label": "C", "text": "如果它影响到日常运转，就按常规处理"},
+      {"label": "D", "text": "会主动修补其中一个小漏洞"},
+      {"label": "E", "text": "会想重构整个机制，让它以后更高效"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  },
+  {
+    "id": "ε-16",
+    "text": "面向接下来24小时，我的行动欲望更接近：",
+    "options": [
+      {"label": "A", "text": "想退出、断开、停止被任何事情牵引"},
+      {"label": "B", "text": "只想维持最低运转，避免新增负荷"},
+      {"label": "C", "text": "正常完成已有事项即可"},
+      {"label": "D", "text": "想主动推进一个具体目标或修复一个问题"},
+      {"label": "E", "text": "想明显扩张行动范围，启动更大的计划或结构"}
+    ],
+    "mapping": {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+  }
+];
+
+// ========== 前端渲染 + 计分引擎 ==========
+(function() {
+  let userAnswers = {};
+  let total = ALL_QUESTIONS.length;
+
+  // 开始按钮
+  document.getElementById("btnStart").onclick = function() {
+    document.getElementById("headerBox").style.display = "none";
+    document.getElementById("quizArea").style.display = "block";
+    renderQuestions();
+  };
+
+  // 渲染题目
+  function renderQuestions() {
+    let html = "";
+    ALL_QUESTIONS.forEach((q, i) => {
+      let no = i + 1;
+      let opts = q.options.map(o => `
+        <label class="option" data-qid="${q.id}" data-val="${o.label}">
+          <input type="radio" name="${q.id}" value="${o.label}">
+          <strong>${o.label}.</strong> ${o.text}
+        </label>`).join("");
+      html += `<div class="card"><div class="card-num">题目 ${no} / ${total}</div><div class="card-text">${q.text}</div>${opts}</div>`;
+    });
+    document.getElementById("quizList").innerHTML = html;
+
+    // 绑定选项点击
+    document.querySelectorAll(".option").forEach(lbl => {
+      lbl.onclick = function() {
+        let qid = this.dataset.qid;
+        let val = this.dataset.val;
+        document.querySelectorAll(`.option[data-qid="${qid}"]`).forEach(o => o.classList.remove("selected"));
+        this.classList.add("selected");
+        this.querySelector("input").checked = true;
+        userAnswers[qid] = val;
+        updateProgress();
+      };
+    });
+  }
+
+  // 进度条
+  function updateProgress() {
+    let answered = Object.keys(userAnswers).length;
+    let pct = Math.round((answered / total) * 100);
+    document.getElementById("progressBar").style.width = pct + "%";
+    document.getElementById("btnSubmit").disabled = (answered < total);
+  }
+
+  // 提交计分
+  document.getElementById("btnSubmit").onclick = function() {
+    let S_pool = { O:0, V:0, D:0, E:0, T:0 };
+    let N_pool = { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
+    let F_pool = { SS:0, DS:0, SN:0, DN:0, Ch:0 };
+    let Sigma  = { s0:0, s1:0, s2s:0, s2c:0 };
+    let SL_pool = { O:0, V:0, D:0, E:0, T:0 };
+    let G_neg = { A:0, B:0, C:0, D:0 };
+    let G_pos = { A:0, B:0, C:0, D:0 };
+    let eps = [];
+
+    ALL_QUESTIONS.forEach(q => {
+      let val = userAnswers[q.id];
+      if (!val) return;
+      let id = q.id;
+
+      if (id.startsWith("S-C")) { let m={A:"O",B:"V",C:"D",D:"E",E:"T"}; if(m[val]) S_pool[m[val]]+=2; }
+      else if (id.startsWith("N-C")) { let m={A:"PN",B:"AN",C:"RN",D:"IN",E:"MN",F:"FN"}; if(m[val]) N_pool[m[val]]+=2; }
+      else if (/^C0[1-4]$/.test(id)) { let m={A:"O",B:"V",C:"D",D:"E",E:"T"}; if(m[val]) S_pool[m[val]]+=2; }
+      else if (/^F0[1-4]$/.test(id)) {
+        let fMap = {
+          F01:{A:{SN:2,SS:2},B:{SN:2,DS:2},C:{DN:2,SS:2},D:{DN:2,DS:2},E:{Ch:2}},
+          F02:{A:{SS:2},B:{DS:2},C:{DS:1,SS:1},D:{DS:2},E:{Ch:2}},
+          F03:{A:{SN:2},B:{DN:2},C:{DN:1,Ch:1},D:{DN:1,Ch:1},E:{Ch:2}},
+          F04:{A:{SS:2,SN:2},B:{DS:2,SN:2},C:{SS:2,DN:2},D:{DS:2,DN:2},E:{Ch:2}}
+        };
+        if (fMap[id] && fMap[id][val]) { let a=fMap[id][val];
+          F_pool.SS+=a.SS||0; F_pool.DS+=a.DS||0; F_pool.SN+=a.SN||0; F_pool.DN+=a.DN||0; F_pool.Ch+=a.Ch||0; }
+      }
+      else if (id.startsWith("st-")) { let m={A:"s0",B:"s1",C:"s2s",D:"s2c"}; if(m[val]) Sigma[m[val]]++; }
+      else if (id.startsWith("SL-")) { let m={A:"V",B:"D",C:"O",D:"E",E:"T"}; if(m[val]) SL_pool[m[val]]+=2; }
+      else if (id.startsWith("Γ-N")) { let m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_neg[m[val]]++; }
+      else if (id.startsWith("Γ-P")) { let m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_pos[m[val]]++; }
+      else if (id.startsWith("ε-")) { let s={A:1,B:2,C:3,D:4,E:5}; if(s[val]) eps.push(s[val]); }
+    });
+
+    // 结算
+    let sArr = Object.entries(S_pool).sort((a,b)=>b[1]-a[1]);
+    let S1 = sArr[0][0], S2 = sArr.length>1 ? sArr[1][0] : null;
+    let nArr = Object.entries(N_pool).sort((a,b)=>b[1]-a[1]);
+    let N1 = nArr[0][0], N2 = nArr.length>1 ? nArr[1][0] : null;
+    let dualS = F_pool.DS >= F_pool.SS && F_pool.DS > F_pool.Ch;
+    let dualN = F_pool.DN >= F_pool.SN && F_pool.DN > F_pool.Ch;
+    let sigArr = [Sigma.s0, Sigma.s1, Sigma.s2s, Sigma.s2c];
+    let sigMax = Math.max(...sigArr);
+    let sigDom = sigArr[0]===sigMax?"σ0" : sigArr[1]===sigMax?"σ1" : sigArr[2]===sigMax?"σ2_switch" : "σ2_collapse";
+    let L1 = Object.entries(SL_pool).sort((a,b)=>b[1]-a[1])[0][0];
+    let metaNeg = getLabel(G_neg), metaPos = getLabel(G_pos);
+    let epsTotal = eps.reduce((a,b)=>a+b,0);
+    let epsZone = epsTotal<=28?"🔴 红区·宕机濒危态":epsTotal<=44?"🟠 橙区·低带宽高耗态":epsTotal<=60?"🟢 绿区·基准稳态":epsTotal<=72?"🔵 蓝区·高能推进态":"🟣 紫区·狂热扩张态";
+
+    let eName = {O:"结构引擎",V:"锚定引擎",D:"动力引擎",E:"扩张引擎",T:"超越引擎"};
+    let eDesc = {
+      O:"你的一生都在追求秩序对混乱的物理统治，致力于打造精密、可预测且严丝合缝的闭环世界。为此能够牺牲短期灵活度；承担前期繁琐的搭建成本；忍受他人的不守规矩。",
+      V:"你是系统在动荡与变局中的最后支点。你重视历史连接与安全底座，当外部环境陷入失控与悬空时，你负责守住那一分归属感与最后的安全防线。为此你能够牺牲扩张速度；承受长期的维持性内耗；承担拖后腿的沉没成本。",
+      D:"你拒绝平庸的温吞维持，生命力在强力的碰撞中才达到巅峰。你像一个拒绝后退的破局者，擅长在僵局中制造剧烈的系统位移，通过直面阻力和对抗，强行点燃停滞事物的引擎。为此你能够担高强度冲突；承受关系紧张；消耗大量体能与情绪。",
+      E:"你对已知的存量版图毫无眷恋，嗅觉永远锚定在未知的增量边界。你像一个不停开启新接口的捕猎者，永远在嗅探外部的新机会与新连接，持续扩大系统做功的吞吐量与影响力上限。为此你能够承担资源失控的风险；承受精力被极度拉散；忍受基本盘的不稳定。",
+      T:"你并不住在现成的规则里，你住在逻辑之上的云端。你习惯抽离一切现实表象的约束，直击核心的第一性原理；你从不盲从现有的结论，而是热衷于从地基处重新定义这个世界的最高解释权。为此你能够短期孤独与不被理解；慢回报；为了正确结构牺牲短期世俗舒适。"
+    };
+    let nName = {PN:"身体/空间/资源",AN:"成长/能力/路径",RN:"关系/亲密/协作",IN:"群体/评价/位置",MN:"意义/信念/目标",FN:"机制/流程/系统"};
+    let nDesc = {
+      FN:"你的力量必须降落在抽象架构（商业模型、协作规则、工具链及反馈闭环）上才能真正生效。你是一个逻辑的工程师，擅长将复杂的现实编码为隐形的机制，通过对反馈闭环的极致精准操作，确保整个世界像钟表一样分秒不差地运行。因此你拒绝毫无规则、纯靠人情世故和拍脑袋做决定的混沌区。",
+      PN:"你的力量必须降落在物理底盘（作息、健康、现金流、物资及空间秩序）上才能真正生效。你是一个现实世界的建造者，你并不相信虚无的承诺，只在乎那些看得见、摸得着、能被绝对掌控的物质安全与空间秩序。因此你拒绝纯虚拟、纯概念、无任何实物落地的空转地带。",
+      AN:"你的力量必须降落在个人演化（技能训练、职业履历、项目经验及试错路径）上才能真正生效。你将人生看作一场永不停歇的升级游戏，每一次做功都在为自己的能力版图增砖添瓦，致力于将自我打造成一个不可替代的进化体。因此你拒绝机械重复、一眼望到头、毫无成长空间的流水线。",
+      RN:"你的力量必须降落于人际连接（同伴、伴侣、合伙人及长期契约）上才能真正生效。你是一个灵魂与契约的编织者，你的影响力通过他人的信任、回应与深度协作来传递，在人与人的共振中实现价值的最大化。因此你拒绝纯粹冰冷的数据核算、绝对理性的杀伐决断区。",
+      IN:"你的力量必须降落在社会网络（组织占位、圈层话语权、公众评价及身份标签）上才能真正生效。你擅长在错综复杂的社会洋流中导航，通过夺取核心位置与塑造群体评价，将个人的姓名转化为一种具备统治力的符号与重权。因此你拒绝无人问津、极度封闭、无需任何社交背书的孤岛。",
+      MN:"你的力量必须降落在精神范式（人生愿景、价值信仰、底层观念及宏大叙事）上才能真正生效。你是一个火种的守护者，只在那些关于“意义”与“终极目标”的高海拔地带做功，通过对价值底座的修筑来决定现实世界的走向。因此你拒绝毫无意义的官僚内耗、每天朝令夕改的糊涂账区。"
+    };
+    let archeText = dualS&&dualN ? `枢纽型架构师 · ${S1}+${S2} × ${N1}+${N2}` :
+                    dualS ? `专项复合人才 · ${S1}+${S2} × ${N1}` :
+                    dualN ? `跨域管理者 · ${S1} × ${N1}+${N2}` :
+                    `单点专才 · ${S1} × ${N1}`;
+    let sigmaText = {
+      "σ1":"高弹性转译型——说到抗压和变通，你就像一根韧性极强的弹力带。就算遇到再大的冲击，你也能一边护住核心底盘，一边灵活调整边界。你会通过退让一些次要利益来换取大局的生存，这种“能屈能伸”的本领让你在复杂环境里活得很久。",
+      "σ0":"原教旨刚性型——在原则问题上，你就像一块高硬度的陶瓷，完全不接受任何“灰色地带”。你绝对死守自己的底线，宁可硬扛损失、甚至丢掉所有收益，也不愿意在规则上退后半步。",
+      "σ2_switch":"现实割肉重组型——你是个纯粹的生存主义者，关键时刻非常果断。你并不在乎所谓的“面子”或“传统”，只要能换取活命或核心利益，你可以随时把原来的规则和负担像“切手指”一样直接甩掉，在废墟上迅速换个活法。",
+      "σ2_collapse":"低带宽崩溃型——你的心理防线比较薄弱，一旦压力过载，原有的底线就会像雪一样融化。你很难在冲突中保持清醒，很容易被环境彻底带偏，最后陷入一种随波逐流、甚至干脆摆烂的状态。"
+    };
+    let sLogicText = {
+      O:"面对危机，你最容易将问题的根源归咎于规则的模糊与流程的断裂。在你看来，如果系统失灵，必然是因为权责边界不再清晰，或者是反馈闭环在某个环节失去了效力。因此，你的第一判断往往是定位到“哪条规则失效了”“哪个闭环断了”——你相信只要把结构重新理顺，系统就能恢复运转。",
+      V:"面对危机，你最容易将问题的根源归咎于安全感的丧失与关系底座的过度紧绷。在你看来，当一个环境变得令人窒息，必然是因为底层失去了容错的缓冲以及相互支撑的依托。因此，你的第一判断往往是锁定“谁的心态崩了”“哪里缺乏兜底”——你相信只要恢复一个熟悉且安全的环境，系统就能重新站稳。",
+      D:"面对危机，你最容易将问题的根源归咎于动能的停滞与真实冲突的被回避。在你看来，系统的腐朽通常始于温吞的维持——不是因为逻辑出了错、也不是因为规则缺了位，而是没人敢于打破僵局，让系统在惯性中逐渐失活。因此，你的第一判断往往是锁定那个“卡住不动”的关键节点。",
+      E:"面对危机，你最容易将问题的根源归咎于输入的贫瘠与视角的封闭。在你看来，系统之所以枯竭，是因为样本量不足或选择面太窄，由于拒绝引入外部的增量才陷入了存量的死循环。因此，你的第一判断往往是寻找被忽略的外部变量——新的资源渠道、新的参考样本、新的第三方视角。",
+      T:"面对危机，你最容易将问题的根源归咎于底层逻辑的错误或系统目标的虚无。在你看来，最致命的失败通常源于手段被错当成目的，或者整个系统在一个完全错误的框架下进行徒劳的努力。因此，你的第一判断往往是重新审视问题本身：“我们到底在解决什么问题？这个框架本身是否成立？”"
+    };
+    function getLabel(c) {
+      let m = Math.max(c.A,c.B,c.C,c.D);
+      let dom = c.D===m?"空转主导":c.C===m?"内源主导":c.B===m?"灰度主导":"外源主导";
+      let arr = Object.entries(c).sort((a,b)=>b[1]-a[1]);
+      if (arr.length>1 && arr[1][1]>=3 && arr[1][1]<m) {
+        let aux = arr[1][0]==="C"?"内源辅助":arr[1][0]==="B"?"灰度辅助":arr[1][0]==="A"?"外源辅助":"空转倾向";
+        return dom+" · "+aux;
+      }
+      return dom;
+    }
+
+    // 生成报告
+    let report = `
+      <h2>🔧 核心驱动力</h2>
+      <p><strong>主引擎：${eName[S1]}</strong></p><p>${eDesc[S1]}</p>
+      ${S2?`<p><strong>副引擎：${eName[S2]}</strong></p><p>${eDesc[S2]}</p>`:""}
+      
+      <h2>🌐 力量主战场</h2>
+      <p><strong>主战场：${nName[N1]}</strong></p><p>${nDesc[N1]}</p>
+      ${N2?`<p><strong>副战场：${nName[N2]}</strong></p><p>${nDesc[N2]}</p>`:""}
+      
+      <h2>🧠 思维风格</h2>
+      <p>${archeText}</p>
+      
+      <h2>⚡ 压力弹性</h2>
+      <p><strong>${sigDom}</strong></p><p>${sigmaText[sigDom]||""}</p>
+      
+      <h2>🔍 危机归因</h2>
+      <p><strong>第一归因视角：${eName[L1]}</strong></p><p>${sLogicText[L1]||""}</p>
+      
+      <h2>🔄 代谢模式</h2>
+      <p>面对压力：<strong>${metaNeg}</strong></p>
+      <p>面对机会：<strong>${metaPos}</strong></p>
+      
+      <h2>🔋 能量状态</h2>
+      <p>总评分：${epsTotal} · ${epsZone}</p>
+    `;
+    document.getElementById("reportBox").innerHTML = report;
+    document.getElementById("reportBox").style.display = "block";
+    document.getElementById("reportBox").scrollIntoView({behavior:"smooth"});
+  };
+})();
+</script>
+
+</body>
+</html>
