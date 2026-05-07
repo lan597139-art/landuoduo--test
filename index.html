@@ -5,152 +5,258 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>职业性格测试</title>
   <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-    .header { text-align: center; margin-bottom: 30px; }
-    .card { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
-    .card-title { font-weight: bold; }
-    .options-container { margin-top: 10px; }
-    .form-check { margin: 5px 0; }
-    .btn { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    .btn:disabled { background: #999; }
-    .report-container { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "PingFang SC","Microsoft YaHei",sans-serif; background:#f0f2f5; color:#333; }
+    .container { max-width:750px; margin:0 auto; padding:20px; }
+    .header { text-align:center; padding:30px 20px; background:#fff; border-radius:12px; margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+    .header h1 { font-size:28px; margin-bottom:10px; }
+    .header p { color:#666; font-size:14px; }
+    .btn { display:inline-block; padding:12px 32px; background:#4a6cf7; color:#fff; border:none; border-radius:8px; font-size:16px; cursor:pointer; transition:all .2s; }
+    .btn:hover { background:#3b5de7; }
+    .btn:disabled { background:#bbb; cursor:not-allowed; }
+    .card { background:#fff; border-radius:10px; padding:20px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
+    .card-num { font-size:13px; color:#999; margin-bottom:8px; }
+    .card-text { font-size:16px; margin-bottom:12px; line-height:1.6; }
+    .option { display:block; padding:10px 14px; margin:6px 0; border:1.5px solid #e0e0e0; border-radius:8px; cursor:pointer; transition:all .15s; }
+    .option:hover { border-color:#4a6cf7; background:#f6f8ff; }
+    .option.selected { border-color:#4a6cf7; background:#eef1ff; }
+    .option input { display:none; }
+    .submit-wrap { text-align:center; margin:20px 0; }
+    .report { background:#fff; border-radius:12px; padding:24px; margin-top:20px; box-shadow:0 2px 8px rgba(0,0,0,.06); display:none; }
+    .report h2 { font-size:20px; margin:20px 0 10px; border-bottom:2px solid #4a6cf7; padding-bottom:6px; }
+    .report h2:first-child { margin-top:0; }
+    .report p { margin:8px 0; line-height:1.7; }
+    .progress-wrap { background:#e0e0e0; border-radius:6px; height:8px; margin:20px 0; position:sticky; top:10px; z-index:10; }
+    .progress-bar { height:100%; border-radius:6px; background:#4a6cf7; width:0%; transition:width .3s; }
   </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>职业性格测试</h1>
-  <p>了解你的心智动力结构、压力弹性与代谢模式。共71题，预计用时15-20分钟。</p>
-  <button class="btn" id="btnStart">开始测试</button>
-</div>
+<div class="container">
+  <div class="header" id="headerBox">
+    <h1>职业性格测试</h1>
+    <p>了解你的心智动力结构、压力弹性与代谢模式<br>共71题，预计用时15-20分钟</p>
+    <button class="btn" id="btnStart" style="margin-top:16px;">开始测试</button>
+  </div>
 
-<div id="quizBox" style="display:none;">
-  <div id="quizListBox"></div>
-  <button class="btn" id="btnSubmit" disabled>提交答案</button>
-</div>
+  <div id="quizArea" style="display:none;">
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div id="quizList"></div>
+    <div class="submit-wrap">
+      <button class="btn" id="btnSubmit" disabled>提交答案</button>
+    </div>
+  </div>
 
-<div id="resultBox" class="report-container"></div>
+  <div class="report" id="reportBox"></div>
+</div>
 
 <script>
-// ==================== 前端渲染 + 计分引擎 ====================
 (function() {
   let allQuestions = [];
-  let userAnswers = {};
-  let totalQuestions = 0;
+  let userAnswers = {};  // key: q.id, value: "A"~"F"
+  let total = 0;
 
-  // ---------- 计分池 ----------
-  let S_pool  = { O:0, V:0, D:0, E:0, T:0 };
-  let N_pool  = { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
-  let F_pool  = { Single_S:0, Dual_S:0, Single_N:0, Dual_N:0, Chaotic:0 };
-  let Sigma   = { s0:0, s1:0, s2s:0, s2c:0 };
-  let Trigger  = [];
-  let S_logic  = { O:0, V:0, D:0, E:0, T:0 };
-  let G_neg = { A:0, B:0, C:0, D:0 };
-  let G_pos = { A:0, B:0, C:0, D:0 };
-  let epsScores = [];
-
-  // ---------- 加载题库 ----------
+  // ==================== 开始 ====================
   document.getElementById("btnStart").onclick = function() {
-    this.style.display = "none";
-    document.getElementById("quizBox").style.display = "block";
-    fetch("quiz.json").then(r=>r.json()).then(qs => {
+    document.getElementById("headerBox").style.display = "none";
+    document.getElementById("quizArea").style.display = "block";
+    fetch("quiz.json").then(r => r.json()).then(qs => {
       allQuestions = qs;
-      totalQuestions = qs.length;
-      renderQuestions(qs);
+      total = qs.length;
+      render(qs);
+    }).catch(e => {
+      document.getElementById("quizList").innerHTML = "<p style='color:red;'>❌ 题库加载失败，请确认 quiz.json 文件存在且格式正确。</p>";
+      console.error(e);
     });
   };
 
-  // ---------- 渲染题目 ----------
-  function renderQuestions(qs) {
+  // ==================== 渲染题目 ====================
+  function render(qs) {
     let html = "";
-    qs.forEach((q,i) => {
-      let no = i+1;
-      let optsHtml = q.options.map((o,j) => `
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="q${i}" value="${o.label}" id="q${i}_${j}">
-          <label class="form-check-label" for="q${i}_${j}">${o.label}. ${o.text}</label>
-        </div>`).join("");
-      html += `<div class="card" id="card${i}"><div class="card-title">题目 ${no}/${totalQuestions}</div><div>${q.text}</div><div class="options-container">${optsHtml}</div></div>`;
+    qs.forEach((q, i) => {
+      let no = i + 1;
+      let opts = q.options.map(o => `
+        <label class="option" data-qid="${q.id}" data-val="${o.label}">
+          <input type="radio" name="${q.id}" value="${o.label}">
+          <strong>${o.label}.</strong> ${o.text}
+        </label>`).join("");
+      html += `<div class="card"><div class="card-num">题目 ${no} / ${total}</div><div class="card-text">${q.text}</div>${opts}</div>`;
     });
-    document.getElementById("quizListBox").innerHTML = html;
+    document.getElementById("quizList").innerHTML = html;
 
-    // 绑定选项变化事件
-    document.querySelectorAll(".form-check-input").forEach(r => {
-      r.onchange = function() {
-        let idx = this.name.replace("q","");
-        userAnswers[idx] = this.value;
-        checkAllAnswered();
+    // 绑定选项点击
+    document.querySelectorAll(".option").forEach(lbl => {
+      lbl.onclick = function() {
+        let qid = this.dataset.qid;
+        let val = this.dataset.val;
+        // 移除同题其他选项的选中
+        document.querySelectorAll(`.option[data-qid="${qid}"]`).forEach(o => o.classList.remove("selected"));
+        this.classList.add("selected");
+        this.querySelector("input").checked = true;
+        userAnswers[qid] = val;
+        updateProgress();
       };
     });
   }
 
-  // ---------- 进度检查 ----------
-  function checkAllAnswered() {
+  // ==================== 进度条 ====================
+  function updateProgress() {
     let answered = Object.keys(userAnswers).length;
-    document.getElementById("btnSubmit").disabled = (answered < totalQuestions);
+    let pct = Math.round((answered / total) * 100);
+    document.getElementById("progressBar").style.width = pct + "%";
+    document.getElementById("btnSubmit").disabled = (answered < total);
   }
 
-  // ---------- 提交计算 ----------
+  // ==================== 计分引擎 ====================
   document.getElementById("btnSubmit").onclick = function() {
-    // 1. 采集答案
+    // ---- 初始化计分池 ----
+    let S_pool = { O:0, V:0, D:0, E:0, T:0 };
+    let N_pool = { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
+    let F_pool = { SS:0, DS:0, SN:0, DN:0, Ch:0 };  // Single_S, Dual_S, Single_N, Dual_N, Chaotic
+    let Sigma  = { s0:0, s1:0, s2s:0, s2c:0 };
+    let Trigger = [];
+    let SL_pool = { O:0, V:0, D:0, E:0, T:0 };
+    let G_neg = { A:0, B:0, C:0, D:0 };
+    let G_pos = { A:0, B:0, C:0, D:0 };
+    let eps = [];  // [score1, score2, ...]
+
     allQuestions.forEach(q => {
       let val = userAnswers[q.id];
       if (!val) return;
       let id = q.id;
 
-      if (id.startsWith("S-C")) { let m={A:"O",B:"V",C:"D",D:"E",E:"T"}; S_pool[m[val]]+=2; }
-      else if (id.startsWith("N-C")) { let m={A:"PN",B:"AN",C:"RN",D:"IN",E:"MN",F:"FN"}; N_pool[m[val]]+=2; }
-      else if (id.startsWith("C0")) { let m={A:"O",B:"V",C:"D",D:"E",E:"T"}; S_pool[m[val]]+=2; }
-      else if (id.startsWith("F0")) {
+      // S_drive: S-C01~S-C06
+      if (id.startsWith("S-C")) { let m={A:"O",B:"V",C:"D",D:"E",E:"T"}; if(m[val]) S_pool[m[val]]+=2; }
+      // S_drive: N-C01~N-C06
+      else if (id.startsWith("N-C")) { let m={A:"PN",B:"AN",C:"RN",D:"IN",E:"MN",F:"FN"}; if(m[val]) N_pool[m[val]]+=2; }
+      // S_drive: C01~C04
+      else if (/^C0[1-4]$/.test(id)) { let m={A:"O",B:"V",C:"D",D:"E",E:"T"}; if(m[val]) S_pool[m[val]]+=2; }
+      // S_drive: F01~F04
+      else if (/^F0[1-4]$/.test(id)) {
         let fMap = {
           F01:{A:{SN:2,SS:2},B:{SN:2,DS:2},C:{DN:2,SS:2},D:{DN:2,DS:2},E:{Ch:2}},
           F02:{A:{SS:2},B:{DS:2},C:{DS:1,SS:1},D:{DS:2},E:{Ch:2}},
           F03:{A:{SN:2},B:{DN:2},C:{DN:1,Ch:1},D:{DN:1,Ch:1},E:{Ch:2}},
           F04:{A:{SS:2,SN:2},B:{DS:2,SN:2},C:{SS:2,DN:2},D:{DS:2,DN:2},E:{Ch:2}}
         };
-        if(fMap[id]&&fMap[id][val]){ let a=fMap[id][val]; F_pool.SS+=a.SS||0; F_pool.DS+=a.DS||0; F_pool.SN+=a.SN||0; F_pool.DN+=a.DN||0; F_pool.Ch+=a.Ch||0; }
+        if (fMap[id] && fMap[id][val]) { let a=fMap[id][val];
+          F_pool.SS+=a.SS||0; F_pool.DS+=a.DS||0; F_pool.SN+=a.SN||0; F_pool.DN+=a.DN||0; F_pool.Ch+=a.Ch||0; }
       }
-      else if (id.startsWith("st-")) { let m={A:"s0",B:"s1",C:"s2s",D:"s2c"}; Sigma[m[val]]++; if(val==="C"||val==="D")Trigger.push({O:"结构",V:"锚定",D:"动力",E:"扩张",T:"超越"}[id.split("-")[1].replace("01","")]||""); }
-      else if (id.startsWith("SL-")) { let m={A:"V",B:"D",C:"O",D:"E",E:"T"}; S_logic[m[val]]+=2; }
-      else if (id.startsWith("Γ-N")) { let m={A:"A",B:"B",C:"C",D:"D"}; G_neg[m[val]]++; }
-      else if (id.startsWith("Γ-P")) { let m={A:"A",B:"B",C:"C",D:"D"}; G_pos[m[val]]++; }
-      else if (id.startsWith("ε-")) { let s={A:1,B:2,C:3,D:4,E:5}; epsScores.push(s[val]||0); }
+      // S_settlement: st-
+      else if (id.startsWith("st-")) { let m={A:"s0",B:"s1",C:"s2s",D:"s2c"}; if(m[val]) Sigma[m[val]]++;
+        if (val==="C"||val==="D") { let t={O01:"结构",V01:"锚定",D01:"动力",E01:"扩张",T01:"超越"};
+          Trigger.push(t[id.replace("st-","")]||""); } }
+      // S_logic: SL-
+      else if (id.startsWith("SL-")) { let m={A:"V",B:"D",C:"O",D:"E",E:"T"}; if(m[val]) SL_pool[m[val]]+=2; }
+      // Γ 负反馈: Γ-N
+      else if (id.startsWith("Γ-N")) { let m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_neg[m[val]]++; }
+      // Γ 正反馈: Γ-P
+      else if (id.startsWith("Γ-P")) { let m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_pos[m[val]]++; }
+      // ε: ε-
+      else if (id.startsWith("ε-")) { let s={A:1,B:2,C:3,D:4,E:5}; if(s[val]) eps.push(s[val]); }
     });
 
-    // 2. 结算
-    let S1 = Object.entries(S_pool).sort((a,b)=>b[1]-a[1])[0][0];
-    let S2 = Object.entries(S_pool).sort((a,b)=>b[1]-a[1])[1]?.[0] || null;
-    let N1 = Object.entries(N_pool).sort((a,b)=>b[1]-a[1])[0][0];
-    let N2 = Object.entries(N_pool).sort((a,b)=>b[1]-a[1])[1]?.[0] || null;
+    // ============ 结算 ============
+    // S1/S2
+    let sArr = Object.entries(S_pool).sort((a,b)=>b[1]-a[1]);
+    let S1 = sArr[0][0], S2 = sArr.length>1 ? sArr[1][0] : null;
+    // N1/N2
+    let nArr = Object.entries(N_pool).sort((a,b)=>b[1]-a[1]);
+    let N1 = nArr[0][0], N2 = nArr.length>1 ? nArr[1][0] : null;
+    // 拓扑
     let dualS = F_pool.DS >= F_pool.SS && F_pool.DS > F_pool.Ch;
     let dualN = F_pool.DN >= F_pool.SN && F_pool.DN > F_pool.Ch;
-    let arche = dualS&&dualN ? `${S1}+${S2} x ${N1}+${N2}` : dualS ? `${S1}+${S2} x ${N1}` : dualN ? `${S1} x ${N1}+${N2}` : `${S1} x ${N1}`;
-    let sigVals = [Sigma.s0,Sigma.s1,Sigma.s2s,Sigma.s2c];
-    let sigMax = Math.max(...sigVals);
-    let sigDom = sigVals[0]===sigMax?"σ0":sigVals[1]===sigMax?"σ1":sigVals[2]===sigMax?"σ2_switch":"σ2_collapse";
-    let L1 = Object.entries(S_logic).sort((a,b)=>b[1]-a[1])[0][0];
-    let meta = function(c){let m=Math.max(c.A,c.B,c.C,c.D);let d=c.D===m?"空转":c.C===m?"内源":c.B===m?"灰度":"外源";return d;};
+    // 相变
+    let sigArr = [Sigma.s0, Sigma.s1, Sigma.s2s, Sigma.s2c];
+    let sigMax = Math.max(...sigArr);
+    let sigDom = sigArr[0]===sigMax?"σ0" : sigArr[1]===sigMax?"σ1" : sigArr[2]===sigMax?"σ2_switch" : "σ2_collapse";
+    // L1
+    let L1 = Object.entries(SL_pool).sort((a,b)=>b[1]-a[1])[0][0];
+    // Γ 代谢
+    let metaNeg = getLabel(G_neg), metaPos = getLabel(G_pos);
+    // ε
+    let epsTotal = eps.reduce((a,b)=>a+b,0);
+    let epsZone = epsTotal<=28?"🔴 红区·宕机濒危态":epsTotal<=44?"🟠 橙区·低带宽高耗态":epsTotal<=60?"🟢 绿区·基准稳态":epsTotal<=72?"🔵 蓝区·高能推进态":"🟣 紫区·狂热扩张态";
 
-    let epsTotal = epsScores.reduce((a,b)=>a+b,0);
-    let epsZone = epsTotal<=28?"红区":epsTotal<=44?"橙区":epsTotal<=60?"绿区":epsTotal<=72?"蓝区":"紫区";
+    // ============ 字典 ============
+    let eName = {O:"结构引擎",V:"锚定引擎",D:"动力引擎",E:"扩张引擎",T:"超越引擎"};
+    let eDesc = {
+      O:"你的一生都在追求秩序对混乱的物理统治，致力于打造精密、可预测的闭环世界。",
+      V:"你是动荡中的最后支点，重视安全底座与归属感，在变局中守住防线。",
+      D:"你拒绝平庸的温吞，生命力在碰撞中达到巅峰，擅长打破僵局、推动位移。",
+      E:"你对存量版图毫无眷恋，嗅觉永远锚定在增量边界，持续扩大系统吞吐量。",
+      T:"你不住在现成的规则里，你住在逻辑之上的云端，直击第一性原理。"
+    };
+    let nName = {PN:"身体/空间/资源",AN:"成长/能力/路径",RN:"关系/亲密/协作",IN:"群体/评价/位置",MN:"意义/信念/目标",FN:"机制/流程/系统"};
+    let nDesc = {
+      FN:"你的力量落在抽象架构上，擅长将复杂现实编码为隐形机制，确保系统像钟表一样精密运行。",
+      PN:"你的力量落在物理底盘上，是现实世界的建造者，只信任看得见、摸得着的物质秩序。",
+      AN:"你的力量落在个人演化上，把人生看作永不停止的升级游戏，不断打磨能力版图。",
+      RN:"你的力量落在人际连接上，通过信任、回应与深度协作传递影响力。",
+      IN:"你的力量落在社会网络上，擅长在群体中导航，夺取位置并塑造评价。",
+      MN:"你的力量落在精神范式上，在意义与终极目标的高海拔地带做功。"
+    };
+    let archeText = dualS&&dualN ? `枢纽型架构师 · ${S1}+${S2} × ${N1}+${N2}` :
+                    dualS ? `专项复合人才 · ${S1}+${S2} × ${N1}` :
+                    dualN ? `跨域管理者 · ${S1} × ${N1}+${N2}` :
+                    `单点专才 · ${S1} × ${N1}`;
+    let sigmaText = {
+      "σ1":"高弹性转译型——你在压力中能屈能伸，退让次要利益换取大局生存。",
+      "σ0":"原教旨刚性型——你死守底线，宁可硬扛损失也不退半步。",
+      "σ2_switch":"现实割肉重组型——你在关键时刻果断甩掉旧规则，换一种活法。",
+      "σ2_collapse":"低带宽崩溃型——你在高压下防线容易融化，需要被动保护。"
+    };
+    let sLogicText = {
+      O:"你最容易将问题归咎于规则的模糊与流程的断裂——你相信只要把结构理顺，系统就能恢复运转。",
+      V:"你最容易将问题归咎于安全感的丧失与关系紧绷——你相信恢复安全环境，系统就能重新站稳。",
+      D:"你最容易将问题归咎于动能停滞与冲突回避——你认为需要有人打破僵局、推动位移。",
+      E:"你最容易将问题归咎于输入贫瘠与视角封闭——你相信引入外部增量才能化解困境。",
+      T:"你最容易将问题归咎于底层逻辑错误或目标虚无——你追问：我们到底在解决什么问题？"
+    };
+    function getLabel(c) {
+      let m = Math.max(c.A,c.B,c.C,c.D);
+      let dom = c.D===m?"空转主导":c.C===m?"内源主导":c.B===m?"灰度主导":"外源主导";
+      let arr = Object.entries(c).sort((a,b)=>b[1]-a[1]);
+      if (arr.length>1 && arr[1][1]>=3 && arr[1][1]<m) {
+        let s = arr[1][0];
+        let aux = s==="C"?"内源辅助":s==="B"?"灰度辅助":s==="A"?"外源辅助":"空转倾向";
+        return dom+" · "+aux;
+      }
+      return dom;
+    }
 
-    let eName={O:"结构引擎",V:"锚定引擎",D:"动力引擎",E:"扩张引擎",T:"超越引擎"};
-    let nName={PN:"身体/资源",AN:"成长/路径",RN:"关系/协作",IN:"群体/评价",MN:"意义/信念",FN:"机制/系统"};
-
-    // 3. 渲染报告
+    // ============ 输出报告 ============
     let report = `
-      <h2>核心驱动力</h2>
-      <p>主引擎：${eName[S1]}${S2?`　副引擎：${eName[S2]}`:""}</p>
-      <h2>力量主战场</h2>
-      <p>主战场：${nName[N1]}${N2?`　副战场：${nName[N2]}`:""}</p>
-      <h2>思维风格</h2><p>${arche}</p>
-      <h2>压力弹性</h2><p>${sigDom}</p>
-      <h2>危机归因</h2><p>${eName[L1]}</p>
-      <h2>代谢模式</h2><p>负反馈：${meta(G_neg)}主导　正反馈：${meta(G_pos)}主导</p>
-      <h2>能量状态</h2><p>${epsTotal}分 · ${epsZone}</p>
+      <h2>🔧 核心驱动力</h2>
+      <p><strong>主引擎：${eName[S1]}</strong>——${eDesc[S1]}</p>
+      ${S2?`<p><strong>副引擎：${eName[S2]}</strong>——${eDesc[S2]}</p>`:""}
+      
+      <h2>🌐 力量主战场</h2>
+      <p><strong>主战场：${nName[N1]}</strong>——${nDesc[N1]}</p>
+      ${N2?`<p><strong>副战场：${nName[N2]}</strong>——${nDesc[N2]}</p>`:""}
+      
+      <h2>🧠 思维风格</h2>
+      <p>${archeText}</p>
+      
+      <h2>⚡ 压力弹性</h2>
+      <p><strong>${sigDom}</strong>——${sigmaText[sigDom]||""}</p>
+      
+      <h2>🔍 危机归因</h2>
+      <p><strong>第一归因视角：${eName[L1]}</strong></p>
+      <p>${sLogicText[L1]||""}</p>
+      
+      <h2>🔄 代谢模式</h2>
+      <p>面对压力：<strong>${metaNeg}</strong></p>
+      <p>面对机会：<strong>${metaPos}</strong></p>
+      
+      <h2>🔋 能量状态</h2>
+      <p>总评分：${epsTotal} · ${epsZone}</p>
     `;
-    document.getElementById("resultBox").innerHTML = report;
-    document.getElementById("resultBox").scrollIntoView({behavior:"smooth"});
+    document.getElementById("reportBox").innerHTML = report;
+    document.getElementById("reportBox").style.display = "block";
+    document.getElementById("reportBox").scrollIntoView({behavior:"smooth"});
   };
 })();
 </script>
