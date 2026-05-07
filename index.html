@@ -1,51 +1,159 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <title>职业性格测试</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="styles.css">
+  <title>职业性格测试</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+    .card-title { font-weight: bold; }
+    .options-container { margin-top: 10px; }
+    .form-check { margin: 5px 0; }
+    .btn { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .btn:disabled { background: #999; }
+    .report-container { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px; }
+  </style>
 </head>
 <body>
 
 <div class="header">
   <h1>职业性格测试</h1>
   <p>了解你的心智动力结构、压力弹性与代谢模式。共71题，预计用时15-20分钟。</p>
+  <button class="btn" id="btnStart">开始测试</button>
 </div>
 
-<div class="fixed-progress" id="fixedProgress">
-  <div class="progress">
-    <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%">0%</div>
-  </div>
+<div id="quizBox" style="display:none;">
+  <div id="quizListBox"></div>
+  <button class="btn" id="btnSubmit" disabled>提交答案</button>
 </div>
 
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-lg-8 col-md-10 col-sm-12">
-      <div class="quiz-container">
-        <div id="startBox" class="text-center">
-          <p class="fs-5">了解你的心智动力结构、压力弹性与代谢模式。共71题，预计用时15-20分钟。</p>
-          <button class="btn btn-primary btn-lg" id="btnStart">开始测试</button>
-        </div>
-        <div id="quizBox">
-          <div id="quizListBox" class="mt-4"></div>
-          <button class="btn btn-primary mt-4 w-100" id="btnCheckAnswer" disabled>提交答案</button>
-          <div id="resultBox" class="mt-4"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<div id="resultBox" class="report-container"></div>
 
-<footer>
-  <p>心智动力系统测试</p>
-</footer>
+<script>
+// ==================== 前端渲染 + 计分引擎 ====================
+(function() {
+  let allQuestions = [];
+  let userAnswers = {};
+  let totalQuestions = 0;
 
-<script src="script.js"></script>
+  // ---------- 计分池 ----------
+  let S_pool  = { O:0, V:0, D:0, E:0, T:0 };
+  let N_pool  = { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
+  let F_pool  = { Single_S:0, Dual_S:0, Single_N:0, Dual_N:0, Chaotic:0 };
+  let Sigma   = { s0:0, s1:0, s2s:0, s2c:0 };
+  let Trigger  = [];
+  let S_logic  = { O:0, V:0, D:0, E:0, T:0 };
+  let G_neg = { A:0, B:0, C:0, D:0 };
+  let G_pos = { A:0, B:0, C:0, D:0 };
+  let epsScores = [];
+
+  // ---------- 加载题库 ----------
+  document.getElementById("btnStart").onclick = function() {
+    this.style.display = "none";
+    document.getElementById("quizBox").style.display = "block";
+    fetch("quiz.json").then(r=>r.json()).then(qs => {
+      allQuestions = qs;
+      totalQuestions = qs.length;
+      renderQuestions(qs);
+    });
+  };
+
+  // ---------- 渲染题目 ----------
+  function renderQuestions(qs) {
+    let html = "";
+    qs.forEach((q,i) => {
+      let no = i+1;
+      let optsHtml = q.options.map((o,j) => `
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="q${i}" value="${o.label}" id="q${i}_${j}">
+          <label class="form-check-label" for="q${i}_${j}">${o.label}. ${o.text}</label>
+        </div>`).join("");
+      html += `<div class="card" id="card${i}"><div class="card-title">题目 ${no}/${totalQuestions}</div><div>${q.text}</div><div class="options-container">${optsHtml}</div></div>`;
+    });
+    document.getElementById("quizListBox").innerHTML = html;
+
+    // 绑定选项变化事件
+    document.querySelectorAll(".form-check-input").forEach(r => {
+      r.onchange = function() {
+        let idx = this.name.replace("q","");
+        userAnswers[idx] = this.value;
+        checkAllAnswered();
+      };
+    });
+  }
+
+  // ---------- 进度检查 ----------
+  function checkAllAnswered() {
+    let answered = Object.keys(userAnswers).length;
+    document.getElementById("btnSubmit").disabled = (answered < totalQuestions);
+  }
+
+  // ---------- 提交计算 ----------
+  document.getElementById("btnSubmit").onclick = function() {
+    // 1. 采集答案
+    allQuestions.forEach(q => {
+      let val = userAnswers[q.id];
+      if (!val) return;
+      let id = q.id;
+
+      if (id.startsWith("S-C")) { let m={A:"O",B:"V",C:"D",D:"E",E:"T"}; S_pool[m[val]]+=2; }
+      else if (id.startsWith("N-C")) { let m={A:"PN",B:"AN",C:"RN",D:"IN",E:"MN",F:"FN"}; N_pool[m[val]]+=2; }
+      else if (id.startsWith("C0")) { let m={A:"O",B:"V",C:"D",D:"E",E:"T"}; S_pool[m[val]]+=2; }
+      else if (id.startsWith("F0")) {
+        let fMap = {
+          F01:{A:{SN:2,SS:2},B:{SN:2,DS:2},C:{DN:2,SS:2},D:{DN:2,DS:2},E:{Ch:2}},
+          F02:{A:{SS:2},B:{DS:2},C:{DS:1,SS:1},D:{DS:2},E:{Ch:2}},
+          F03:{A:{SN:2},B:{DN:2},C:{DN:1,Ch:1},D:{DN:1,Ch:1},E:{Ch:2}},
+          F04:{A:{SS:2,SN:2},B:{DS:2,SN:2},C:{SS:2,DN:2},D:{DS:2,DN:2},E:{Ch:2}}
+        };
+        if(fMap[id]&&fMap[id][val]){ let a=fMap[id][val]; F_pool.SS+=a.SS||0; F_pool.DS+=a.DS||0; F_pool.SN+=a.SN||0; F_pool.DN+=a.DN||0; F_pool.Ch+=a.Ch||0; }
+      }
+      else if (id.startsWith("st-")) { let m={A:"s0",B:"s1",C:"s2s",D:"s2c"}; Sigma[m[val]]++; if(val==="C"||val==="D")Trigger.push({O:"结构",V:"锚定",D:"动力",E:"扩张",T:"超越"}[id.split("-")[1].replace("01","")]||""); }
+      else if (id.startsWith("SL-")) { let m={A:"V",B:"D",C:"O",D:"E",E:"T"}; S_logic[m[val]]+=2; }
+      else if (id.startsWith("Γ-N")) { let m={A:"A",B:"B",C:"C",D:"D"}; G_neg[m[val]]++; }
+      else if (id.startsWith("Γ-P")) { let m={A:"A",B:"B",C:"C",D:"D"}; G_pos[m[val]]++; }
+      else if (id.startsWith("ε-")) { let s={A:1,B:2,C:3,D:4,E:5}; epsScores.push(s[val]||0); }
+    });
+
+    // 2. 结算
+    let S1 = Object.entries(S_pool).sort((a,b)=>b[1]-a[1])[0][0];
+    let S2 = Object.entries(S_pool).sort((a,b)=>b[1]-a[1])[1]?.[0] || null;
+    let N1 = Object.entries(N_pool).sort((a,b)=>b[1]-a[1])[0][0];
+    let N2 = Object.entries(N_pool).sort((a,b)=>b[1]-a[1])[1]?.[0] || null;
+    let dualS = F_pool.DS >= F_pool.SS && F_pool.DS > F_pool.Ch;
+    let dualN = F_pool.DN >= F_pool.SN && F_pool.DN > F_pool.Ch;
+    let arche = dualS&&dualN ? `${S1}+${S2} x ${N1}+${N2}` : dualS ? `${S1}+${S2} x ${N1}` : dualN ? `${S1} x ${N1}+${N2}` : `${S1} x ${N1}`;
+    let sigVals = [Sigma.s0,Sigma.s1,Sigma.s2s,Sigma.s2c];
+    let sigMax = Math.max(...sigVals);
+    let sigDom = sigVals[0]===sigMax?"σ0":sigVals[1]===sigMax?"σ1":sigVals[2]===sigMax?"σ2_switch":"σ2_collapse";
+    let L1 = Object.entries(S_logic).sort((a,b)=>b[1]-a[1])[0][0];
+    let meta = function(c){let m=Math.max(c.A,c.B,c.C,c.D);let d=c.D===m?"空转":c.C===m?"内源":c.B===m?"灰度":"外源";return d;};
+
+    let epsTotal = epsScores.reduce((a,b)=>a+b,0);
+    let epsZone = epsTotal<=28?"红区":epsTotal<=44?"橙区":epsTotal<=60?"绿区":epsTotal<=72?"蓝区":"紫区";
+
+    let eName={O:"结构引擎",V:"锚定引擎",D:"动力引擎",E:"扩张引擎",T:"超越引擎"};
+    let nName={PN:"身体/资源",AN:"成长/路径",RN:"关系/协作",IN:"群体/评价",MN:"意义/信念",FN:"机制/系统"};
+
+    // 3. 渲染报告
+    let report = `
+      <h2>核心驱动力</h2>
+      <p>主引擎：${eName[S1]}${S2?`　副引擎：${eName[S2]}`:""}</p>
+      <h2>力量主战场</h2>
+      <p>主战场：${nName[N1]}${N2?`　副战场：${nName[N2]}`:""}</p>
+      <h2>思维风格</h2><p>${arche}</p>
+      <h2>压力弹性</h2><p>${sigDom}</p>
+      <h2>危机归因</h2><p>${eName[L1]}</p>
+      <h2>代谢模式</h2><p>负反馈：${meta(G_neg)}主导　正反馈：${meta(G_pos)}主导</p>
+      <h2>能量状态</h2><p>${epsTotal}分 · ${epsZone}</p>
+    `;
+    document.getElementById("resultBox").innerHTML = report;
+    document.getElementById("resultBox").scrollIntoView({behavior:"smooth"});
+  };
+})();
+</script>
 
 </body>
 </html>
