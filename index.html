@@ -283,6 +283,284 @@ var ALL_QUESTIONS = [
     document.getElementById("reportBox").scrollIntoView({behavior:"smooth"});
   };
 })();
+  
+// ==================== 前端渲染 + 计分引擎（完整字典版） ====================
+(function() {
+  var userAnswers = {};
+  var total = ALL_QUESTIONS.length;
+
+  document.getElementById("btnStart").onclick = function() {
+    document.getElementById("headerBox").style.display = "none";
+    document.getElementById("quizArea").style.display = "block";
+    renderQuestions();
+  };
+
+  function renderQuestions() {
+    var html = "";
+    ALL_QUESTIONS.forEach(function(q, i) {
+      var no = i + 1;
+      var opts = q.options.map(function(o) {
+        return '<label class="option" data-qid="' + q.id + '" data-val="' + o.label + '"><input type="radio" name="' + q.id + '" value="' + o.label + '"><strong>' + o.label + '.</strong> ' + o.text + '</label>';
+      }).join("");
+      html += '<div class="card"><div class="card-num">题目 ' + no + ' / ' + total + '</div><div class="card-text">' + q.text + '</div>' + opts + '</div>';
+    });
+    document.getElementById("quizList").innerHTML = html;
+
+    document.querySelectorAll(".option").forEach(function(lbl) {
+      lbl.onclick = function() {
+        var qid = this.dataset.qid;
+        var val = this.dataset.val;
+        document.querySelectorAll('.option[data-qid="' + qid + '"]').forEach(function(o) { o.classList.remove("selected"); });
+        this.classList.add("selected");
+        this.querySelector("input").checked = true;
+        userAnswers[qid] = val;
+        updateProgress();
+      };
+    });
+  }
+
+  function updateProgress() {
+    var answered = Object.keys(userAnswers).length;
+    var pct = Math.round((answered / total) * 100);
+    document.getElementById("progressBar").style.width = pct + "%";
+    document.getElementById("btnSubmit").disabled = (answered < total);
+  }
+
+  document.getElementById("btnSubmit").onclick = function() {
+    // --- 初始化计分池 ---
+    var S_pool = { O:0, V:0, D:0, E:0, T:0 };
+    var N_pool = { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
+    var F_pool = { SS:0, DS:0, SN:0, DN:0, Ch:0 };
+    var Sigma  = { s0:0, s1:0, s2s:0, s2c:0 };
+    var Trigger = [];
+    var SL_pool = { O:0, V:0, D:0, E:0, T:0 };
+    var G_neg = { A:0, B:0, C:0, D:0 };
+    var G_pos = { A:0, B:0, C:0, D:0 };
+    var eps = [];
+
+    ALL_QUESTIONS.forEach(function(q) {
+      var val = userAnswers[q.id];
+      if (!val) return;
+      var id = q.id;
+
+      if (id.startsWith("S-C")) { var m={A:"O",B:"V",C:"D",D:"E",E:"T"}; if(m[val]) S_pool[m[val]]+=2; }
+      else if (id.startsWith("N-C")) { var m={A:"PN",B:"AN",C:"RN",D:"IN",E:"MN",F:"FN"}; if(m[val]) N_pool[m[val]]+=2; }
+      else if (/^C0[1-4]$/.test(id)) { var m={A:"O",B:"V",C:"D",D:"E",E:"T"}; if(m[val]) S_pool[m[val]]+=2; }
+      else if (/^F0[1-4]$/.test(id)) {
+        var fMap = {
+          F01:{A:{SN:2,SS:2},B:{SN:2,DS:2},C:{DN:2,SS:2},D:{DN:2,DS:2},E:{Ch:2}},
+          F02:{A:{SS:2},B:{DS:2},C:{DS:1,SS:1},D:{DS:2},E:{Ch:2}},
+          F03:{A:{SN:2},B:{DN:2},C:{DN:1,Ch:1},D:{DN:1,Ch:1},E:{Ch:2}},
+          F04:{A:{SS:2,SN:2},B:{DS:2,SN:2},C:{SS:2,DN:2},D:{DS:2,DN:2},E:{Ch:2}}
+        };
+        if (fMap[id] && fMap[id][val]) { var a=fMap[id][val];
+          F_pool.SS+=a.SS||0; F_pool.DS+=a.DS||0; F_pool.SN+=a.SN||0; F_pool.DN+=a.DN||0; F_pool.Ch+=a.Ch||0; }
+      }
+      else if (id.startsWith("st-")) { var m={A:"s0",B:"s1",C:"s2s",D:"s2c"}; if(m[val]) { Sigma[m[val]]++; if(val==="C"||val==="D") Trigger.push(id); } }
+      else if (id.startsWith("SL-")) { var m={A:"V",B:"D",C:"O",D:"E",E:"T"}; if(m[val]) SL_pool[m[val]]+=2; }
+      else if (id.startsWith("Γ-N")) { var m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_neg[m[val]]++; }
+      else if (id.startsWith("Γ-P")) { var m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_pos[m[val]]++; }
+      else if (id.startsWith("ε-")) { var s={A:1,B:2,C:3,D:4,E:5}; if(s[val]) eps.push(s[val]); }
+    });
+
+    // --- 1. 引擎/沙盒 结算 ---
+    var sArr = Object.entries(S_pool).sort(function(a,b){return b[1]-a[1];});
+    var S1 = sArr[0][0], S2 = sArr.length>1 && sArr[1][1]>0 ? sArr[1][0] : null;
+    var nArr = Object.entries(N_pool).sort(function(a,b){return b[1]-a[1];});
+    var N1 = nArr[0][0], N2 = nArr.length>1 && nArr[1][1]>0 ? nArr[1][0] : null;
+    var dualS = F_pool.DS >= F_pool.SS && F_pool.DS > F_pool.Ch;
+    var dualN = F_pool.DN >= F_pool.SN && F_pool.DN > F_pool.Ch;
+
+    // --- 2. 心腹角色判定 ---
+    var confidant = "";
+    var S_has = function(e){ return (S1===e || S2===e); };
+    var N_has = function(s){ return (N1===s || N2===s); };
+    if ((S_has("O")||S_has("T")) && (N_has("FN")||N_has("MN")||N_has("AN"))) confidant = "谋臣型心腹";
+    else if ((S_has("O")||S_has("D")) && (N_has("FN")||N_has("AN")||N_has("PN"))) confidant = "执行型心腹";
+    else if ((S_has("D")||S_has("E")) && (N_has("IN")||N_has("PN")||N_has("AN"))) confidant = "开疆型心腹";
+    else if ((S_has("V")||S_has("O")) && (N_has("RN")||N_has("PN")||N_has("FN"))) confidant = "维稳型心腹";
+    else if ((S_has("T")||S_has("E")) && (N_has("MN")||N_has("IN")||N_has("RN"))) confidant = "布道型心腹";
+    else confidant = "系统型心腹";
+
+    // --- 3. 职业方向 ---
+    var careerMap = {
+      "T": {dir:"战略、研究、咨询、架构、顶层设计", pos:"战略顾问、管理咨询、行业研究、产品战略、创始人参谋", unsuit:"纯执行、强应酬、低信息透明、只背锅无决策权"},
+      "O": {dir:"风控、合规、财务、审计、规则、边界管理", pos:"法务、合规、风控、财务审核、内控、质量管理", unsuit:"灰区套利、高速扩张、规则模糊但要求背责"},
+      "V": {dir:"关系维护、用户陪伴、社群、服务、内部稳定", pos:"HRBP、员工关系、客户成功、社群运营、心理陪伴", unsuit:"高权力决策、强对抗谈判、长期单向消耗"},
+      "D": {dir:"改革、危机处理、突击项目、竞争突破", pos:"改革项目负责人、危机公关、销售冲锋、增长突击", unsuit:"长期低刺激维护、细水长流陪伴、纯规则文书岗"},
+      "E": {dir:"商务、增长、市场、渠道、人脉、资源整合", pos:"BD、销售负责人、渠道经理、增长负责人", unsuit:"核心机密无制衡、高权限低监管、长期纯后台"}
+    };
+    if (S1==="T" && S2==="O") careerMap["T+O"] = {dir:"战略、研究、咨询、架构、顶层设计", pos:"战略顾问、管理咨询、行业研究、产品战略、创始人参谋", unsuit:"纯执行、强应酬、低信息透明、只背锅无决策权"};
+    if (S1==="V" && S2==="T") careerMap["V+T"] = {dir:"价值校准、内容、咨询、复盘、精神陪伴", pos:"教练、咨询顾问、深度内容作者、品牌理念顾问", unsuit:"要求无条件站队、纯情绪安抚、强服从体系"};
+    var career = careerMap[S1+"+"+S2] || careerMap[S1] || {dir:"复合方向", pos:"根据具体场域组合", unsuit:"单一维度重复"};
+
+    // --- 4. Sigma ---
+    var sigArr = [Sigma.s0, Sigma.s1, Sigma.s2s, Sigma.s2c];
+    var sigMax = Math.max.apply(null, sigArr);
+    var sigDom = sigArr[0]===sigMax?"σ0":sigArr[1]===sigMax?"σ1":sigArr[2]===sigMax?"σ2_switch":"σ2_collapse";
+
+    // --- 5. L1 ---
+    var L1 = Object.entries(SL_pool).sort(function(a,b){return b[1]-a[1];})[0][0];
+
+    // --- 6. Γ ---
+    function getMeta(c) {
+      var m = Math.max(c.A,c.B,c.C,c.D);
+      var dom = c.D===m?"空转主导":c.C===m?"内源主导":c.B===m?"灰度主导":"外源主导";
+      var arr = Object.entries(c).sort(function(a,b){return b[1]-a[1];});
+      if (arr.length>1 && arr[1][1]>=3 && arr[1][1]<m) {
+        var aux = arr[1][0]==="C"?"内源辅助":arr[1][0]==="B"?"灰度辅助":arr[1][0]==="A"?"外源辅助":"空转倾向";
+        return dom+" · "+aux;
+      }
+      return dom;
+    }
+    var metaNeg = getMeta(G_neg), metaPos = getMeta(G_pos);
+
+    // --- 7. ε ---
+    var loadPool=0,stressPool=0,emotionPool=0,motivePool=0;
+    for(var i=0;i<eps.length;i++) {
+      if(i<4) loadPool+=eps[i];
+      else if(i<8) stressPool+=eps[i];
+      else if(i<12) emotionPool+=eps[i];
+      else motivePool+=eps[i];
+    }
+    var epsTotal = loadPool+stressPool+emotionPool+motivePool;
+    var epsZone = epsTotal<=28?"🔴 红区":epsTotal<=44?"🟠 橙区":epsTotal<=60?"🟢 绿区":epsTotal<=72?"🔵 蓝区":"🟣 紫区";
+    var drainType = "";
+    var drainArr = [loadPool,stressPool,emotionPool,motivePool];
+    var drainMin = Math.min.apply(null,drainArr);
+    if(loadPool===drainMin) drainType="Load";
+    else if(stressPool===drainMin) drainType="Stress";
+    else if(emotionPool===drainMin) drainType="Emotion";
+    else drainType="Motive";
+
+    // ============ 完整字典 ============
+    var eName = {O:"结构引擎",V:"锚定引擎",D:"动力引擎",E:"扩张引擎",T:"超越引擎"};
+    var nName = {PN:"身体/空间/资源",AN:"成长/能力/路径",RN:"关系/亲密/协作",IN:"群体/评价/位置",MN:"意义/信念/目标",FN:"机制/流程/系统"};
+
+    var eDesc = {
+      O:"你的一生都在追求秩序对混乱的物理统治。你不满足于简单的顺从，而是致力于亲手打造一个精密、可预测且严丝合缝的闭环世界，将一切不确定性彻底驯服为可控的铁律。为此能够牺牲短期灵活度；承担前期繁琐的搭建成本；忍受他人的不守规矩。",
+      V:"你是系统在动荡与变局中的最后支点。你重视历史连接与安全底座，当外部环境陷入失控与悬空时，你负责守住那一分归属感与最后的安全防线，是动荡中为众人提供灵魂依托的最后防线。为此你能够牺牲扩张速度；承受长期的维持性内耗；承担拖后腿的沉没成本。",
+      D:"你拒绝平庸的温吞维持，生命力在强力的碰撞中才达到巅峰。你像一个拒绝后退的破局者，擅长在僵局中制造剧烈的系统位移，通过直面阻力和对抗，强行点燃停滞事物的引擎，推动一切跨越障碍。为此你能够担高强度冲突；承受关系紧张；消耗大量体能与情绪。",
+      E:"你对已知的存量版图毫无眷恋，嗅觉永远锚定在未知的增量边界。你像一个不停开启新接口的捕猎者，永远在嗅探外部的新机会与新连接，持续扩大系统做功的吞吐量与影响力上限。为此你能够承担资源失控的风险；承受精力被极度拉散；忍受基本盘的不稳定。",
+      T:"你并不住在现成的规则里，你住在逻辑之上的云端。你习惯抽离一切现实表象的约束，直击核心的第一性原理；你从不盲从现有的结论，而是热衷于从地基处重新定义这个世界的最高解释权。为此你能够短期孤独与不被理解；慢回报；为了正确结构牺牲短期世俗舒适。"
+    };
+
+    var nDesc = {
+      PN:"你的力量必须降落在物理底盘（作息、健康、现金流、物资及空间秩序）上才能真正生效。你是一个现实世界的建造者，你并不相信虚无的承诺，只在乎那些看得见、摸得着、能被绝对掌控的物质安全与空间秩序。因此你拒绝纯虚拟、纯概念、无任何实物落地的空转地带。",
+      AN:"你的力量必须降落在个人演化（技能训练、职业履历、项目经验及试错路径）上才能真正生效。你将人生看作一场永不停歇的升级游戏，每一次做功都在为自己的能力版图增砖添瓦，致力于将自我打造成一个不可替代的进化体。因此你拒绝机械重复、一眼望到头、毫无成长空间的流水线。",
+      RN:"你的力量必须降落于人际连接（同伴、伴侣、合伙人及长期契约）上才能真正生效。你是一个灵魂与契约的编织者，你的影响力通过他人的信任、回应与深度协作来传递，在人与人的共振中实现价值的最大化。因此你拒绝纯粹冰冷的数据核算、绝对理性的杀伐决断区。",
+      IN:"你的力量必须降落在社会网络（组织占位、圈层话语权、公众评价及身份标签）上才能真正生效。你擅长在错综复杂的社会洋流中导航，通过夺取核心位置与塑造群体评价，将个人的姓名转化为一种具备统治力的符号与重权。因此你拒绝无人问津、极度封闭、无需任何社交背书的孤岛。",
+      MN:"你的力量必须降落在精神范式（人生愿景、价值信仰、底层观念及宏大叙事）上才能真正生效。你是一个火种的守护者，只在那些关于“意义”与“终极目标”的高海拔地带做功，通过对价值底座的修筑来决定现实世界的走向。因此你拒绝毫无意义的官僚内耗、每天朝令夕改的糊涂账区。",
+      FN:"你的力量必须降落在抽象架构（商业模型、协作规则、工具链及反馈闭环）上才能真正生效。你是一个逻辑的工程师，擅长将复杂的现实编码为隐形的机制，通过对反馈闭环的极致精准操作，确保整个世界像钟表一样分秒不差地运行。因此你拒绝毫无规则、纯靠人情世故和拍脑袋做决定的混沌区。"
+    };
+
+    var confText = {
+      "谋臣型心腹":"你最核心的价值在于提供超越现状的判断力，系统应当授予你全局诊断与长期战略规划的重权。为了确保逻辑的准确性，必须为你提供完整的信息透明度。应避免将你置于追求极速变现或高压社交应酬的环境中，以免损耗你的战略带宽。你会被谨慎的深用，并制衡全责。",
+      "执行型心腹":"你是确保目标从概念转化为现实的关键，应授权你负责流程落地与交付闭环。为了发挥你的最高效率，系统必须搭配明确的目标指示与验收标准。禁止将你置于高度无序的环境中，你需要清晰的规则边界来完成高标准的交付。你会被即插即用般的深用。",
+      "开疆型心腹":"你是打破存量僵局的利刃，适合授权你进行市场突破、资源置换与外部圈层扩张。由于你的做功方式通常具有破坏性，系统需配套强力的风控审计工具作为支撑。不宜将你放置在需要长期精细化维稳的岗位，那会抑制你的爆发力。你会被半核心地位使用，并接受强力的风控监管。",
+      "维稳型心腹":"你是系统抵御风险的防火墙，应授权你负责底盘维护、人际关系调停与风险兜底。为了确保你的稳定性，系统必须给予你足够的资源缓冲与心理余量。严禁要求你发起具有高风险的破坏性创新，以免动摇你的防御核心。你会被深用，置于后方核心。",
+      "布道型心腹":"你是组织共识与影响力的构建核心，适合授权你负责文化建设、愿景解释与外部影响力构建。你擅长赋予行动以意义感，但系统需同步防范你的愿景构思与现实成本脱节。禁止将你锁死在低维、机械重复的流水线作业中，那将是对你认知带宽的极大浪费。你会被视为外围/影响力圈核心。",
+      "系统型心腹":"你是组织机制的底层设计者，适合授权你负责流程架构、系统搭建与知识体系建设。你的价值在于将散乱的经验编码为可复用的机制。系统需为你提供足够的抽象空间和长周期项目。禁止将你置于短期杂活、纯人情场或无授权背锅的环境中，那将直接瓦解你的结构化能力。"
+    };
+
+    var archeText = dualS&&dualN ? "枢纽型架构师 · "+S1+"+"+S2+" × "+N1+"+"+N2 : dualS ? "专项复合人才 · "+S1+"+"+S2+" × "+N1 : dualN ? "跨域管理者 · "+S1+" × "+N1+"+"+N2 : "单点专才 · "+S1+" × "+N1;
+
+    var sigmaText = {
+      "σ1":"高弹性转译型——说到抗压和变通，你就像一根韧性极强的弹力带。就算遇到再大的冲击，你也能一边护住核心底盘，一边灵活调整边界。你会通过退让一些次要利益来换取大局的生存，这种“能屈能伸”的本领让你在复杂环境里活得很久。身为你的老板和合伙人，会因为你变通能力极强，他们可以放心把那些最复杂、最模糊、最需要“和光同尘”的高难度任务交给你处理。",
+      "σ0":"原教旨刚性型——在原则问题上，你就像一块高硬度的陶瓷，完全不接受任何“灰色地带”。你绝对死守自己的底线，宁可硬扛损失、甚至丢掉所有收益，也不愿意在规则上退后半步。对你来说，要么按规矩全拿，要么干脆彻底掀桌子，没有中间项。",
+      "σ2_switch":"现实割肉重组型——你是个纯粹的生存主义者，关键时刻非常果断。你并不在乎所谓的“面子”或“传统”，只要能换取活命或核心利益，你可以随时把原来的规则和负担像“切手指”一样直接甩掉，在废墟上迅速换个活法。",
+      "σ2_collapse":"低带宽崩溃型——你的心理防线比较薄弱，一旦压力过载，原有的底线就会像雪一样融化。你很难在冲突中保持清醒，很容易被环境彻底带偏，最后陷入一种随波逐流、甚至干脆摆烂的状态。"
+    };
+
+    var authText = {
+      "σ1":"保持全量授权。弹性极佳，可授权其处理高度灰度与不确定性的复杂结算场域。",
+      "σ0":"锁定灰度权限。严禁将其放置于需要灵活变通、和光同尘的资源运作位，极易引发教条式系统卡死与客情断裂。",
+      "σ2_switch":"⚠️ 设立强监控机制。必须设定明确的刚性清算协议与利益绑定机制，防止其在关键节点抛弃系统独立逃生。",
+      "σ2_collapse":"⚠️ 剥夺核心授权。抗压极差，仅限外围低压环境使用，严禁向其开放具有单点故障风险的系统核心库。"
+    };
+
+    var sLogicText = {
+      O:"面对危机，你最容易将问题的根源归咎于规则的模糊与流程的断裂。在你看来，如果系统失灵，必然是因为权责边界不再清晰，或者是反馈闭环在某个环节失去了效力。因此，你的第一判断往往是定位到“哪条规则失效了”“哪个闭环断了”——你相信只要把结构重新理顺，系统就能恢复运转。",
+      V:"面对危机，你最容易将问题的根源归咎于安全感的丧失与关系底座的过度紧绷。在你看来，当一个环境变得令人窒息，必然是因为底层失去了容错的缓冲以及相互支撑的依托。因此，你的第一判断往往是锁定“谁的心态崩了”“哪里缺乏兜底”——你相信只要恢复一个熟悉且安全的环境，系统就能重新站稳。",
+      D:"面对危机，你最容易将问题的根源归咎于动能的停滞与真实冲突的被回避。在你看来，系统的腐朽通常始于温吞的维持——不是因为逻辑出了错、也不是因为规则缺了位，而是没人敢于打破僵局，让系统在惯性中逐渐失活。因此，你的第一判断往往是锁定那个“卡住不动”的关键节点：是谁在回避正面冲突？是哪一步失去了推进的动量？",
+      E:"面对危机，你最容易将问题的根源归咎于输入的贫瘠与视角的封闭。在你看来，系统之所以枯竭，是因为样本量不足或选择面太窄，由于拒绝引入外部的增量才陷入了存量的死循环。因此，你的第一判断往往是寻找被忽略的外部变量——新的资源渠道、新的参考样本、新的第三方视角。",
+      T:"面对危机，你最容易将问题的根源归咎于底层逻辑的错误或系统目标的虚无。在你看来，最致命的失败通常源于手段被错当成目的，或者整个系统在一个完全错误的框架下进行徒劳的努力。因此，你的第一判断往往是重新审视问题本身：“我们到底在解决什么问题？这个框架本身是否成立？”"
+    };
+
+    var metaTextNeg = {
+      "内源单一型":"你是个完全“自带干粮”的系统。外界的评价、规矩或是人情绑架，很难真正穿透你的内核，你只认逻辑，不认脸色。面对不合理的强压、甩锅或越界，你会选择毫不犹豫地正面迎击。你敢于承担不合群的代价，明确划定边界、要求规则对等，绝不接受不明不白的委屈和情绪剥削。你不常使用中间策略，处理方式直接而清晰。",
+      "内源主导 · 灰度辅助型":"你是个“自带干粮”的系统，稳定性主要来自内心的那杆秤。面对不合理的强压、甩锅或越界，你的第一反应是设立边界、坚持规则对等，绝不接受不明不白的情绪剥削。与此同时，你保留了一套可调用的灰度手腕——当情境需要时，你能先降低冲突、做一部分表面配合，再把真正的精力转向修补核心漏洞。灰度转化不是你的主频段，但它赋予了你面对复杂博弈时不轻易卡死的灵活性。",
+      "外源单一型":"你是一个“高度开放”的系统，稳定性非常依赖外界的反馈和投喂。环境的夸奖、认可和资源能让你瞬间充满电，但如果周围全是负面噪音，你也会比别人更容易受内伤。面对不合理的要求、评价或低压消耗，你的反应往往是退让降噪。为了短期的安全和表面和谐，你倾向于委屈自己去配合大环境的节奏，先把麻烦应付过去再说。",
+      "灰度单一型":"你是个极聪明的“超级转化炉”。你既不盲目硬刚，也不委屈顺从，而是擅长把外界的压强和规则，悄悄转译成自己建设底盘的燃料，在和光同尘中完成系统升级。面对不合理的强压，你很会“打太极”。你不会直接掀桌子，而是先做一部分表面功夫交差，然后把真正的精力用来修补你认为重要的核心漏洞，在规则边缘给自己抠出余地。"
+    };
+    var metaTextPos = {
+      "内源单一型":"你是个完全“自带干粮”的系统。越是面对巨大的诱惑和夸奖，你反而越警觉。你宁可走得慢一点、错过一些风口，也要死死守住自己的核心底盘和边界，绝不被外界的“大饼”和高帽子忽悠瘸了。外部正反馈几乎不会改变你的方向判断。",
+      "内源主导 · 灰度辅助型":"越是面对诱惑和夸奖，你反而越警觉。你不会因为外界的认可而改变方向，宁可走得慢一点、错过一些风口，也要守住核心底盘和边界。但你并不拒绝一切正反馈——你会接住认可带来的动力，将其拆解成可验证的阶段目标和风控线，让“好运气”沉淀为真正可复用的能力。灰度转化是你的辅助手段，让你在顺风局中既不失速也不失控。",
+      "外源单一型":"你是一个“高度开放”的系统，稳定性非常依赖外界的反馈和投喂。环境的夸奖、认可和资源能让你瞬间充满电。当诱人的机会、资源或极高的评价出现时，你极易被这种“顺风局”带起节奏，倾向于全量压上，追求极致的版图扩张和认可度，哪怕这会让你精力过度分散、主线变模糊。",
+      "灰度单一型":"你是个极聪明的“超级转化炉”。面对好机会和夸奖，你懂得见好就收。你会接住这些动力，但马上会把它们拆解成阶段性的目标和风控线，确保这些“好运气”能沉淀为真正可复用的能力。你不盲追风口，也不拒绝善意，一切外部正反馈都被你转化为系统升级的燃料。"
+    };
+
+    var epsZoneText = {
+      "🔴 红区":"你现在的状态就像是电量只剩 1% 且正在闪烁红灯。系统带宽已经彻底耗尽，物理机能和心理承压都到了崩溃边缘。你现在的自我防御机制已经全面开启，随时准备切断所有外部连接来保命。",
+      "🟠 橙区":"你现在的状态就像开启了“省电模式”。你只能沿着惯性勉强维持最基本的日常运转，对外界的信号非常敏感且极度缺乏耐心，任何多出来的麻烦都会让你觉得难以忍受。",
+      "🟢 绿区":"你现在的状态处于正常的“收支平衡”。你既不亢奋也不抗拒，能够非常客观地就事论事。现在的你拥有标准的算力带宽，能稳定地输出你原本该有的能力水平。",
+      "🔵 蓝区":"你现在的状态简直是“电量满格”。系统运转非常丝滑，你不仅能轻松搞定自己的分内事，甚至还有余力去帮别人修补漏洞。你现在的抗压和抗干扰能力都处于巅峰状态。",
+      "🟣 紫区":"你现在的状态处于一种“超载狂热”中。你不仅精力过剩，而且极度渴望搞点大动作，去打破旧规矩或开拓新版图。这种爆发式的能量很有攻击性，虽然很猛，但要小心这是在大脑透支。"
+    };
+    var drainText = {
+      "Load":"注意守住作息和体能的底线。",
+      "Stress":"长期无反馈的黑盒环境会逐渐消耗你的稳定性。",
+      "Emotion":"持续的人际摩擦可能打破当前的平衡状态。",
+      "Motive":"机械重复的事务会慢慢磨掉你的心气。"
+    };
+    var drainLabel = {
+      "Load":"物理承载","Stress":"心理承压","Emotion":"情绪极性","Motive":"动机烈度"
+    };
+
+    // ==================== 拼接报告 ====================
+    var report = "";
+    report += '<h2>🔧 核心驱动力</h2>';
+    report += '<p><strong>主引擎：' + eName[S1] + '</strong></p><p>' + eDesc[S1] + '</p>';
+    if (S2) report += '<p><strong>副引擎：' + eName[S2] + '</strong></p><p>' + eDesc[S2] + '</p>';
+    
+    report += '<h2>🌐 力量主战场</h2>';
+    report += '<p><strong>主战场：' + nName[N1] + '</strong></p><p>' + nDesc[N1] + '</p>';
+    if (N2) report += '<p><strong>副战场：' + nName[N2] + '</strong></p><p>' + nDesc[N2] + '</p>';
+    
+    report += '<h2>🧠 思维风格</h2><p>' + archeText + '</p>';
+    
+    report += '<h2>🤝 协作角色与职业方向</h2>';
+    report += '<p><strong>心腹角色：' + confidant + '</strong></p><p>' + (confText[confidant]||"") + '</p>';
+    report += '<p><strong>最适合职业方向：</strong>' + career.dir + '</p>';
+    report += '<p><strong>典型岗位：</strong>' + career.pos + '</p>';
+    report += '<p><strong>不适合方向：</strong>' + career.unsuit + '</p>';
+    
+    report += '<h2>⚡ 压力弹性</h2>';
+    report += '<p><strong>' + sigDom + '：' + sigmaText[sigDom] + '</strong></p>';
+    report += '<p>' + (authText[sigDom]||"") + '</p>';
+    
+    report += '<h2>🔍 危机归因</h2>';
+    report += '<p><strong>第一归因视角：' + eName[L1] + '</strong></p><p>' + (sLogicText[L1]||"") + '</p>';
+    
+    report += '<h2>🔄 代谢模式</h2>';
+    report += '<p><strong>面对压力：</strong>' + metaNeg + '</p>';
+    report += '<p>' + (metaTextNeg[metaNeg]||"") + '</p>';
+    report += '<p><strong>面对机会：</strong>' + metaPos + '</p>';
+    report += '<p>' + (metaTextPos[metaPos]||"") + '</p>';
+    
+    report += '<h2>🔋 能量状态</h2>';
+    report += '<p><strong>综合评分：' + epsTotal + ' · ' + epsZone + '</strong></p>';
+    report += '<p>' + (epsZoneText[epsZone]||"") + '</p>';
+    if (drainType) {
+      report += '<p><strong>当前主要脆弱点：' + drainLabel[drainType] + '</strong></p>';
+      report += '<p>' + drainText[drainType] + '</p>';
+    }
+
+    document.getElementById("reportBox").innerHTML = report;
+    document.getElementById("reportBox").style.display = "block";
+    document.getElementById("reportBox").scrollIntoView({behavior:"smooth"});
+  };
+})();
 </script>
 
 </body>
