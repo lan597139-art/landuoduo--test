@@ -883,7 +883,7 @@ var ALL_QUESTIONS = [
       if (!val) return;
       var id = q.id;
 
-      if (id.startsWith("S-C") || /^C0[1-4]$/.test(id)) { 
+     if (id.startsWith("S-C") || /^C0[1-4]$/.test(id)) {
         var m={A:"O",B:"V",C:"D",D:"E",E:"T"}; if(m[val]) S_pool[m[val]]+=2; 
       }
       else if (id.startsWith("N-C")) { 
