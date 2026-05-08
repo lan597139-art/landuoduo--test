@@ -1080,54 +1080,102 @@ var ALL_QUESTIONS = [
       "Emotion":"无意义的情绪摩擦正在剧烈消耗你仅存的余额，持续的人际交互可能打破当前的平衡状态。",
       "Motive":"机械重复的事务会慢慢磨掉你的心气，缺乏目标感的瞎忙会让你彻底失去推进动力。"
     };
-
-    var drainLabel = {
-      "Load":"物理承载","Stress":"心理承压","Emotion":"情绪极性","Motive":"动机烈度"
+        // ==================== 心腹短句 & 拓扑短句字典 ====================
+    var confQuote = {
+      "谋臣型心腹": "我的价值不在于执行，在于能看见别人看不到的东西",
+      "执行型心腹": "别跟我谈愿景，告诉我具体怎么做，我来搞定",
+      "开疆型心腹": "存量没有意思，我要去打开那些还没有碰过的地方",
+      "维稳型心腹": "你们往前冲，我在后面把一切稳住，不让系统散架",
+      "布道型心腹": "我需要让更多人理解这件事的意义，不然推不动",
+      "守门型心腹": "扩张可以，但有些红线不能碰，我就是那条红线",
+      "破局型心腹": "系统快死了？让我来，我有办法在废墟上重新点火",
+      "系统型心腹": "混乱是因为没有好结构，我负责搭一个能自己跑起来的框架",
+      "情感型心腹": "你们都在讲效率，但没有人关心这里的人还好不好",
+      "镜子型心腹": "我不是来告诉你该做什么，我是来帮你看清你到底想要什么",
+      "资源型心腹": "你们缺的不是能力，是缺对的人，缺对的资源，我能找到"
     };
+
+    var complexityLabel = dualS&&dualN ? "多维调度型" : dualS ? "专项攻坚型" : dualN ? "跨界串联型" : "深度穿透型";
+    var complexityQuote = {
+      "深度穿透型": "我只做一件事，但我要把这件事做穿。",
+      "专项攻坚型": "我能在一个领域里调动多套逻辑，处理那些别人搞不定的复杂项目。",
+      "跨界串联型": "我擅长把不同领域的资源串起来，让它们产生化学反应。",
+      "多维调度型": "我能同时处理多件性质不同的事，但要警惕自己因此烧干。",
+      "潜能未定型": "我还没有找到那个让我扎根的点，但我的能量一直在，只是在等一个方向。"
+    };
+    var complexityDesc = {
+      "深度穿透型": "专注于单一维度的单线击穿，你的复杂度上限虽然受限，但抗干扰能力极强。你像一柄精准的手术刀，拒绝一切细碎的干扰与无谓的修饰，存在的唯一目的就是在选定的单点上实现极致的穿透与深度。",
+      "专项攻坚型": "具备在单一领域内调动多重逻辑的厚度，极其适合处理那些重型、高难度的复杂项目。你像一台全副武装的攻坚战车，能够吸收高压环境下的复杂矛盾，并将多重驱动力转化为击碎瓶颈的合力，实现专项领域的深度破局。",
+      "跨界串联型": "习惯用一套底层逻辑打通多个现实场域，是天生的中台调度者与跨部门协调者。你像一条流动的河流，能轻易穿透不同领域的行政与规则壁垒，让看似孤立的资源在你的逻辑链条下产生化学反应，实现高效的跨界输出。",
+      "多维调度型": "具备同时处理异构任务的高阶算力，系统调度能力极其强悍。你像一座昼夜不停的高速运转枢纽，能在大规模的并发需求中保持主线不乱，通过复杂的逻辑网络实现多维覆盖，但必须警惕由于极度耗能而引发的系统性宕机。",
+      "潜能未定型": "目前的系统尚未形成稳定的功耗结构，仍缺乏承重能力与持续做功的闭合机制。你正处于一种高能但散乱的叠加态，拥有巨大的潜能却尚未收束，急需在现实中寻找到一个坚固的锚点，来实现从自由游离到有效输出的质变。"
+    };
+    var archeCode = dualS&&dualN ? S1+"+"+S2+" × "+N1+"+"+N2 : dualS ? S1+"+"+S2+" × "+N1 : dualN ? S1+" × "+N1+"+"+N2 : S1+" × "+N1;
 
     // ==================== 拼接报告 ====================
     var report = "";
+    
+    // --- 内在引擎 ---
     report += '<h2>🔧 你的内在引擎：是什么在驱动你</h2>';
-    report += '<p><strong>主引擎：' + eName[S1] + '</strong></p><p>' + eDesc[S1] + '</p>';
-    if (S2) report += '<p><strong>副引擎：' + eName[S2] + '</strong></p><p>' + eDesc[S2] + '</p>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">主引擎：' + eName[S1] + '</p>';
+    report += '<p style="margin-top:0;line-height:1.8;">' + eDesc[S1] + '</p>';
+    if (S2) {
+      report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">副引擎：' + eName[S2] + '</p>';
+      report += '<p style="margin-top:0;line-height:1.8;">' + eDesc[S2] + '</p>';
+    }
     
+    // --- 现实领地 ---
     report += '<h2>🌐 你的现实领地：你把能量投向了哪里</h2>';
-    report += '<p><strong>主战场：' + nName[N1] + '</strong></p><p>' + nDesc[N1] + '</p>';
-    if (N2) report += '<p><strong>副战场：' + nName[N2] + '</strong></p><p>' + nDesc[N2] + '</p>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">主战场：' + nName[N1] + '</p>';
+    report += '<p style="margin-top:0;line-height:1.8;">' + nDesc[N1] + '</p>';
+    if (N2) {
+      report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">副战场：' + nName[N2] + '</p>';
+      report += '<p style="margin-top:0;line-height:1.8;">' + nDesc[N2] + '</p>';
+    }
     
+    // --- 思维风格 ---
     report += '<h2>🧠 你的操作系统：如何处理复杂任务</h2>';
-    report += '<p><strong>拓扑结构：' + archeText + '</strong></p>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">拓扑结构：' + archeCode + '｜' + complexityLabel + '</p>';
+    report += '<p style="font-style:italic;color:#555;margin-top:0;">“' + (complexityQuote[complexityLabel]||"") + '”</p>';
+    report += '<p style="margin-top:0;line-height:1.8;">' + (complexityDesc[complexityLabel]||"") + '</p>';
     
+    // --- 协作角色 ---
     report += '<h2>🤝 你的协作位置：在团队中发挥什么价值</h2>';
-    report += '<p><strong>协作角色：' + confidant + '</strong></p>';
-    report += '<p>' + (confText[confidant]||"") + '</p>';
-    report += '<p><strong>最适合职业方向：</strong>' + career.dir + '</p>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">协作角色：' + confidant + '</p>';
+    report += '<p style="font-style:italic;color:#555;margin-top:0;">“' + (confQuote[confidant]||"") + '”</p>';
+    report += '<p style="margin-top:0;line-height:1.8;">' + (confText[confidant]||"") + '</p>';
+    report += '<p style="margin-top:12px;"><strong>最适合职业方向：</strong>' + career.dir + '</p>';
     report += '<p><strong>典型岗位：</strong>' + career.pos + '</p>';
     report += '<p><strong>不适合方向：</strong>' + career.unsuit + '</p>';
     
+    // --- 抗压模式 ---
     report += '<h2>⚡ 你的抗压模式：极限压力下你会怎样</h2>';
-    report += '<p><strong>主导相变状态：' + sigDom + '</strong></p>';
-    report += '<p>' + (sigmaDesc[sigDom]||"") + '</p>';
-    report += '<p><strong>授权调整：</strong>' + (authTextMap[sigDom]||"") + '</p>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">主导相变状态：' + sigDom + '｜' + (sigmaDesc[sigDom]||"").split('\n')[0] + '</p>';
+    report += '<p style="margin-top:0;line-height:1.8;">' + (sigmaDesc[sigDom]||"").split('\n').slice(1).join('<br>') + '</p>';
+    report += '<p style="margin-top:8px;"><strong>授权调整：</strong>' + (authTextMap[sigDom]||"") + '</p>';
     
+    // --- 诊断视角 ---
     report += '<h2>🔍 你的诊断视角：你认为问题出在哪</h2>';
-    report += '<p><strong>第一归因倾向：' + eName[L1] + '</strong></p>';
-    report += '<p>' + (sLogicTextFull[L1]||"") + '</p>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">第一归因倾向：' + eName[L1] + '</p>';
+    var logicText = (sLogicTextFull[L1]||"").replace(/\n\n/g, '</p><p style="margin-top:12px;line-height:1.8;">').replace(/\n/g, '<br>');
+    report += '<p style="margin-top:0;line-height:1.8;">' + logicText + '</p>';
     
+    // --- 反馈处理 ---
     report += '<h2>🔄 你的反馈处理：如何应对外部正负反馈</h2>';
-    report += '<p><strong>面对压力：</strong></p>';
-    var negLabel = metaNegRaw.split(" · ")[0];
-    report += '<p>' + (metaNegFull[metaNegRaw]||metaNegFull[negLabel]||metaNegRaw) + '</p>';
-    report += '<p><strong>面对机会：</strong></p>';
-    var posLabel = metaPosRaw.split(" · ")[0];
-    report += '<p>' + (metaPosFull[metaPosRaw]||metaPosFull[posLabel]||metaPosRaw) + '</p>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">面对压力：' + metaNegRaw + '</p>';
+    var negFull = metaNegFull[metaNegRaw] || metaNegFull[metaNegRaw.split(" · ")[0]] || "";
+    report += '<p style="margin-top:0;line-height:1.8;">' + (negFull.indexOf('\n')>-1 ? negFull.split('\n').slice(1).join('<br>') : negFull) + '</p>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;margin-top:16px;">面对机会：' + metaPosRaw + '</p>';
+    var posFull = metaPosFull[metaPosRaw] || metaPosFull[metaPosRaw.split(" · ")[0]] || "";
+    report += '<p style="margin-top:0;line-height:1.8;">' + (posFull.indexOf('\n')>-1 ? posFull.split('\n').slice(1).join('<br>') : posFull) + '</p>';
     
+    // --- 能量状态 ---
     report += '<h2>🔋 你的当下状态：此刻的身心能量水平</h2>';
-    report += '<p><strong>综合评分：' + epsTotal + '分｜工况：' + epsZone + '</strong></p>';
-    report += '<p>' + (epsFullText[epsZone]||"") + '</p>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">综合评分：' + epsTotal + '分｜工况：' + epsZone + '</p>';
+    report += '<p style="margin-top:0;line-height:1.8;">' + (epsFullText[epsZone]||"") + '</p>';
     if (drainType) {
-      report += '<p><strong>当前主要脆弱点：' + drainLabel[drainType] + '</strong></p>';
-      report += '<p>' + drainFullText[drainType] + '</p>';
+      report += '<p style="font-weight:bold;font-size:16px;margin-top:16px;">⚠️ 当前主要脆弱点：' + drainLabel[drainType] + '</p>';
+      report += '<p style="margin-top:0;line-height:1.8;">' + drainFullText[drainType] + '</p>';
     }
 
     document.getElementById("reportBox").innerHTML = report;
