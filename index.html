@@ -924,29 +924,72 @@ var ALL_QUESTIONS = [
     var dualS = F_pool.DS >= F_pool.SS && F_pool.DS > F_pool.Ch;
     var dualN = F_pool.DN >= F_pool.SN && F_pool.DN > F_pool.Ch;
 
-    // 心腹角色
+        // ==================== 心腹角色判定（11型优先级） ====================
     var confidant = "";
     var S_has = function(e){ return (S1===e || S2===e); };
     var N_has = function(s){ return (N1===s || N2===s); };
-    if ((S_has("O")||S_has("T")) && (N_has("FN")||N_has("MN")||N_has("AN"))) confidant = "谋臣型心腹";
-    else if ((S_has("O")||S_has("D")) && (N_has("FN")||N_has("AN")||N_has("PN"))) confidant = "执行型心腹";
-    else if ((S_has("D")||S_has("E")) && (N_has("IN")||N_has("PN")||N_has("AN"))) confidant = "开疆型心腹";
-    else if ((S_has("V")||S_has("O")) && (N_has("RN")||N_has("PN")||N_has("FN"))) confidant = "维稳型心腹";
-    else if ((S_has("T")||S_has("E")) && (N_has("MN")||N_has("IN")||N_has("RN"))) confidant = "布道型心腹";
-    else confidant = "系统型心腹";
+    var S_only = function(e){ return (S1===e && (!S2 || S2===e)); };
+    
+    // 优先级1：谋臣型心腹
+    if ((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN"))) {
+      confidant = "谋臣型心腹";
+    }
+    // 优先级2：守门型心腹
+    else if ((S1==="O" || S2==="O") && !S_has("T") && !S_has("D") && !S_has("E") && (N_has("FN")||N_has("PN"))) {
+      confidant = "守门型心腹";
+    }
+    // 优先级3：开疆型心腹
+    else if ((S_has("D")||S_has("E")) && (N_has("IN")||N_has("PN")) && !((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN")))) {
+      confidant = "开疆型心腹";
+    }
+    // 优先级4：维稳型心腹
+    else if ((S_has("V")||(S1==="O"&&S2==="V")||(S2==="V"&&S1==="O")) && (N_has("RN")||N_has("PN")) && !((S1==="O"||S2==="O") && !S_has("T") && !S_has("D") && !S_has("E") && (N_has("FN")||N_has("PN")))) {
+      confidant = "维稳型心腹";
+    }
+    // 优先级5：布道型心腹
+    else if ((S_has("T")||S_has("E")) && (N_has("MN")||N_has("IN")||N_has("RN")) && !((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN")))) {
+      confidant = "布道型心腹";
+    }
+    // 优先级6：执行型心腹
+    else if ((S_has("O")||S_has("D")) && (N_has("FN")||N_has("AN")||N_has("PN")) && !((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN"))) && !((S1==="O"||S2==="O") && !S_has("T") && !S_has("D") && !S_has("E") && (N_has("FN")||N_has("PN")))) {
+      confidant = "执行型心腹";
+    }
+    // 优先级7：破局型心腹
+    else if (S_has("D") && !((S_has("D")||S_has("E")) && (N_has("IN")||N_has("PN"))) && !((S_has("O")||S_has("D")) && (N_has("FN")||N_has("AN")||N_has("PN")))) {
+      confidant = "破局型心腹";
+    }
+    // 优先级8：系统型心腹
+    else if (N_has("FN") && !((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN"))) && !((S1==="O"||S2==="O") && !S_has("T") && !S_has("D") && !S_has("E") && (N_has("FN")||N_has("PN"))) && !((S_has("O")||S_has("D")) && (N_has("FN")||N_has("AN")||N_has("PN")))) {
+      confidant = "系统型心腹";
+    }
+    // 优先级9：资源型心腹
+    else if (S_has("E") && !((S_has("D")||S_has("E")) && (N_has("IN")||N_has("PN"))) && !((S_has("T")||S_has("E")) && (N_has("MN")||N_has("IN")||N_has("RN")))) {
+      confidant = "资源型心腹";
+    }
+    // 优先级10：情感型心腹
+    else if (S_has("V") && N_has("RN") && !((S_has("V")||(S1==="O"&&S2==="V")||(S2==="V"&&S1==="O")) && (N_has("RN")||N_has("PN")))) {
+      confidant = "情感型心腹";
+    }
+    // 优先级11：镜子型心腹（含回退）
+    else {
+      confidant = "镜子型心腹";
+    }
 
-    // 职业方向
-    var careerMap = {
-      "T": {dir:"战略、研究、咨询、架构、顶层设计", pos:"战略顾问、管理咨询、行业研究、产品战略、创始人参谋", unsuit:"纯执行、强应酬、低信息透明、只背锅无决策权"},
-      "O": {dir:"风控、合规、财务、审计、规则、边界管理", pos:"法务、合规、风控、财务审核、内控、质量管理", unsuit:"灰区套利、高速扩张、规则模糊但要求背责"},
-      "V": {dir:"关系维护、用户陪伴、社群、服务、内部稳定", pos:"HRBP、员工关系、客户成功、社群运营", unsuit:"高权力决策、强对抗谈判、长期单向消耗"},
-      "D": {dir:"改革、危机处理、突击项目、竞争突破", pos:"改革项目负责人、危机公关、销售冲锋、增长突击", unsuit:"长期低刺激维护、细水长流陪伴、纯规则文书岗"},
-      "E": {dir:"商务、增长、市场、渠道、人脉、资源整合", pos:"BD、销售负责人、渠道经理、增长负责人", unsuit:"核心机密无制衡、高权限低监管、长期纯后台"}
+    // ==================== 职业方向（按心腹类型映射） ====================
+    var careerByConfidant = {
+      "谋臣型心腹": {dir:"战略、研究、咨询、架构、顶层设计", pos:"战略顾问、管理咨询、行业研究、产品战略、创始人参谋、组织诊断", unsuit:"纯执行、强应酬、低信息透明、只背锅无决策权", auth:"授权系统诊断与长期规划权；禁止置于极速变现或高压应酬区"},
+      "守门型心腹": {dir:"风控、合规、财务、审计、规则、边界管理", pos:"法务、合规、风控、财务审核、内控、质量管理、流程审核", unsuit:"灰区套利、高速扩张、规则模糊但要求背责", auth:"授权风控审计、合规审查与边界管理权；禁止置于灰度套利或高速扩张岗位"},
+      "开疆型心腹": {dir:"市场突破、资源置换、商务拓展、圈层扩张", pos:"BD、销售负责人、渠道经理、市场增长、资源整合", unsuit:"核心机密无制衡、高权限低监管、长期纯后台", auth:"授权市场突破、资源置换与圈层扩张权；需配套强力风控审计"},
+      "维稳型心腹": {dir:"底盘维护、关系调停、风险兜底、内部稳定", pos:"HRBP、员工关系、行政总管、客户成功、社群运营", unsuit:"高权力决策、复杂利益分配、强对抗谈判", auth:"授权底盘维护、关系调停与风险兜底权；给予充足的缓冲资源"},
+      "布道型心腹": {dir:"文化建设、愿景解释、外部影响力、品牌叙事", pos:"品牌经理、公关、内容总监、布道师、社区领袖", unsuit:"纯执行流水线、低自主性、无话语权", auth:"授权文化建设、愿景解释与外部影响力构建权；防范虚化现实成本"},
+      "执行型心腹": {dir:"项目推进、流程落地、运营交付、战术管理", pos:"项目经理、运营经理、PMO、交付负责人、教务主管", unsuit:"长期无目标、频繁改口、多头指挥、无反馈环境", auth:"授权流程落地与交付权；必须搭配明确目标指示，禁止置于无序环境中"},
+      "破局型心腹": {dir:"改革、危机处理、突击项目、竞争突破", pos:"改革项目负责人、危机公关、销售冲锋、增长突击", unsuit:"长期低刺激维护、细水长流陪伴、纯规则文书岗", auth:"授权危机处理、改革推进与竞争突破权；需接受其带来的短期规则摩擦"},
+      "系统型心腹": {dir:"系统设计、产品、流程、组织机制、知识体系", pos:"产品经理、业务架构师、流程架构、SOP设计、知识库负责人", unsuit:"纯人情场、短期杂活、无边界救火、无授权背锅", auth:"授权流程架构、系统搭建与知识体系建设权；需提供足够的抽象空间和长周期项目"},
+      "资源型心腹": {dir:"商务、增长、市场、渠道、人脉、资源整合", pos:"BD、销售负责人、渠道经理、融资助理、增长负责人", unsuit:"核心机密无制衡、高权限低监管、长期纯后台", auth:"授权商务拓展、资源整合与市场增长权；需配套清晰的风控边界和利益绑定机制"},
+      "情感型心腹": {dir:"关系维护、用户陪伴、社群、服务、内部稳定", pos:"HRBP、员工关系、客户成功、社群运营、心理陪伴", unsuit:"高权力决策、复杂利益分配、强对抗谈判、长期单向消耗", auth:"授权员工关系、客户陪伴与社群运营权；需保护其不被过度索取情绪资源"},
+      "镜子型心腹": {dir:"价值校准、内容、咨询、复盘、精神陪伴", pos:"教练、咨询顾问、深度内容作者、品牌理念顾问、战略复盘顾问", unsuit:"要求无条件站队、纯情绪安抚、强服从体系", auth:"授权深度复盘、理念咨询与精神陪伴权；需接受其低服从性和高独立需求"}
     };
-    if (S1==="T" && S2==="O") careerMap["T+O"] = {dir:"战略、研究、咨询、架构、顶层设计", pos:"战略顾问、管理咨询、行业研究、产品战略、创始人参谋", unsuit:"纯执行、强应酬、低信息透明、只背锅无决策权"};
-    if (S1==="V" && S2==="T") careerMap["V+T"] = {dir:"价值校准、内容、咨询、复盘、精神陪伴", pos:"教练、咨询顾问、深度内容作者、品牌理念顾问", unsuit:"要求无条件站队、纯情绪安抚、强服从体系"};
-    var career = careerMap[S1+"+"+S2] || careerMap[S1] || {dir:"复合方向", pos:"根据具体场域组合", unsuit:"单一维度重复"};
-
+    var career = careerByConfidant[confidant] || careerByConfidant["镜子型心腹"];
     // --- 2. Sigma ---
     var sigArr = [Sigma.s0, Sigma.s1, Sigma.s2s, Sigma.s2c];
     var sigMax = Math.max.apply(null, sigArr);
