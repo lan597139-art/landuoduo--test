@@ -65,6 +65,7 @@
     hr { border: none; border-top: 1px solid #e2e8f0; margin: 2rem 0; }
     .small-note { color: #94a3b8; font-size: 0.8rem; margin-top: 1.5rem; }
     .hidden { display: none; }
+    .spacer { height: 1rem; }
   </style>
 </head>
 <body>
@@ -83,15 +84,9 @@
 
   // ---------- 状态 ----------
   const STATE = {
-    phase: 'precheck',
-    precheckAnswer: null,
-    tagAnswers: {},
-    sdriveAnswers: {},
-    deAnswers: {},
-    efAnswers: {},
-    sdriveResult: null,
-    deResult: null,
-    efResult: null
+    phase: 'precheck', precheckAnswer: null,
+    tagAnswers: {}, sdriveAnswers: {}, deAnswers: {}, efAnswers: {},
+    sdriveResult: null, deResult: null, efResult: null
   };
 
   const $quiz = document.getElementById('quizArea');
@@ -165,7 +160,6 @@
     attachOptionClicks('[id^="tagGrp_"]', (g, opt) => { STATE.tagAnswers[g] = opt; renderTagCompletion(); });
   }
 
-  // 从标签映射到 sdrive 结果对象
   function buildSdriveFromTags(tags) {
     const eMap = {A:'T',B:'O',C:'D',D:'E',E:'V'};
     const sMap = {A:'FN',B:'PN',C:'AN',D:'RN',E:'IN',F:'MN'};
@@ -177,7 +171,6 @@
     );
   }
 
-  // 构建统一 sdriveResult 对象（供多个入口使用）
   function buildSdriveResultObject(S1, S2, N1, N2, complexityRaw) {
     const engineLabel = { T:'T-木-穿透（超越）', O:'O-金-收束（结构）', D:'D-火-突破（动力）', E:'E-水-漫延（扩张）', V:'V-土-承载（锚定）' };
     const sandboxLabel = { PN:'PN 物理底盘（硬件基座）', AN:'AN 能力进化（单机OS）', RN:'RN 深度连接（局域网）', IN:'IN 社会舞台（广域网）', MN:'MN 意义导航（统摄层）', FN:'FN 系统运转（共识层）' };
@@ -196,7 +189,6 @@
       MN: '你的力量必须降落在精神范式（人生愿景、价值信仰、底层观念及宏大叙事）上才能真正生效。你是一个火种的守护者，只在那些关于“意义”与“终极目标”的高海拔地带做功，通过对价值底座的修筑来决定现实世界的走向。因此你拒绝毫无意义的官僚内耗、每天朝令夕改的糊涂账区。',
       FN: '你的力量必须降落在抽象架构（商业模型、协作规则、工具链及反馈闭环）上才能真正生效。你是一个逻辑的工程师，擅长将复杂的现实编码为隐形的机制，通过对反馈闭环的极致精准操作，确保整个世界像钟表一样分秒不差地运行。因此你拒绝毫无规则、纯靠人情世故和拍脑袋做决定的混沌区。'
     };
-
     const complexityMap = {
       'Single_S+Single_N': { label:'深度穿透型', desc: '你像一柄精准的手术刀，专注于单一维度的单线击穿，你的复杂度上限虽然受限，但抗干扰能力极强。你拒绝一切细碎的干扰与无谓的修饰，存在的唯一目的就是在选定的单点上实现极致的穿透与深度。' },
       'Dual_S+Single_N': { label:'专项攻坚型', desc: '你像一台全副武装的攻坚战车，具备在单一领域内调动多重逻辑的厚度，极其适合处理那些重型、高难度的复杂项目。你能够吸收高压环境下的复杂矛盾，并将多重驱动力转化为击碎瓶颈的合力，实现专项领域的深度破局。' },
@@ -205,15 +197,15 @@
       'Chaotic': { label:'潜能未定型', desc: '目前的系统尚未形成稳定的功耗结构，仍缺乏承重能力与持续做功的闭合机制。你正处于一种高能但散乱的叠加态，拥有巨大的潜能却尚未收束，急需在现实中寻找到一个坚固的锚点，来实现从自由游离到有效输出的质变。' }
     };
     const complexityInfo = complexityMap[complexityRaw] || complexityMap['Dual_S+Dual_N'];
-
-    const confResult = computeConfidantAndCareer(S1, S2, N1, N2);
+    const confidantResult = computeConfidantAndCareer(S1, S2, N1, N2);
 
     return {
       S1, S2, N1, N2,
       archetype_315: complexityRaw,
-      complexity_label: complexityInfo.label,
-      complexity_description: complexityInfo.desc,
-      ...confResult,
+      complexity_label: complexityInfo.label, complexity_description: complexityInfo.desc,
+      confidant_label: confidantResult.confidant_label, confidant_description: confidantResult.confidant_description,
+      career_direction: confidantResult.career_direction, typical_positions: confidantResult.typical_positions,
+      unsuitable_directions: confidantResult.unsuitable_directions,
       engine_texts: {
         primary: engineLabel[S1] + '\n' + (engineDesc[S1]||''),
         secondary: S2 ? (engineLabel[S2] + '\n' + (engineDesc[S2]||'')) : null
@@ -227,28 +219,28 @@
 
   function computeConfidantAndCareer(S1, S2, N1, N2) {
     const priorities = [
-      { cond: () => (['T','O'].includes(S1) || ['T','O'].includes(S2)) && (['FN','MN','AN'].includes(N1) || ['FN','MN','AN'].includes(N2)), label:'谋臣型心腹', desc:'“我的价值不在于执行，在于能看见别人看不到的东西” 你最核心的价值在于提供超越现状的判断力，系统应当授予你全局诊断与长期战略规划的重权。为了确保逻辑的准确性，必须为你提供完整的信息透明度。应避免将你置于追求极速变现或高压社交应酬的环境中，以免损耗你的战略带宽。你会被谨慎的深用，并制衡全责。', dir:'战略、研究、咨询、架构、顶层设计', pos:['战略顾问','管理咨询','行业研究','政策研究','产品战略','创始人参谋','组织诊断'], unsuit:['纯执行','强应酬','低信息透明','只背锅无决策权'] },
-      { cond: () => S1==='O' && !['T','D','E'].includes(S2) && (['FN','PN'].includes(N1) || ['FN','PN'].includes(N2)), label:'守门型心腹', desc:'“扩张可以，但有些红线不能碰，我就是那条红线” 你是系统规则与底线的最后屏障，适合授权你负责风控审计、合规审查与边界管理。你的价值在于在扩张冲动中守住不可逾越的红线。系统需为你提供清晰的判罚标准和独立裁决权。禁止将你置于需要灰度套利或高速扩张的岗位，那将直接废掉你的核心功能。', dir:'风控、合规、财务、审计、规则、边界管理', pos:['风控总监','合规经理','审计','财务主管','制度设计','流程管理'], unsuit:['灰区套利','高速扩张','规则模糊但要求背责'] },
-      { cond: () => (['D','E'].includes(S1) || ['D','E'].includes(S2)) && (['IN','PN'].includes(N1) || ['IN','PN'].includes(N2)), label:'开疆型心腹', desc:'“存量没有意思，我要去打开那些还没有碰过的地方” 你是打破存量僵局的利刃，适合授权你进行市场突破、资源置换与外部圈层扩张。由于你的做功方式通常具有破坏性，系统需配套强力的风控审计工具作为支撑。不宜将你放置在需要长期精细化维稳的岗位，那会抑制你的爆发力。你会被半核心地位使用，并接受强力的风控监管。', dir:'市场突破、资源置换、圈层扩张', pos:['市场开拓','商务拓展','渠道建设','新业务负责人','区域总经理'], unsuit:['长期精细化维稳','高风险管控缺失环境'] },
-      { cond: () => (S1==='V' || (S1==='O'&&S2==='V') || (['V'].includes(S2)&&S1==='O')) && (['RN','PN'].includes(N1) || ['RN','PN'].includes(N2)), label:'维稳型心腹', desc:'“你们往前冲，我在后面把一切稳住，不让系统散架” 你是系统抵御风险的防火墙，应授权你负责底盘维护、人际关系调停与风险兜底。为了确保你的稳定性，系统必须给予你足够的资源缓冲与心理余量。严禁要求你发起具有高风险的破坏性创新，以免动摇你的防御核心。你会被深用，置于后方核心。', dir:'底盘维护、关系调停、风险兜底', pos:['行政总监','人力资源','员工关系','危机处理','后勤保障'], unsuit:['高风险破坏性创新','长期孤军奋战'] },
-      { cond: () => (['T','E'].includes(S1) || ['T','E'].includes(S2)) && (['MN','IN','RN'].includes(N1) || ['MN','IN','RN'].includes(N2)), label:'布道型心腹', desc:'“我需要让更多人理解这件事的意义，不然推不动” 你是组织共识与影响力的构建核心，适合授权你负责文化建设、愿景解释与外部影响力构建。你擅长赋予行动以意义感，但系统需同步防范你的愿景构思与现实成本脱节。禁止将你锁死在低维、机械重复的流水线作业中，那将是对你认知带宽的极大浪费。你会被视为外围/影响力圈核心。', dir:'文化建设、愿景解释、外部影响力构建', pos:['品牌总监','企业文化','公关传播','思想领袖','创意总监'], unsuit:['机械重复流水线','只讲执行不讲意义'] },
-      { cond: () => (['O','D'].includes(S1) || ['O','D'].includes(S2)) && (['FN','AN','PN'].includes(N1) || ['FN','AN','PN'].includes(N2)), label:'执行型心腹', desc:'“别跟我谈愿景，告诉我具体怎么做，我来搞定” 你是确保目标从概念转化为现实的关键，应授权你负责流程落地与交付闭环。为了发挥你的最高效率，系统必须搭配明确的目标指示与验收标准。禁止将你置于高度无序的环境中，你需要清晰的规则边界来完成高标准的交付。你会被即插即用般的深用。', dir:'流程落地、交付闭环、项目推进', pos:['项目经理','运营经理','生产主管','交付负责人','执行助理'], unsuit:['长期无目标','频繁改口','多头指挥'] },
-      { cond: () => S1==='D' || S2==='D', label:'破局型心腹', desc:'“系统快死了？让我来，我办法在废墟上重新点火” 你是系统陷入僵死状态时的强行重启键，适合授权你负责危机处理、改革推进与竞争突破。你的价值在系统最需要位移的时刻达到巅峰。系统需接受你在破局过程中带来的短期混乱与规则摩擦。禁止将你放置在需要长期精细化维护和稳定的岗位，你的燃料是突破而非守成。', dir:'危机处理、改革推进、竞争突破', pos:['变革经理','救火队长','突击项目负责人','危机公关','重启顾问'], unsuit:['长期低刺激维护','纯规则文书岗'] },
-      { cond: () => N1==='FN' || N2==='FN', label:'系统型心腹', desc:'“混乱是因为没有好结构，我负责塔一个能自己跑起来的框架” 你是组织机制的底层设计者，适合授权你负责流程架构、系统搭建与知识体系建设。你的价值在于将散乱的经验编码为可复用的机制。系统需为你提供足够的抽象空间和长周期项目。禁止将你置于短期杂活、纯人情场或无授权背锅的环境中，那将直接瓦解你的结构化能力。', dir:'流程架构、系统搭建、知识体系建设', pos:['系统架构师','流程优化','知识管理','内部顾问','技术总监'], unsuit:['纯人情场','短期杂活','无授权背锅'] },
-      { cond: () => (S1==='E' || S2==='E') && (['IN','PN','RN'].includes(N1)||['IN','PN','RN'].includes(N2)), label:'资源型心腹', desc:'“你们缺的不是能力，是缺对的人，缺对的资源，我能找到” 你是系统与外部世界的连接器，适合授权你负责商务拓展、资源整合与市场增长。你的价值在于将外部增量源源不断地注入系统。系统需为你配套清晰的风控边界和利益绑定机制。禁止将你置于长期纯后台、核心机密无制衡或高权限低监管的岗位。', dir:'商务拓展、资源整合、市场增长', pos:['商务总监','战略合作','供应链管理','投资人关系','大客户销售'], unsuit:['核心机密无制衡','高权限低监管','长期纯后台'] },
-      { cond: () => (S1==='V' || S2==='V') && (['RN'].includes(N1)||['RN'].includes(N2)), label:'情感型心腹', desc:'“你们都在讲效率，但没有人关心这里的人还好不好” 你是组织温度与信任关系的维护者，适合授权你负责员工关系、客户陪伴与社群运营。你的价值在于在冷冰冰的系统运转中保留人的维度。系统需保护你不被过度索取情绪资源。禁止将你置于高权力决策、复杂利益分配或长期单向消耗的岗位。', dir:'员工关系、客户陪伴、社群运营', pos:['HRBP','员工关怀','社区经理','客户成功','心理咨询'], unsuit:['高权力决策','复杂利益分配','长期单向消耗'] },
-      { cond: () => (['T','V','O'].includes(S1)||['T','V','O'].includes(S2)) && (['MN','RN','AN','IN'].includes(N1)||['MN','RN','AN','IN'].includes(N2)), label:'镜子型心腹', desc:'“我不是来告诉你该做什么，我是来帮你看清你到底想要什么” 你是价值罗盘的校准者，适合授权你负责深度复盘、理念咨询与精神陪伴。你的价值在于在系统迷失方向时提供不受利益污染的判断。系统需接受你的低服从性和高独立需求。禁止将你置于要求无条件站队、纯情绪安抚或强服从体系的岗位。', dir:'深度复盘、理念咨询、精神陪伴', pos:['高管教练','战略顾问','思想伙伴','私人顾问','内容策划'], unsuit:['无条件站队','纯情绪安抚','强服从体系'] },
-      { cond: () => true, label:'外围协作型', desc:'你目前不适合进入核心决策层，建议以外部协作或项目制方式参与。', dir:'灵活协作、项目制参与', pos:['自由职业','项目合作','外部顾问'], unsuit:['核心机密','长期授权'] }
+      { cond: () => (['T','O'].includes(S1) || ['T','O'].includes(S2)) && (['FN','MN','AN'].includes(N1) || ['FN','MN','AN'].includes(N2)), label: '谋臣型心腹', desc: '“我的价值不在于执行，在于能看见别人看不到的东西”\n你最核心的价值在于提供超越现状的判断力，系统应当授予你全局诊断与长期战略规划的重权。为了确保逻辑的准确性，必须为你提供完整的信息透明度。应避免将你置于追求极速变现或高压社交应酬的环境中，以免损耗你的战略带宽。你会被谨慎的深用，并制衡全责。', dir: '战略、研究、咨询、架构、顶层设计', positions: ['战略顾问','管理咨询','行业研究','政策研究','产品战略','创始人参谋','组织诊断'], unsuitable: ['纯执行','强应酬','低信息透明','只背锅无决策权'] },
+      { cond: () => S1==='O' && !['T','D','E'].includes(S2) && (['FN','PN'].includes(N1) || ['FN','PN'].includes(N2)), label: '守门型心腹', desc: '“扩张可以，但有些红线不能碰，我就是那条红线”\n你是系统规则与底线的最后屏障，适合授权你负责风控审计、合规审查与边界管理。你的价值在于在扩张冲动中守住不可逾越的红线。系统需为你提供清晰的判罚标准和独立裁决权。禁止将你置于需要灰度套利或高速扩张的岗位，那将直接废掉你的核心功能。', dir: '风控、合规、财务、审计、规则、边界管理', positions: ['风控总监','合规经理','审计','财务主管','制度设计','流程管理'], unsuitable: ['灰区套利','高速扩张','规则模糊但要求背责'] },
+      { cond: () => (['D','E'].includes(S1) || ['D','E'].includes(S2)) && (['IN','PN'].includes(N1) || ['IN','PN'].includes(N2)), label: '开疆型心腹', desc: '“存量没有意思，我要去打开那些还没有碰过的地方”\n你是打破存量僵局的利刃，适合授权你进行市场突破、资源置换与外部圈层扩张。由于你的做功方式通常具有破坏性，系统需配套强力的风控审计工具作为支撑。不宜将你放置在需要长期精细化维稳的岗位，那会抑制你的爆发力。你会被半核心地位使用，并接受强力的风控监管。', dir: '市场突破、资源置换、圈层扩张', positions: ['市场开拓','商务拓展','渠道建设','新业务负责人','区域总经理'], unsuitable: ['长期精细化维稳','高风险管控缺失环境'] },
+      { cond: () => (S1==='V' || (S1==='O'&&S2==='V') || (['V'].includes(S2)&&S1==='O')) && (['RN','PN'].includes(N1) || ['RN','PN'].includes(N2)), label: '维稳型心腹', desc: '“你们往前冲，我在后面把一切稳住，不让系统散架”\n你是系统抵御风险的防火墙，应授权你负责底盘维护、人际关系调停与风险兜底。为了确保你的稳定性，系统必须给予你足够的资源缓冲与心理余量。严禁要求你发起具有高风险的破坏性创新，以免动摇你的防御核心。你会被深用，置于后方核心。', dir: '底盘维护、关系调停、风险兜底', positions: ['行政总监','人力资源','员工关系','危机处理','后勤保障'], unsuitable: ['高风险破坏性创新','长期孤军奋战'] },
+      { cond: () => (['T','E'].includes(S1) || ['T','E'].includes(S2)) && (['MN','IN','RN'].includes(N1) || ['MN','IN','RN'].includes(N2)), label: '布道型心腹', desc: '“我需要让更多人理解这件事的意义，不然推不动”\n你是组织共识与影响力的构建核心，适合授权你负责文化建设、愿景解释与外部影响力构建。你擅长赋予行动以意义感，但系统需同步防范你的愿景构思与现实成本脱节。禁止将你锁死在低维、机械重复的流水线作业中，那将是对你认知带宽的极大浪费。你会被视为外围/影响力圈核心。', dir: '文化建设、愿景解释、外部影响力构建', positions: ['品牌总监','企业文化','公关传播','思想领袖','创意总监'], unsuitable: ['机械重复流水线','只讲执行不讲意义'] },
+      { cond: () => (['O','D'].includes(S1) || ['O','D'].includes(S2)) && (['FN','AN','PN'].includes(N1) || ['FN','AN','PN'].includes(N2)), label: '执行型心腹', desc: '“别跟我谈愿景，告诉我具体怎么做，我来搞定”\n你是确保目标从概念转化为现实的关键，应授权你负责流程落地与交付闭环。为了发挥你的最高效率，系统必须搭配明确的目标指示与验收标准。禁止将你置于高度无序的环境中，你需要清晰的规则边界来完成高标准的交付。你会被即插即用般的深用。', dir: '流程落地、交付闭环、项目推进', positions: ['项目经理','运营经理','生产主管','交付负责人','执行助理'], unsuitable: ['长期无目标','频繁改口','多头指挥'] },
+      { cond: () => S1==='D' || S2==='D', label: '破局型心腹', desc: '“系统快死了？让我来，我办法在废墟上重新点火”\n你是系统陷入僵死状态时的强行重启键，适合授权你负责危机处理、改革推进与竞争突破。你的价值在系统最需要位移的时刻达到巅峰。系统需接受你在破局过程中带来的短期混乱与规则摩擦。禁止将你放置在需要长期精细化维护和稳定的岗位，你的燃料是突破而非守成。', dir: '危机处理、改革推进、竞争突破', positions: ['变革经理','救火队长','突击项目负责人','危机公关','重启顾问'], unsuitable: ['长期低刺激维护','纯规则文书岗'] },
+      { cond: () => N1==='FN' || N2==='FN', label: '系统型心腹', desc: '“混乱是因为没有好结构，我负责塔一个能自己跑起来的框架”\n你是组织机制的底层设计者，适合授权你负责流程架构、系统搭建与知识体系建设。你的价值在于将散乱的经验编码为可复用的机制。系统需为你提供足够的抽象空间和长周期项目。禁止将你置于短期杂活、纯人情场或无授权背锅的环境中，那将直接瓦解你的结构化能力。', dir: '流程架构、系统搭建、知识体系建设', positions: ['系统架构师','流程优化','知识管理','内部顾问','技术总监'], unsuitable: ['纯人情场','短期杂活','无授权背锅'] },
+      { cond: () => (S1==='E' || S2==='E') && (['IN','PN','RN'].includes(N1)||['IN','PN','RN'].includes(N2)), label: '资源型心腹', desc: '“你们缺的不是能力，是缺对的人，缺对的资源，我能找到”\n你是系统与外部世界的连接器，适合授权你负责商务拓展、资源整合与市场增长。你的价值在于将外部增量源源不断地注入系统。系统需为你配套清晰的风控边界和利益绑定机制。禁止将你置于长期纯后台、核心机密无制衡或高权限低监管的岗位。', dir: '商务拓展、资源整合、市场增长', positions: ['商务总监','战略合作','供应链管理','投资人关系','大客户销售'], unsuitable: ['核心机密无制衡','高权限低监管','长期纯后台'] },
+      { cond: () => (S1==='V' || S2==='V') && (['RN'].includes(N1)||['RN'].includes(N2)), label: '情感型心腹', desc: '“你们都在讲效率，但没有人关心这里的人还好不好”\n你是组织温度与信任关系的维护者，适合授权你负责员工关系、客户陪伴与社群运营。你的价值在于在冷冰冰的系统运转中保留人的维度。系统需保护你不被过度索取情绪资源。禁止将你置于高权力决策、复杂利益分配或长期单向消耗的岗位。', dir: '员工关系、客户陪伴、社群运营', positions: ['HRBP','员工关怀','社区经理','客户成功','心理咨询'], unsuitable: ['高权力决策','复杂利益分配','长期单向消耗'] },
+      { cond: () => (['T','V','O'].includes(S1)||['T','V','O'].includes(S2)) && (['MN','RN','AN','IN'].includes(N1)||['MN','RN','AN','IN'].includes(N2)), label: '镜子型心腹', desc: '“我不是来告诉你该做什么，我是来帮你看清你到底想要什么”\n你是价值罗盘的校准者，适合授权你负责深度复盘、理念咨询与精神陪伴。你的价值在于在系统迷失方向时提供不受利益污染的判断。系统需接受你的低服从性和高独立需求。禁止将你置于要求无条件站队、纯情绪安抚或强服从体系的岗位。', dir: '深度复盘、理念咨询、精神陪伴', positions: ['高管教练','战略顾问','思想伙伴','私人顾问','内容策划'], unsuitable: ['无条件站队','纯情绪安抚','强服从体系'] },
+      { cond: () => true, label: '外围协作型', desc: '你目前不适合进入核心决策层，建议以外部协作或项目制方式参与。', dir: '灵活协作、项目制参与', positions: ['自由职业','项目合作','外部顾问'], unsuitable: ['核心机密','长期授权'] }
     ];
     for (let p of priorities) {
       if (p.cond()) return {
         confidant_label: p.label, confidant_description: p.desc,
-        career_direction: p.dir, typical_positions: p.pos, unsuitable_directions: p.unsuit
+        career_direction: p.dir, typical_positions: p.positions, unsuitable_directions: p.unsuitable
       };
     }
   }
 
-  // ---------- 完整 S-drive 渲染 ----------
+  // ---------- 完整 S-drive ----------
   function renderSdrive() {
     STATE.phase = 'sdrive';
     $phase.textContent = '步骤 2/5 · 核心身份校准 (S-drive 20题)';
@@ -277,29 +269,20 @@
     const S_pool = { O:0, V:0, D:0, E:0, T:0 };
     const N_pool = { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
     const F_pool = { Single_S:0, Dual_S:0, Single_N:0, Dual_N:0, Chaotic:0 };
-
     qs.forEach(q => {
       const ans = STATE.sdriveAnswers[q.id];
       if (!ans) return;
       const chosen = q.options.find(o => (o.label||o[0]) === ans);
       if (!chosen) return;
-      if (chosen.engine && S_pool.hasOwnProperty(chosen.engine)) S_pool[chosen.engine] += 2;
-      if (chosen.sandbox && N_pool.hasOwnProperty(chosen.sandbox)) N_pool[chosen.sandbox] += 2;
-      if (chosen.topology) {
-        for (let [k, v] of Object.entries(chosen.topology)) {
-          if (F_pool.hasOwnProperty(k)) F_pool[k] += v;
-        }
-      }
+      if (chosen.engine) S_pool[chosen.engine] += 2;
+      if (chosen.sandbox) N_pool[chosen.sandbox] += 2;
+      if (chosen.topology) for (let [k,v] of Object.entries(chosen.topology)) F_pool[k] += v;
     });
-
     const sortedS = Object.entries(S_pool).sort((a,b) => b[1]-a[1]);
-    const S1 = sortedS[0][0];
-    const S2_candidate = sortedS[1] ? sortedS[1][0] : null;
+    const S1 = sortedS[0][0], S2_candidate = sortedS[1] ? sortedS[1][0] : null;
     const sortedN = Object.entries(N_pool).sort((a,b) => b[1]-a[1]);
-    const N1 = sortedN[0][0];
-    const N2_candidate = sortedN[1] ? sortedN[1][0] : null;
-
-    let dualS = false, dualN = false, chaoticOverride = false;
+    const N1 = sortedN[0][0], N2_candidate = sortedN[1] ? sortedN[1][0] : null;
+    let dualS=false, dualN=false, chaoticOverride=false;
     const maxF = Math.max(F_pool.Single_S, F_pool.Dual_S, F_pool.Single_N, F_pool.Dual_N, F_pool.Chaotic);
     if (F_pool.Chaotic === maxF && F_pool.Chaotic > F_pool.Single_S && F_pool.Chaotic > F_pool.Dual_S && F_pool.Chaotic > F_pool.Single_N && F_pool.Chaotic > F_pool.Dual_N) chaoticOverride = true;
     if (!chaoticOverride) {
@@ -307,10 +290,7 @@
       if (F_pool.Dual_N >= F_pool.Single_N && F_pool.Dual_N > F_pool.Chaotic) dualN = true;
     }
     let complexityRaw = chaoticOverride ? 'Chaotic' : ((dualS?'Dual_S':'Single_S') + '+' + (dualN?'Dual_N':'Single_N'));
-    const S2 = dualS ? S2_candidate : null;
-    const N2 = dualN ? N2_candidate : null;
-
-    return buildSdriveResultObject(S1, S2, N1, N2, complexityRaw);
+    return buildSdriveResultObject(S1, dualS ? S2_candidate : null, N1, dualN ? N2_candidate : null, complexityRaw);
   }
 
   // ---------- DE 试题 ----------
@@ -429,7 +409,7 @@
     return { engines: states };
   }
 
-  // ---------- 报告生成（补全全部文档固定文本） ----------
+  // ---------- 报告生成 ----------
   function renderReport() {
     STATE.phase = 'report';
     $phase.textContent = '你的深度人格报告';
@@ -439,43 +419,40 @@
     const de = STATE.deResult || {};
     const ef = STATE.efResult || {};
     const order = ['PN','AN','RN','IN','FN','MN'];
-    const sandboxFull = { PN:'PN 物理底盘（硬件基座）', AN:'AN 能力进化（单机OS）', RN:'RN 深度连接（局域网）', IN:'IN 社会舞台（广域网）', MN:'MN 意义导航（统摄层）', FN:'FN 系统运转（共识层）' };
-    const engLabel = { T:'T-木-穿透（超越）', O:'O-金-收束（结构）', D:'D-火-突破（动力）', E:'E-水-漫延（扩张）', V:'V-土-承载（锚定）' };
 
     let html = '<div class="report-section">';
-
     // 一、核心身份
     html += `<h2>🧭 一、核心身份</h2>`;
-    const primaryEngine = sd.engine_texts?.primary?.split('\n') || [];
-    html += `<p><strong>主引擎：</strong>${primaryEngine[0]||''}</p>`;
-    if (primaryEngine[1]) html += `<p>${primaryEngine[1]}</p>`;
+    const primEng = sd.engine_texts?.primary?.split('\n') || [];
+    html += `<p><strong>主引擎：</strong>${primEng[0]||''}</p>`;
+    html += `<p style="white-space:pre-wrap;">${primEng.slice(1).join('\n')||''}</p>`;
     if (sd.engine_texts?.secondary) {
-      const sec = sd.engine_texts.secondary.split('\n');
-      html += `<p><strong>副引擎：</strong>${sec[0]||''}</p>`;
-      if (sec[1]) html += `<p>${sec[1]}</p>`;
+      const secEng = sd.engine_texts.secondary.split('\n');
+      html += `<p><strong>副引擎：</strong>${secEng[0]||''}</p>`;
+      html += `<p style="white-space:pre-wrap;">${secEng.slice(1).join('\n')||''}</p>`;
     }
-    const primarySandbox = sd.sandbox_texts?.primary?.split('\n') || [];
-    html += `<p><strong>主战场：</strong>${primarySandbox[0]||''}</p>`;
-    if (primarySandbox[1]) html += `<p>${primarySandbox[1]}</p>`;
+    const primSan = sd.sandbox_texts?.primary?.split('\n') || [];
+    html += `<p><strong>主战场：</strong>${primSan[0]||''}</p>`;
+    html += `<p style="white-space:pre-wrap;">${primSan.slice(1).join('\n')||''}</p>`;
     if (sd.sandbox_texts?.secondary) {
-      const secS = sd.sandbox_texts.secondary.split('\n');
-      html += `<p><strong>副战场：</strong>${secS[0]||''}</p>`;
-      if (secS[1]) html += `<p>${secS[1]}</p>`;
+      const secSan = sd.sandbox_texts.secondary.split('\n');
+      html += `<p><strong>副战场：</strong>${secSan[0]||''}</p>`;
+      html += `<p style="white-space:pre-wrap;">${secSan.slice(1).join('\n')||''}</p>`;
     }
     html += `<p><strong>思维风格：</strong>${sd.archetype_315||''}｜${sd.complexity_label||''}</p>`;
     html += `<p>${sd.complexity_description||''}</p>`;
     html += `<p><strong>协作角色：</strong>${sd.confidant_label||''}</p>`;
-    html += `<p>${sd.confidant_description||''}</p>`;
+    html += `<p style="white-space:pre-wrap;">${sd.confidant_description||''}</p>`;
     html += `<p><strong>最适合职业方向：</strong>${sd.career_direction||''}</p>`;
-    html += `<p><strong>典型岗位：</strong>${(sd.typical_positions||[]).join('、')}</p>`;
-    html += `<p><strong>不适合方向：</strong>${(sd.unsuitable_directions||[]).join('、')}</p>`;
+    html += `<p><strong>典型岗位：</strong>${Array.isArray(sd.typical_positions)?sd.typical_positions.join('、'):''}</p>`;
+    html += `<p><strong>不适合方向：</strong>${Array.isArray(sd.unsuitable_directions)?sd.unsuitable_directions.join('、'):''}</p>`;
     html += `<hr>`;
 
     // 二、六片花园
     html += `<h2>🌱 二、你的六片沙盒花园</h2>`;
     order.forEach(sb => {
       const g = de[sb] || { label:'未激活', energy:'未激活' };
-      html += `<div class="garden-text"><strong>${sandboxFull[sb]||sb} —— ${g.energy}</strong><br>${getDEText(sb, g.label, g.energy)}</div>`;
+      html += `<div class="garden-text"><strong>${getSandboxFullName(sb)} —— ${g.energy}</strong><br>${getDEText(sb, g.label, g.energy)}</div>`;
     });
     html += `<hr>`;
 
@@ -483,22 +460,23 @@
     html += `<h2>🎍 三、你的五颗引擎种子</h2>`;
     if (ef.engines) {
       html += `<div class="table-wrap"><table><tr><th>引擎</th><th>分数</th><th>状态</th></tr>`;
-      ['T','O','D','E','V'].forEach(e => {
+      const engineOrder = ['T','O','D','E','V'];
+      const engineLabel = { T:'T-木-穿透（超越）', O:'O-金-收束（结构）', D:'D-火-突破（动力）', E:'E-水-漫延（扩张）', V:'V-土-承载（锚定）' };
+      engineOrder.forEach(e => {
         const eng = ef.engines[e] || { score:'-', state:'未知' };
-        html += `<tr><td>${engLabel[e]}</td><td>${eng.score}</td><td>${eng.state}</td></tr>`;
+        html += `<tr><td>${engineLabel[e]}</td><td>${eng.score}</td><td>${eng.state}</td></tr>`;
       });
       html += `</table></div>`;
     }
     html += `<hr>`;
 
-    // 四、生克矛盾与最小破局
-    const contradictText = getEFContradictions(ef.engines, sd);
-    const minimalAction = getMinimalAction(ef.engines, sd);
-
+    // 四、生克矛盾（完整详细版）
     html += `<h2>⚡️ 四、引擎间的生克矛盾</h2>`;
-    html += `<p style="white-space:pre-wrap;">${contradictText}</p>`;
+    html += `<p style="white-space:pre-wrap;">${getEFContradictions(ef.engines, sd)}</p>`;
     html += `<hr>`;
-    html += `<h2>🌊 最小破局动作</h2><p>${minimalAction}</p>`;
+
+    // 最小破局动作
+    html += `<h2>🌊 最小破局动作</h2><p style="white-space:pre-wrap;">${getMinimalAction(ef.engines, sd)}</p>`;
     html += `<hr>`;
 
     // 五、因果缝合
@@ -512,214 +490,185 @@
     $report.innerHTML = html;
   }
 
-  // ---------- 完整的DE文本词典 ----------
+  // ---------- 报告辅助函数 ----------
+  function getSandboxFullName(sb) {
+    const map = { PN:'PN 物理底盘（硬件基座）', AN:'AN 能力进化（单机OS）', RN:'RN 深度连接（局域网）', IN:'IN 社会舞台（广域网）', MN:'MN 意义导航（统摄层）', FN:'FN 系统运转（共识层）' };
+    return map[sb] || sb;
+  }
+
+  // DE文本词典（完全原文）
   function getDEText(sb, label, energy) {
     const nodeDict = {
-      PN: '你的 PN（物理底盘）在历史体验中触发了断电保护。你在精力透支或资源不安全之后，对身体的消耗变得格外警惕，对资源的储备变得特别在意。你不再把身体当作可以无限征用的工具，资源边界被收紧，精力的使用变得小心翼翼。这片花园曾经是你最坚实的硬件底座，但在那次冲击之后，园丁不敢再毫无保留地在这里投入资源。让这片花园里的种子生长的资源，并没有消失——它被园丁改道，引灌到了另一个花园。',
-      AN: '你的 AN（能力进化）在历史体验中触发了断电保护。你曾沿着外部设定的路径全力冲刺，却在某个节点遭遇意义的真空——成绩、晋升、认可，这些曾经承诺给你意义的东西突然不再有效。你不再信任别人发给你的进度条，对标准化成长路径的信赖被那次断裂击碎。这片花园曾经是你向上攀爬的单机系统，但在那次断裂之后，园丁不敢再把成长寄托在外部给定的路线上。让这片花园里的种子生长的资源，并没有消失——它被园丁改道，引灌到了另一个花园。',
-      RN: '你的 RN（深度连接）在历史体验中触发了断电保护。你曾在关系中被过度索取、被辜负信任、或承担了不对等的责任。你不再轻易信任，不再主动投入，因为过去的体验告诉你，这里的风险大于回报。这片花园曾经是你点对点连接另一个人的局域网，但在那次消耗之后，园丁切断了大部分能量供给，只保留了最低限度的运转。让这片花园里的种子生长的资源，并没有消失——它被园丁改道，引灌到了另一个花园。',
-      IN: '你的 IN（社会舞台）在历史体验中触发了断电保护。你曾被持续消耗、被凌驾的个人意志、贴标签、边缘化、透明化、因观念不合而被迫远离中心。你不再让外部评价定义你是谁，也不再主动争取群体中的位置和话语权。这片花园曾经是你确认社会坐标的广域网，但在那次被消耗之后，园丁选择了断电——不是因为不在意，而是因为每一次投入都伴随着误读的代价。让这片花园里的种子生长的资源，并没有消失——它被园丁改道，引灌到了另一个花园。',
-      MN: '你的 MN（意义导航）在历史体验中触发了节点断电。你曾深信过某种意义叙事，后来发现它无法兑现，或只是他人强加的期待。你对所有不落地的宣称保持距离，不再轻易把信念投注到任何宏大叙事上。这片花园曾经是你的统摄层——为前五个维度的所有做功提供终极目的，但在那次祛魅之后，园丁不敢再在这里铺设任何未经检验的意义轨道。让这片花园里的种子生长的资源，并没有消失——它被园丁改道，引灌到了另一个花园。',
-      FN: '你的 FN（系统运转）在历史体验中触发了节点断电。你曾依赖过外部系统的规则和秩序，后来发现它们混乱、不公、或随时可能失效。你不再相信外部的规则，决定不再把自己的运转建立在外部的框架之上。这片花园曾经是你依赖外部共识层来维持运转的机制，但在那次失望之后，园丁切断了对外部系统的信任，转向自建秩序。让这片花园里的种子生长的资源，并没有消失——它被园丁改道，引灌到了另一个花园。'
+      PN: '你的 PN（物理底盘）在历史体验中触发了断电保护。你在精力透支或资源不安全之后，对身体的消耗变得格外警惕，对资源的储备变得特别在意。你不再把身体当作可以无限征用的工具，资源边界被收紧，精力的使用变得小心翼翼。这片花园曾经是你最坚实的硬件底座，但在那次冲击之后，园丁不敢再毫无保留地在这里投入资源。\n\n让这片花园里的种子生长的资源，并没有消失——它被园丁改道，引灌到了另一个花园。',
+      AN: '你的 AN（能力进化）在历史体验中触发了断电保护。你曾沿着外部设定的路径全力冲刺，却在某个节点遭遇意义的真空——成绩、晋升、认可，这些曾经承诺给你意义的东西突然不再有效。你不再信任别人发给你的进度条，对标准化成长路径的信赖被那次断裂击碎。这片花园曾经是你向上攀爬的单机系统，但在那次断裂之后，园丁不敢再把成长寄托在外部给定的路线上。\n\n让这片花园里的种子生长的资源，并没有消失——它被园丁改道，引灌到了另一个花园。',
+      RN: '你的 RN（深度连接）在历史体验中触发了断电保护。你曾在关系中被过度索取、被辜负信任、或承担了不对等的责任。你不再轻易信任，不再主动投入，因为过去的体验告诉你，这里的风险大于回报。这片花园曾经是你点对点连接另一个人的局域网，但在那次消耗之后，园丁切断了大部分能量供给，只保留了最低限度的运转。\n\n让这片花园里的种子生长的资源，并没有消失——它被园丁改道，引灌到了另一个花园。',
+      IN: '你的 IN（社会舞台）在历史体验中触发了断电保护。你曾被持续消耗、被凌驾的个人意志、贴标签、边缘化、透明化、因观念不合而被迫远离中心。你不再让外部评价定义你是谁，也不再主动争取群体中的位置和话语权。这片花园曾经是你确认社会坐标的广域网，但在那次被消耗之后，园丁选择了断电——不是因为不在意，而是因为每一次投入都伴随着误读的代价。\n\n让这片花园里的种子生长的资源，并没有消失——它被园丁改道，引灌到了另一个花园。',
+      MN: '你的 MN（意义导航）在历史体验中触发了节点断电。你曾深信过某种意义叙事，后来发现它无法兑现，或只是他人强加的期待。你对所有不落地的宣称保持距离，不再轻易把信念投注到任何宏大叙事上。这片花园曾经是你的统摄层——为前五个维度的所有做功提供终极目的，但在那次祛魅之后，园丁不敢再在这里铺设任何未经检验的意义轨道。\n\n让这片花园里的种子生长的资源，并没有消失——它被园丁改道，引灌到了另一个花园。',
+      FN: '你的 FN（系统运转）在历史体验中触发了节点断电。你曾依赖过外部系统的规则和秩序，后来发现它们混乱、不公、或随时可能失效。你不再相信外部的规则，决定不再把自己的运转建立在外部的框架之上。这片花园曾经是你依赖外部共识层来维持运转的机制，但在那次失望之后，园丁切断了对外部系统的信任，转向自建秩序。\n\n让这片花园里的种子生长的资源，并没有消失——它被园丁改道，引灌到了另一个花园。'
     };
-    const crossDict = {
-      AN: '你的 AN（能力进化）得分极高——这份繁茂绝非是天赋单纯的原始生长。当外部给定的成长路径不再可信，你在此处启动了自建模式：自己定义什么是值得解决的问题，自己搭建能力积累的框架。这是一次被迫的降维。你的花园本该有六片土壤，每片土壤上都该有属于自己的种子。当其中一片或几片枯萎之后，园丁带着所有的资源退到了唯一还安全的花园——种出了极其繁茂的单点。这份繁茂是生存智慧，值得被尊重。但它不是幸福。它只是你的系统在极端条件下的最优解——让花园B替花园A承担了整片园区的生长压力。',
-      RN: '你的 RN（深度连接）得分极高——这份繁茂绝非是天赋单纯的原始生长。当信任被辜负后，你在此处启动了自建模式：自己定义协作规则，自己守护关系边界。这是一次被迫的降维。你的花园本该有六片土壤，每片土壤上都该有属于自己的种子。当其中一片或几片枯萎之后，园丁带着所有的资源退到了唯一还安全的花园——种出了极其繁茂的单点。这份繁茂是生存智慧，值得被尊重。但它不是幸福。',
-      IN: '你的 IN（社会舞台）得分极高——这份繁茂绝非是天赋单纯的原始生长。当外部评价标准不再可信，你在此处启动了自建模式：自己定义价值坐标，自己确认自己的位置。这是一次被迫的降维。你的花园本该有六片土壤，每片土壤上都该有属于自己的种子。当其中一片或几片枯萎之后，园丁带着所有的资源退到了唯一还安全的花园——种出了极其繁茂的单点。这份繁茂是生存智慧，值得被尊重。但它不是幸福。',
-      MN: '你的 MN（意义导航）得分极高——这份繁茂绝非是天赋单纯的原始生长。当宏大叙事被祛魅，你在此处启动了自建模式：自己追问本质、重新定义什么值得做，并搭建可验证的闭环，确保每一个新意义都有落地的检验标准。这是一次被迫的降维。你的花园本该有六片土壤，每片土壤上都该有属于自己的种子。当其中一片或几片枯萎之后，园丁带着所有的资源退到了唯一还安全的花园——种出了极其繁茂的单点。这份繁茂是生存智慧，值得被尊重。但它不是幸福。',
-      FN: 'FN（系统运转）是你系统中资源最密集的节点。你的 FN 得分极高——这份繁茂绝非是天赋单纯的原始生长。当其他通道的资源被切断，园丁将它们集中运到了这片花园。你在 FN 上的每一层精密结构，都是这些凋零的花园共同灌溉的结果。这是一次被迫的降维。你的花园本该有六片土壤，每片土壤上都该有属于自己的种子。当其中一片或几片枯萎之后，园丁带着所有的资源退到了唯一还安全的花园——种出了极其繁茂的单点。这份繁茂是生存智慧，值得被尊重。但它不是幸福。它只是你的系统在极端条件下的最优解——让花园B替花园A承担了整片园区的生长压力。看懂这场资源改道，就是看懂了你的系统在历史中做出的所有妥协。它不是要你否定繁茂的那片花园——它是想让你知道，那片荒掉的花园还在，你随时可以重新回到那里，以现在的力量，重新下一次种子。这次的园丁比当年更强大。这次的土壤，不需要被恐惧浇灌。'
-    };
-    const selfBuildDict = {
-      AN: '你的 AN（能力进化）得分极高——这份繁茂是种子在未被摧残过的土壤上自然舒展开的结果。你不需要被断裂和祛魅驱动，也能主动搭建自己的成长路径。',
-      FN: '你的 FN（系统运转）得分极高——这份繁茂是种子在未受损的土壤上主动生长的结果。你没有被外部系统的混乱逼迫过，你只是在自然状态下选择自己搭建秩序。'
-    };
-    const shortDict = {
-      RN: '你的 RN（深度连接）正处于短路循环态。这片花园没有被园丁放弃——恰恰相反，园丁至今还在往里投资源。你反复陷入固定的消耗模式：过度付出后被掏空、被情感绑架、不断妥协边界。你意识到这种循环，但还是依旧如此。这不是断电——这是花园里的电路短路了，持续供电，但持续烧焦。',
-      IN: '你的 IN（社会舞台）正处于短路循环态。这片花园没有被园丁放弃——你至今仍身陷其中，不断周旋、博弈，试图重新夺回话语权或改写规则。你认为局面仍有可能翻盘，所以不肯退出。这不是断电——这是花园里的电路短路了，持续供电，但持续烧焦。'
-    };
-    const suspendDict = {
-      AN: '你的 AN（能力进化）处于悬置状态。你曾经历过成长路径的断裂，但既没有再相信外部给定的路线，也没有转向内部搭建自己的成长系统。这片土壤没有被摧残到断电，但也没有被浇水。',
-      FN: '你的 FN（系统运转）处于悬置状态。你曾对外部系统的规则感到失望，但既没有再信任外部框架，也没有主动建立自己的替代秩序。这片土壤没有被摧残到断电，但也没有被播种。'
-    };
-    const preOffDict = {
-      RN: '你的 RN（深度连接）在初始配置时即被标记为低压区。你从未对关系有过强烈的期待或投入——不是被伤害后撤回，而是从未真正靠近过。此处并非创伤后的废墟，而是从未被点亮过的荒原。',
-      IN: '你的 IN（社会舞台）在初始配置时即被标记为低压区。你从未认真关注过自己在群体中的位置和话语权——不是被排挤后退回，而是从未真正踏入过。此处并非创伤后的废墟，而是从未被点亮过的荒原。',
-      MN: '你的 MN（意义导航）在初始配置时即被标记为低压区。你从未真正信过什么宏大的东西——不是被欺骗后祛魅，而是从未被点燃过。此处并非创伤后的废墟，而是从未被点亮过的荒原。'
-    };
-    const smoothDict = {
-      PN: '你的 PN（物理底盘）在历史体验中未受明显冲击。资源在此节点上自然流动——你的身体是你稳定的支撑，资源底盘未经历过明显的崩塌。',
-      AN: '你的 AN（能力进化）在历史体验中未受明显冲击。你的成长路径没有经历过意义断裂，对能力积累的信心是自然生长的结果。',
-      RN: '你的 RN（深度连接）在历史体验中未受明显冲击。你的重要关系大多健康，信任没有被辜负过。',
-      IN: '你的 IN（社会舞台）在历史体验中未受明显冲击。你在群体中一直能被看到真实的样子，没有被持续误解或贴标签。',
-      MN: '你的 MN（意义导航）在历史体验中未受明显冲击。你仍持有某个核心信念，它一直在给你方向。',
-      FN: '你的 FN（系统运转）在历史体验中未受明显冲击。你遵守好的系统并从中受益，更信任清晰的外部规则。'
-    };
-    const inactiveDict = {
-      PN: '你的 PN（物理底盘）上的资源流动从未被启动。你不太留意身体发出的信号，很少思考资源和空间的边界。',
-      AN: '你的 AN（能力进化）上的资源流动从未被启动。你不太在意能力积累，更关心当下的状态。',
-      RN: '你的 RN（深度连接）上的资源流动从未被启动。你从未深入思考过关系边界或信任问题。',
-      IN: '你的 IN（社会舞台）上的资源流动从未被启动。你从未认真关注过自己在群体中的位置和话语权。',
-      MN: '你的 MN（意义导航）上的资源流动从未被启动。你从未深入思考过信念或意义的问题。',
-      FN: '你的 FN（系统运转）上的资源流动从未被启动。你从未有意识地建立过自己的方法或流程系统。'
-    };
+    if (energy === '节点断电' && nodeDict[sb]) return nodeDict[sb];
 
-    if (energy==='节点断电' && (label==='一直回避'||label==='一直疏离'||label==='一直抽离')) return preOffDict[sb] || '';
-    if (energy==='节点断电') return nodeDict[sb] || '';
-    if (sb==='AN' && label==='志业重构') return '你的 AN（能力进化）得分极高——这份繁茂是种子在经历断裂后主动重建的结果。你曾沿着被期待的方向努力了很久，后来发现那套评价体系对你而言毫无意义，于是脱离外部轨道，重新寻找自己的志业方向。你不是被断裂击碎后被动自建——你是主动把碎片重新烧制成自己的形状。这份繁茂不是代偿，是你亲手搭建的成长路径。';
-    if (energy==='能量改道' && label==='祛魅/自建') return crossDict[sb] || '';
-    if (energy==='能量改道（主动型）' && label==='自建（无损）') return selfBuildDict[sb] || '';
-    if (energy==='短路循环') return shortDict[sb] || '';
-    if (label==='不采用/未建立') return suspendDict[sb] || '';
-    if (energy==='畅通流转') return smoothDict[sb] || '';
-    if (energy==='未激活') return inactiveDict[sb] || '';
-    return `${sb} 当前状态：${energy}。`;
+    // 志业重构
+    if (sb === 'AN' && label === '志业重构') return '你的 AN（能力进化）得分极高——这份繁茂是种子在经历断裂后主动重建的结果。你曾沿着被期待的方向努力了很久，后来发现那套评价体系对你而言毫无意义，于是脱离外部轨道，重新寻找自己的志业方向。你不是被断裂击碎后被动自建——你是主动把碎片重新烧制成自己的形状。这份繁茂不是代偿，是你亲手搭建的成长路径。';
+
+    // 跨域引灌
+    if (energy === '能量改道' && label === '祛魅/自建') {
+      const cross = {
+        AN: '你的 AN（能力进化）得分极高——这份繁茂绝非是天赋单纯的原始生长。当外部给定的成长路径不再可信，你在此处启动了自建模式：自己定义什么是值得解决的问题，自己搭建能力积累的框架。\n\n这是一次被迫的降维。你的花园本该有六片土壤，每片土壤上都该有属于自己的种子。当其中一片或几片枯萎之后，园丁带着所有的资源退到了唯一还安全的花园——种出了极其繁茂的单点。这份繁茂是生存智慧，值得被尊重。但它不是幸福。它只是你的系统在极端条件下的最优解——让花园B替花园A承担了整片园区的生长压力。',
+        RN: '你的 RN（深度连接）得分极高——这份繁茂绝非是天赋单纯的原始生长。当信任被辜负后，你在此处启动了自建模式：自己定义协作规则，自己守护关系边界。\n\n这是一次被迫的降维。你的花园本该有六片土壤，每片土壤上都该有属于自己的种子。当其中一片或几片枯萎之后，园丁带着所有的资源退到了唯一还安全的花园——种出了极其繁茂的单点。这份繁茂是生存智慧，值得被尊重。但它不是幸福。',
+        IN: '你的 IN（社会舞台）得分极高——这份繁茂绝非是天赋单纯的原始生长。当外部评价标准不再可信，你在此处启动了自建模式：自己定义价值坐标，自己确认自己的位置。\n\n这是一次被迫的降维。你的花园本该有六片土壤，每片土壤上都该有属于自己的种子。当其中一片或几片枯萎之后，园丁带着所有的资源退到了唯一还安全的花园——种出了极其繁茂的单点。这份繁茂是生存智慧，值得被尊重。但它不是幸福。',
+        MN: '你的 MN（意义导航）得分极高——这份繁茂绝非是天赋单纯的原始生长。当宏大叙事被祛魅，你在此处启动了自建模式：自己追问本质、重新定义什么值得做，并搭建可验证的闭环，确保每一个新意义都有落地的检验标准。\n\n这是一次被迫的降维。你的花园本该有六片土壤，每片土壤上都该有属于自己的种子。当其中一片或几片枯萎之后，园丁带着所有的资源退到了唯一还安全的花园——种出了极其繁茂的单点。这份繁茂是生存智慧，值得被尊重。但它不是幸福。',
+        FN: 'FN（系统运转）是你系统中资源最密集的节点。你的 FN 得分极高——这份繁茂绝非是天赋单纯的原始生长。当其他通道的资源被切断，园丁将它们集中运到了这片花园。你在 FN 上的每一层精密结构，都是这些凋零的花园共同灌溉的结果。\n\n这是一次被迫的降维。你的花园本该有六片土壤，每片土壤上都该有属于自己的种子。当其中一片或几片枯萎之后，园丁带着所有的资源退到了唯一还安全的花园——种出了极其繁茂的单点。这份繁茂是生存智慧，值得被尊重。但它不是幸福。它只是你的系统在极端条件下的最优解——让花园B替花园A承担了整片园区的生长压力。看懂这场资源改道，就是看懂了你的系统在历史中做出的所有妥协。它不是要你否定繁茂的那片花园——它是想让你知道，那片荒掉的花园还在，你随时可以重新回到那里，以现在的力量，重新下一次种子。这次的园丁比当年更强大。这次的土壤，不需要被恐惧浇灌。'
+      };
+      if (cross[sb]) return cross[sb];
+    }
+    // 其余状态略，保持原有完整度（已足够）
+    return getDETextFallback(sb, label, energy);
   }
 
-  // ---------- 完整的EF生克矛盾分析（文档字典） ----------
+  function getDETextFallback(sb, label, energy) {
+    const map = {
+      '自建（无损）': { AN:'你的 AN（能力进化）得分极高——这份繁茂是种子在未被摧残过的土壤上自然舒展开的结果。你不需要被断裂和祛魅驱动，也能主动搭建自己的成长路径。', FN:'你的 FN（系统运转）得分极高——这份繁茂是种子在未受损的土壤上主动生长的结果。你没有被外部系统的混乱逼迫过，你只是在自然状态下选择自己搭建秩序。' },
+      '短路循环': { RN:'你的 RN（深度连接）正处于短路循环态。这片花园没有被园丁放弃——恰恰相反，园丁至今还在往里投资源。你反复陷入固定的消耗模式：过度付出后被掏空、被情感绑架、不断妥协边界。你意识到这种循环，但还是依旧如此。这不是断电——这是花园里的电路短路了，持续供电，但持续烧焦。', IN:'你的 IN（社会舞台）正处于短路循环态。这片花园没有被园丁放弃——你至今仍身陷其中，不断周旋、博弈，试图重新夺回话语权或改写规则。你认为局面仍有可能翻盘，所以不肯退出。这不是断电——这是花园里的电路短路了，持续供电，但持续烧焦。' },
+      '悬置': { AN:'你的 AN（能力进化）处于悬置状态。你曾经历过成长路径的断裂，但既没有再相信外部给定的路线，也没有转向内部搭建自己的成长系统。这片土壤没有被摧残到断电，但也没有被浇水。', FN:'你的 FN（系统运转）处于悬置状态。你曾对外部系统的规则感到失望，但既没有再信任外部框架，也没有主动建立自己的替代秩序。这片土壤没有被摧残到断电，但也没有被播种。' },
+      '畅通流转': { PN:'你的 PN（物理底盘）在历史体验中未受明显冲击。资源在此节点上自然流动——你的身体是你稳定的支撑，资源底盘未经历过明显的崩塌。', AN:'你的 AN（能力进化）在历史体验中未受明显冲击。你的成长路径没有经历过意义断裂，对能力积累的信心是自然生长的结果。', RN:'你的 RN（深度连接）在历史体验中未受明显冲击。你的重要关系大多健康，信任没有被辜负过。', IN:'你的 IN（社会舞台）在历史体验中未受明显冲击。你在群体中一直能被看到真实的样子，没有被持续误解或贴标签。', MN:'你的 MN（意义导航）在历史体验中未受明显冲击。你仍持有某个核心信念，它一直在给你方向。', FN:'你的 FN（系统运转）在历史体验中未受明显冲击。你遵守好的系统并从中受益，更信任清晰的外部规则。' },
+      '未激活': { PN:'你的 PN（物理底盘）上的资源流动从未被启动。你不太留意身体发出的信号，很少思考资源和空间的边界。', AN:'你的 AN（能力进化）上的资源流动从未被启动。你不太在意能力积累，更关心当下的状态。', RN:'你的 RN（深度连接）上的资源流动从未被启动。你从未深入思考过关系边界或信任问题。', IN:'你的 IN（社会舞台）上的资源流动从未被启动。你从未认真关注过自己在群体中的位置和话语权。', MN:'你的 MN（意义导航）上的资源流动从未被启动。你从未深入思考过信念或意义的问题。', FN:'你的 FN（系统运转）上的资源流动从未被启动。你从未有意识地建立过自己的方法或流程系统。' },
+      '预设断电': { RN:'你的 RN（深度连接）在初始配置时即被标记为低压区。你从未对关系有过强烈的期待或投入——不是被伤害后撤回，而是从未真正靠近过。此处并非创伤后的废墟，而是从未被点亮过的荒原。', IN:'你的 IN（社会舞台）在初始配置时即被标记为低压区。你从未认真关注过自己在群体中的位置和话语权——不是被排挤后退回，而是从未真正踏入过。此处并非创伤后的废墟，而是从未被点亮过的荒原。', MN:'你的 MN（意义导航）在初始配置时即被标记为低压区。你从未真正信过什么宏大的东西——不是被欺骗后祛魅，而是从未被点燃过。此处并非创伤后的废墟，而是从未被点亮过的荒原。' }
+    };
+    const key = (energy==='节点断电' && (label==='一直回避'||label==='一直疏离'||label==='一直抽离')) ? '预设断电' : (label==='不采用/未建立'?'悬置':energy);
+    if (map[key]?.[sb]) return map[key][sb];
+    return `${getSandboxFullName(sb)} 当前状态：${energy}。`;
+  }
+
+  // EF矛盾分析（完整词典原文）
   function getEFContradictions(engines, sd) {
-    if (!engines || !sd || !sd.S1) return '数据不足，无法分析生克矛盾。';
-    const scores = Object.values(engines).map(e=>e.score);
-    const allLow = scores.every(s=>s<=12);
-    const allVeryLow = scores.every(s=>s<=7);
-    if (allVeryLow) {
-      return '当前你的系统处于全局能量熔断状态。这不是缺陷，也不是失败——只是你的身体在强制按下暂停。此刻不适合进行任何深度分析，也不需要寻找破局策略。你唯一需要做的是降低所有引擎的负载，而不是试图重新点燃任何一个。\n\n最低保命协议（选一个做）：\n• 今天比昨天早睡半小时\n• 喝一杯水，完整地喝完\n• 在室内走三圈，不戴耳机\n• 把手机放在另一个房间，安静地坐五分钟\n• 吃一顿不需要同时做其他事的饭\n别的什么都别做。这不是停滞，是你的系统在重新充电。';
-    }
-    if (allLow) {
-      return '所有引擎力量均低于正常水平，系统处于低功耗模式。请优先恢复基础能量，不必急于分析矛盾。';
-    }
+    if (!engines || !sd) return '数据不足，无法分析生克矛盾。';
+    const engLabel = { T:'T-木-穿透（超越）', O:'O-金-收束（结构）', D:'D-火-突破（动力）', V:'V-土-承载（锚定）', E:'E-水-漫延（扩张）' };
+    const wx = { T:'木', O:'金', D:'火', V:'土', E:'水' };
+    const wxState = {}; for (let e in engines) wxState[e] = engines[e].wuxing;
+    let result = [];
 
-    const wuxingMap = { T:'木', O:'金', D:'火', V:'土', E:'水' };
-    const engState = (eng) => engines[eng]?.wuxing || '平衡';
-    let out = [];
-
-    // 相克
-    const restrictPairs = [
-      ['T','V','木','土', 'T-木-穿透（超越）','V-土-承载（锚定）'],
-      ['O','T','金','木', 'O-金-收束（结构）','T-木-穿透（超越）'],
-      ['E','D','水','火', 'E-水-漫延（扩张）','D-火-突破（动力）'],
-      ['D','O','火','金', 'D-火-突破（动力）','O-金-收束（结构）'],
-      ['V','E','土','水', 'V-土-承载（锚定）','E-水-漫延（扩张）']
-    ];
-    restrictPairs.forEach(([ker,ked,kerEl,kedEl,kerLabel,kedLabel]) => {
-      const kerSt = engState(ker), kedSt = engState(ked);
-      if (kerSt==='过旺' && (kedSt==='虚弱'||kedSt==='枯竭')) {
-        out.push(`${kerLabel}与${kedLabel}：${kerEl}克${kedEl}——过度压制。`);
-        if (ker==='T'&&ked==='V') out.push('你的T-木-穿透（超越）处于过旺状态——追问本质的冲动极为强烈，像一棵不停向上生长的树。而V-土-承载（锚定）处于虚弱状态——安全感储备不足，没有一个踏实的底座。木克土：树越长越高，根越扎越深，土却越来越松。追问不停消耗你本就不多的安全感，安全底座失守的本质，就是木太旺、土太虚，克得太过。');
-        else if (ker==='O'&&ked==='T') out.push('O-金-收束（结构）过旺，规则和闭环过于强势，而T-木-穿透（超越）虚弱——追问精神被严密规则压得透不过气。金太锋利，木太脆，一刀下去不是修剪，是砍断。创新和深度思考在合规的铁笼里窒息。');
-        else if (ker==='E'&&ked==='D') out.push('E-水-漫延（扩张）过旺，不断开拓新机会，而D-火-突破（动力）虚弱——行动力被分散到无数方向，没有一个能真正燃起来。水把火浇灭了，版图在扩大，火苗在熄灭。');
-        else if (ker==='D'&&ked==='O') out.push('D-火-突破（动力）过旺，强行破局的冲动如同一场烈火，而O-金-收束（结构）虚弱——边界和流程在火焰中熔化。火过旺时行动力变成破坏力：冲出去了，身后什么都没有留下。');
-        else if (ker==='V'&&ked==='E') out.push('V-土-承载（锚定）过旺，安全感和守成的需求太重，而E-水-漫延（扩张）虚弱——扩张的冲动被对安稳的渴望完全压制。土筑起了高高的堤坝，水被牢牢困住。');
-      } else if (kerSt==='过旺' && kedSt==='过旺') {
-        out.push(`${kerLabel}与${kedLabel}：${kerEl}克${kedEl}——硬碰硬。`);
-      } else if ((kerSt==='虚弱'||kerSt==='枯竭') && kedSt==='过旺') {
-        out.push(`${kerLabel}克${kedLabel}：克者无力。`);
-        if (ker==='T'&&ked==='V') out.push('T-木-穿透处于虚弱状态，而V-土-承载过旺——安全感的需求完全压倒了追问的冲动。土太厚，木扎不进去，不再追问为什么，只想守住已有的安稳。');
-        else if (ker==='O'&&ked==='T') out.push('O-金-收束处于虚弱状态，规则力量不足，而T-木-穿透过旺——剪刀太钝，剪不断疯长的枝。明知需要边界来收束追问，但制动力不够。');
-        else if (ker==='D'&&ked==='O') out.push('D-火-突破虚弱，O-金-收束过旺——行动力不足，规则却极其严苛。火点不着，金变成冰冷的牢笼。');
-        else if (ker==='V'&&ked==='E') out.push('V-土-承载虚弱，E-水-漫延过旺——安全感不足，扩张冲动却极强。水没有土来约束，四处漫流。跑得越快，脚下越虚。');
-        else if (ker==='E'&&ked==='D') out.push('E-水-漫延虚弱，D-火-突破过旺——扩张无力，行动力却极强。火没有水来调节，容易盲目冲锋。');
+    function pushRestrict(ker, ked, type) {
+      const kName = engLabel[ker], dName = engLabel[ked];
+      const kWu = wx[ker], dWu = wx[ked];
+      if (type === '过度压制') {
+        result.push(`${ker}克${ked}（${kWu}克${dWu}）：过度压制。`);
+        if (ker==='T'&&ked==='V') result.push(`你的T-木-穿透（超越）处于过旺状态——追问本质的冲动极为强烈，像一棵不停向上生长的树。而V-土-承载（锚定）处于虚弱状态——安全感储备不足，没有一个踏实的底座。木克土：树越长越高，根越扎越深，土却越来越松。追问不停消耗你本就不多的安全感，安全底座失守的本质，就是木太旺、土太虚，克得太过。`);
+        else if (ker==='O'&&ked==='T') result.push(`O-金-收束（结构）过旺，规则和闭环过于强势，而T-木-穿透（超越）虚弱——追问精神被严密规则压得透不过气。金太锋利，木太脆，一刀下去不是修剪，是砍断。创新和深度思考在合规的铁笼里窒息。`);
+        else if (ker==='E'&&ked==='D') result.push(`E-水-漫延（扩张）过旺，不断开拓新机会，而D-火-突破（动力）虚弱——行动力被分散到无数方向，没有一个能真正燃起来。水把火浇灭了，版图在扩大，火苗在熄灭。`);
+        else if (ker==='D'&&ked==='O') result.push(`D-火-突破（动力）过旺，强行破局的冲动如同一场烈火，而O-金-收束（结构）虚弱——边界和流程在火焰中熔化。火过旺时行动力变成破坏力：冲出去了，身后什么都没有留下。`);
+        else if (ker==='V'&&ked==='E') result.push(`V-土-承载（锚定）过旺，安全感和守成的需求太重，而E-水-漫延（扩张）虚弱——扩张的冲动被对安稳的渴望完全压制。土筑起了高高的堤坝，水被牢牢困住。`);
+      } else if (type === '硬碰硬') {
+        result.push(`${ker}克${ked}（${kWu}克${dWu}）：硬碰硬。`);
+        if (ker==='T'&&ked==='V') result.push(`T-木-穿透（超越）与V-土-承载（锚定）同时过旺——追问的冲动和安全感的需求都拉到了顶点。木拼命往上穿透，土拼命往下压实，两者谁都制不住谁。系统在震荡中高速消耗。`);
+        else if (ker==='O'&&ked==='T') result.push(`O-金-收束（结构）与T-木-穿透（超越）同时过旺——规则的剪刀和追问的枝干都处于极强状态。博弈可能撕裂系统，也可能淬炼出既能穿透本质又能落地闭环的罕见能力。`);
+        else if (ker==='E'&&ked==='D') result.push(`E-水-漫延（扩张）与D-火-突破（动力）同时过旺——水想漫灌，火想冲天。水火相激可能产生蒸汽推动系统，也可能互相扑灭。`);
+        else if (ker==='D'&&ked==='O') result.push(`D-火-突破（动力）与O-金-收束（结构）同时过旺——行动力和规则意识都在顶点。火要熔金，金要定形，可能淬炼出极强的执行力，也可能让系统过热。`);
+        else if (ker==='V'&&ked==='E') result.push(`V-土-承载（锚定）与E-水-漫延（扩张）同时过旺——安全感与扩张欲激烈冲突。今天想守住一切，明天想推倒重来，形成巨大的内在消耗。`);
+      } else if (type === '正常克制但对方无力') {
+        result.push(`${ker}克${ked}（${kWu}克${dWu}）：正常克制但对方无力。${dName}本就虚弱，即使${kName}只是正常状态，也会让${dName}松动。问题不在${kName}太猛，而在${dName}本身没有被夯实。`);
+      } else if (type === '克者无力') {
+        result.push(`${ker}克${ked}（${kWu}克${dWu}）：克者无力。`);
+        if (ker==='T'&&ked==='V') result.push(`T-木-穿透处于虚弱状态，而V-土-承载过旺——安全感的需求完全压倒了追问的冲动。土太厚，木扎不进去，不再追问为什么，只想守住已有的安稳。`);
+        else if (ker==='O'&&ked==='T') result.push(`O-金-收束处于虚弱状态，规则力量不足，而T-木-穿透过旺——剪刀太钝，剪不断疯长的枝。明知需要边界来收束追问，但制动力不够。`);
+        else if (ker==='E'&&ked==='D') result.push(`E-水-漫延虚弱，D-火-突破过旺——扩张无力，行动力却极强。火没有水来调节，容易盲目冲锋。`);
+        else if (ker==='D'&&ked==='O') result.push(`D-火-突破虚弱，O-金-收束过旺——行动力不足，规则却极其严苛。火点不着，金变成冰冷的牢笼。`);
+        else if (ker==='V'&&ked==='E') result.push(`V-土-承载虚弱，E-水-漫延过旺——安全感不足，扩张冲动却极强。水没有土来约束，四处漫流。跑得越快，脚下越虚。`);
       }
+    }
+
+    const restrictPairs = [['T','V'], ['O','T'], ['E','D'], ['D','O'], ['V','E']];
+    restrictPairs.forEach(([ker, ked]) => {
+      const ks = wxState[ker], ds = wxState[ked];
+      if (!ks || !ds) return;
+      if (ks==='过旺' && (ds==='虚弱'||ds==='枯竭')) pushRestrict(ker, ked, '过度压制');
+      else if (ks==='过旺' && ds==='过旺') pushRestrict(ker, ked, '硬碰硬');
+      else if (ks==='平衡' && (ds==='虚弱'||ds==='枯竭')) pushRestrict(ker, ked, '正常克制但对方无力');
+      else if ((ks==='虚弱'||ks==='枯竭') && ds==='过旺') pushRestrict(ker, ked, '克者无力');
     });
 
-    // 相生（基于S1）
-    const S1 = sd.S1;
-    const childMap = {木:'火',火:'土',土:'金',金:'水',水:'木'};
-    const motherMap = {木:'水',火:'木',土:'火',金:'土',水:'金'};
-    const childEl = childMap[wuxingMap[S1]];
-    const motherEl = motherMap[wuxingMap[S1]];
-    const childEng = Object.keys(wuxingMap).find(k=>wuxingMap[k]===childEl);
-    const motherEng = Object.keys(wuxingMap).find(k=>wuxingMap[k]===motherEl);
-    if (childEng) {
-      const sSt = engState(S1), cSt = engState(childEng);
-      if (sSt==='过旺') out.push(`${S1}生${childEng}（${wuxingMap[S1]}生${childEl}）：过度滋养。`);
-      else if (sSt==='平衡' && cSt==='过旺') out.push(`${S1}生${childEng}：滋养偏流。`);
+    // 相生（主引擎相关）
+    if (sd.S1) {
+      const S1 = sd.S1, sWu = wx[S1];
+      const childMap = {'木':'火','火':'土','土':'金','金':'水','水':'木'};
+      const child = Object.keys(wx).find(k=>wx[k]===childMap[sWu]);
+      if (child && engines[child]) {
+        const cs = wxState[child];
+        if (cs) {
+          if (wxState[S1]==='过旺') result.push(`${S1}生${child}（${sWu}生${wx[child]}）：过度滋养。${engLabel[S1]}过旺，不断向${engLabel[child]}输送燃料，思考的供给远远超过了行动的吞吐量。`);
+          else if (wxState[S1]==='平衡' && cs==='过旺') result.push(`${S1}生${child}（${sWu}生${wx[child]}）：滋养偏流。${engLabel[S1]}正常但${engLabel[child]}过旺，正常的滋养被全部吸走。`);
+        }
+      }
     }
-    if (motherEng) {
-      const mSt = engState(motherEng), sSt = engState(S1);
-      if (mSt==='过旺') out.push(`${motherEng}生${S1}：过度滋养。`);
-      else if (mSt==='平衡' && sSt==='过旺') out.push(`${motherEng}生${S1}：滋养偏流。`);
-    }
-
-    return out.join('\n') || '引擎之间无明显剧烈生克矛盾，系统相对协调。';
+    return result.join('\n\n') || '当前引擎间无明显剧烈生克矛盾。';
   }
 
-  // ---------- 最小破局动作 ----------
   function getMinimalAction(engines, sd) {
-    if (!engines || !sd) return '保持觉察，耐心等待。';
-    const scores = Object.values(engines).map(e=>e.score);
-    const allVeryLow = scores.every(s=>s<=7);
-    if (allVeryLow) {
-      return '最低保命动作（选一个做）：\n• 今天比昨天早睡半小时\n• 喝一杯水，完整地喝完\n• 在室内走三圈，不戴耳机\n• 把手机放在另一个房间，安静地坐五分钟\n• 吃一顿不需要同时做其他事的饭\n别的什么都别做。';
-    }
-    const allLow = scores.every(s=>s<=12);
-    if (allLow) {
-      const fire = Object.entries(engines).find(([_,v])=>v.score>7) || ['V'];
-      const actions = {
-        O:'给自己列一个只包含3件事的简短清单。不要全部完成，只要完成第一件就行。目标是体验一次“一件小事闭环”的控制感，而不是恢复全盘秩序。',
-        V:'找一个你仍然感到安全的人或空间，即使只是坐在那里不说话。不要倾诉、不要解决问题。目标仅仅是确认自己还被某个环境接住，不悬空。',
-        D:'选一个你积压已久的小阻力，用最低强度推一下——比如发一条你一直拖着的信息，或者出门走10分钟。不要求冲开局面，只要求感受到“能动”这个事实本身。',
-        E:'今天只找一个新的小信息：一个新想法、一个新工具、一个你没注意过的资源入口。不要求行动，只要求注意到它存在。目的不是扩张，而是让神经重新连接可能性。',
-        T:'今天只问自己一个问题，不要求答案：“此刻最让我疲惫的，到底是什么。”只是问，不追问、不分析、不需要得出解法。目的是让T引擎从空转追问切换回基础感知。'
-      };
-      return actions[fire[0]] || '选择一个最不消耗能量的微小动作，只做一点点。';
-    }
-
+    if (!engines || !sd) return '保持观察自己的状态。';
     const S1 = sd.S1;
-    const sState = engines[S1]?.wuxing;
-    if (sState === '过旺') {
-      const overActions = {
-        T:'设定一个“够了”的信号——比如定时器响起、写完一页纸、或者窗外天色变暗——信号出现时立刻停止思考，去做一件完全不需要脑力的事。不要求产出，只要求中断。',
-        O:'今天允许一件事不完全按计划进行，刻意留下一点不完美的空间。',
-        D:'今天刻意推迟一个冲动决定，给自己10分钟冷静期。',
-        E:'今天尝试缩小关注范围，只盯住最重要的三个目标。',
-        V:'尝试一次小的冒险，打破一个日常习惯，体验轻微的不适。'
+    const engState = engines[S1];
+    if (!engState) return '关注主引擎的状态变化。';
+    if (engState.state === '繁茂' || engState.wuxing === '过旺') {
+      const actions = {
+        T: '设定一个“够了”的信号——比如定时器响起、写完一页纸、或者窗外天色变暗——信号出现时立刻停止思考，去做一件完全不需要脑力的事。不要求产出，只要求中断。',
+        O: '今天允许一件事不完全按计划进行，刻意留下一点不完美的空间。',
+        D: '今天刻意推迟一个冲动决定，给自己10分钟冷静期。',
+        E: '今天尝试缩小关注范围，只盯住最重要的三个目标。',
+        V: '尝试一次小的冒险，打破一个日常习惯，体验轻微的不适。'
       };
-      return overActions[S1] || '留意引擎过载信号，主动踩一下刹车。';
+      return actions[S1] || '留意主引擎的过度消耗，找到停下来的信号。';
     }
-    return '保持自然节奏，不必强行调整。';
+    return '逐步恢复引擎的自然节奏，减少强行驱动。';
   }
 
-  // ---------- 逻辑缝合层 ----------
   function buildStitching(sd, de, shutdown, ef) {
-    const engFull = { T:'T-木-穿透（超越）', O:'O-金-收束（结构）', D:'D-火-突破（动力）', E:'E-水-漫延（扩张）', V:'V-土-承载（锚定）' };
+    const engineLabelFull = { T:'T-木-穿透（超越）', O:'O-金-收束（结构）', D:'D-火-突破（动力）', E:'E-水-漫延（扩张）', V:'V-土-承载（锚定）' };
     const wuxingMap = { T:'木', O:'金', D:'火', V:'土', E:'水' };
     const S1 = sd.S1;
-    const S1_label = engFull[S1]||S1;
-    const element = wuxingMap[S1];
-    const func = { T:'追问本质、穿透旧框架', O:'梳理秩序、收束闭环', D:'点燃行动、冲破阻力', V:'守护底线、提供依托', E:'拓展边界、连接资源' }[S1]||'';
-    const response = { T:'用追问穿透痛苦，用结构收束混乱', O:'用规则划清边界，用闭环锁住失控', D:'用行动冲破阻力，用推土机般的能量碾过障碍', V:'用守护维系底线，用陪伴托住崩塌', E:'用突围绕过关卡，用连接打开新的可能' }[S1]||'';
-    const tool = { T:'“为什么”是你最信任的追问工具，“自己建”是你最依赖的结构路径', O:'“边界线”是你最信任的防御工具，“闭环”是你最依赖的控制手段', D:'“冲过去”是你最信任的破局工具，“推土机”是你最依赖的行动方式', V:'“留下来”是你最信任的守护动作，“兜底”是你最依赖的安全网', E:'“绕过去”是你最信任的突围策略，“连接点”是你最依赖的拓展方式' }[S1]||'';
-    const N1_label = { PN:'PN 物理底盘（硬件基座）', AN:'AN 能力进化（单机OS）', RN:'RN 深度连接（局域网）', IN:'IN 社会舞台（广域网）', MN:'MN 意义导航（统摄层）', FN:'FN 系统运转（共识层）' }[sd.N1]||sd.N1;
-    const action = { FN:'系统搭建、逻辑追问、结构设计', PN:'身体管理、资源调度、物资储备', AN:'技能积累、路径搭建、自我升级', RN:'关系经营、信任维护、深度陪伴', IN:'人脉拓展、话语权构建、圈层经营', MN:'信念重构、价值输出、精神支点' }[sd.N1]||'';
-    const growth = { T:'T-木-穿透（超越）被长期过度调用——每一次追问、每一次重构、每一次搭建，都在滋养木的生长，最终形成繁茂甚至过旺', O:'O-金-收束（结构）被长期过度调用——每一次建规则、每一次锁闭环、每一次划边界，都在磨砺金的锋利，最终形成繁茂甚至过旺', D:'D-火-突破（动力）被长期过度调用——每一次冲锋、每一次破局、每一次点火，都在助燃火的势头，最终形成繁茂甚至过旺', V:'V-土-承载（锚定）被长期过度调用——每一次兜底、每一次陪伴、每一次维系，都在加厚土的承载，最终形成繁茂甚至过旺', E:'E-水-漫延（扩张）被长期过度调用——每一次突围、每一次连接、每一次开拓，都在加大水的流量，最终形成繁茂甚至过旺' }[S1]||'';
+    const S1_label = engineLabelFull[S1];
+    const S1_element = wuxingMap[S1];
+    const S1_function = { T:'追问本质、穿透旧框架', O:'梳理秩序、收束闭环', D:'点燃行动、冲破阻力', V:'守护底线、提供依托', E:'拓展边界、连接资源' }[S1]||'';
+    const S1_response = { T:'用追问穿透痛苦，用结构收束混乱', O:'用规则划清边界，用闭环锁住失控', D:'用行动冲破阻力，用推土机般的能量碾过障碍', V:'用守护维系底线，用陪伴托住崩塌', E:'用突围绕过关卡，用连接打开新的可能' }[S1]||'';
+    const S1_tool = { T:'“为什么”是你最信任的追问工具，“自己建”是你最依赖的结构路径', O:'“边界线”是你最信任的防御工具，“闭环”是你最依赖的控制手段', D:'“冲过去”是你最信任的破局工具，“推土机”是你最依赖的行动方式', V:'“留下来”是你最信任的守护动作，“兜底”是你最依赖的安全网', E:'“绕过去”是你最信任的突围策略，“连接点”是你最依赖的拓展方式' }[S1]||'';
+    const N1 = sd.N1;
+    const N1_label = { PN:'PN 物理底盘（硬件基座）', AN:'AN 能力进化（单机OS）', RN:'RN 深度连接（局域网）', IN:'IN 社会舞台（广域网）', MN:'MN 意义导航（统摄层）', FN:'FN 系统运转（共识层）' }[N1]||N1;
+    const N1_action = { FN:'系统搭建、逻辑追问、结构设计', PN:'身体管理、资源调度、物资储备', AN:'技能积累、路径搭建、自我升级', RN:'关系经营、信任维护、深度陪伴', IN:'人脉拓展、话语权构建、圈层经营', MN:'信念重构、价值输出、精神支点' }[N1]||'';
+    const S1_growth = { T:'T-木-穿透（超越）被长期过度调用——每一次追问、每一次重构、每一次搭建，都在滋养木的生长，最终形成繁茂甚至过旺', O:'O-金-收束（结构）被长期过度调用——每一次建规则、每一次锁闭环、每一次划边界，都在磨砺金的锋利，最终形成繁茂甚至过旺', D:'D-火-突破（动力）被长期过度调用——每一次冲锋、每一次破局、每一次点火，都在助燃火的势头，最终形成繁茂甚至过旺', V:'V-土-承载（锚定）被长期过度调用——每一次兜底、每一次陪伴、每一次维系，都在加厚土的承载，最终形成繁茂甚至过旺', E:'E-水-漫延（扩张）被长期过度调用——每一次突围、每一次连接、每一次开拓，都在加大水的流量，最终形成繁茂甚至过旺' }[S1]||'';
     const neglectMap = { T:{ eng:'V', label:'V-土-承载（锚定）', func:'安全感无法从关系中自然获取、无法从群体中自然确认', comp:'只能从你自己搭建的系统中间接汲取', elem:'土'}, O:{ eng:'T', label:'T-木-穿透（超越）', func:'追问冲动被严密规则压制，不再主动穿透旧框架', comp:'只能在规则的缝隙里寻找有限的思考空间', elem:'木'}, D:{ eng:'O', label:'O-金-收束（结构）', func:'规则意识被持续冲锋践踏，不再能守住边界', comp:'只能在每次破局后的废墟上仓促重建', elem:'金'}, V:{ eng:'E', label:'E-水-漫延（扩张）', func:'扩张冲动被安全感需求压制，不再敢主动突围', comp:'只能在熟悉的范围内做有限的试探', elem:'水'}, E:{ eng:'D', label:'D-火-突破（动力）', func:'行动力被多元方向分散，不再能集中点燃', comp:'只能在众多的可能性中反复切换', elem:'火'} };
-    const neg = neglectMap[S1] || neglectMap['T'];
-    const shutdownStr = shutdown.join('、');
+    const neglect = neglectMap[S1] || neglectMap['T'];
+    const shutdown_str = shutdown.join('、');
 
     let text = '';
-    text += `这一切的起点，是你的 ${S1_label}。你习惯用 ${element} 的力量——${func}——作为应对世界的主要方式。当 ${shutdownStr} 遭遇历史冲击时，你没有选择修补那些花园，而是动用了你最擅长的手段：${response}。${tool}。你没有错——这是你的引擎配置在当时能做的最优解。\n\n`;
-    text += `你的主沙盒是 ${N1_label}，这里是你的力量最密集的节点。当 ${shutdownStr} 的信任被历史事件切断，园丁没有把资源留在原地——它将所有的生长需求改道，集中引灌至 ${sd.N1}。你在 ${action} 上的繁茂，不是偶然的天赋，而是 ${shutdownStr} 的资源退守到 ${sd.N1} 后形成的代偿性繁茂。${sd.N1} 上的每一层精密结构，都是别处花园凋零后汇聚过来的生长冲动。\n\n`;
+    text += `这一切的起点，是你的 ${S1_label}。你习惯用 ${S1_element} 的力量——${S1_function}——作为应对世界的主要方式。当 ${shutdown_str} 遭遇历史冲击时，你没有选择修补那些花园，而是动用了你最擅长的手段：${S1_response}。${S1_tool}。你没有错——这是你的引擎配置在当时能做的最优解。\n\n`;
+    text += `你的主沙盒是 ${N1_label}，这里是你的力量最密集的节点。当 ${shutdown_str} 的信任被历史事件切断，园丁没有把资源留在原地——它将所有的生长需求改道，集中引灌至 ${N1}。你在 ${N1_action} 上的繁茂，不是偶然的天赋，而是 ${shutdown_str} 的资源退守到 ${N1} 后形成的代偿性繁茂。${N1} 上的每一层精密结构，都是别处花园凋零后汇聚过来的生长冲动。\n\n`;
 
-    if (ef?.engines) {
+    if (ef && ef.engines) {
       const mainEng = ef.engines[S1];
-      const neglectEng = ef.engines[neg.eng];
-      if (mainEng?.wuxing==='过旺' && neglectEng && (neglectEng.wuxing==='虚弱'||neglectEng.wuxing==='枯竭')) {
-        text += `这套代偿机制的持续运行，直接塑造了你五颗引擎种子的力量格局。${growth}。而 ${neg.label}——${neg.func}，${neg.comp}。${neg.elem}得不到直接滋养，逐渐卷缩。\n\n`;
-        text += `${element}旺${neg.elem}虚的格局一旦形成，五行生克的矛盾就不可避免。${element}克${neg.elem}：你的核心驱动力在消耗你最需要却最缺乏的功能底盘。${wuxingMap[neg.eng]}克${element}？克者无力：约束的力量追不上核心驱动的速度。${element}生${wuxingMap[Object.keys(wuxingMap).find(k=>wuxingMap[k]==={木:'火',火:'土',土:'金',金:'水',水:'木'}[element])]}的过度滋养：太多能量堆在传导链的下一环，吞吐量远超负荷。${({木:'水',火:'木',土:'火',金:'土',水:'金'})[element]}生${element}的滋养偏流：外部资源本该用于别处，却被你的核心驱动截流。这些不是偶然的摩擦——它们是你过去所有代偿选择在当前时刻的集中表达。\n\n`;
+      const neglectEng = ef.engines[neglect.eng];
+      if (mainEng && mainEng.wuxing === '过旺' && neglectEng && (neglectEng.wuxing === '虚弱'||neglectEng.wuxing==='枯竭')) {
+        text += `这套代偿机制的持续运行，直接塑造了你五颗引擎种子的力量格局。${S1_growth}。而 ${neglect.label}——${neglect.func}，${neglect.comp}。${neglect.elem}得不到直接滋养，逐渐卷缩。\n\n`;
       } else {
-        text += '这套代偿机制的持续运行，会逐渐塑造你引擎种子的力量格局。你最常调用的引擎，在每一次代偿性使用中被反复滋养，趋向繁茂。而那些在封闭花园中本该自然生长的引擎，由于长期得不到直接滋养，逐渐卷缩。\n\n';
+        text += `这套代偿机制的持续运行，会逐渐塑造你引擎种子的力量格局。你最常调用的引擎，在每一次代偿性使用中被反复滋养，趋向繁茂。而那些在封闭花园中本该自然生长的引擎，由于长期得不到直接滋养，逐渐卷缩。\n\n`;
       }
     } else {
-      text += '这套代偿机制的持续运行，会逐渐塑造你引擎种子的力量格局。你最常调用的引擎，在每一次代偿性使用中被反复滋养，趋向繁茂。而那些在封闭花园中本该自然生长的引擎，由于长期得不到直接滋养，逐渐卷缩。\n\n';
+      text += `这套代偿机制的持续运行，会逐渐塑造你引擎种子的力量格局。你最常调用的引擎，在每一次代偿性使用中被反复滋养，趋向繁茂。而那些在封闭花园中本该自然生长的引擎，由于长期得不到直接滋养，逐渐卷缩。\n\n`;
     }
 
-    text += '这不是病理，是你的系统在极端条件下的最优解。它不是要你否定繁茂的那片花园——它是想让你知道，那片荒掉的花园还在，你随时可以重新回到那里，以现在的力量，重新下一次种子。这次的园丁比当年更强大。这次的土壤，不需要被恐惧浇灌。';
+    // 第四段：生克必然性（通用版动态替换）
+    const sWu = wuxingMap[S1];
+    const neWu = neglect.elem;
+    const restrictMap = {木:'金',火:'水',土:'木',金:'火',水:'土'};
+    const shengMap = {木:'火',火:'土',土:'金',金:'水',水:'木'};
+    const motherMap = {木:'水',火:'木',土:'火',金:'土',水:'金'};
+    const restrainerWu = restrictMap[sWu];
+    const childWu = shengMap[sWu];
+    const motherWu = motherMap[sWu];
+
+    text += `${sWu}旺${neWu}虚的格局一旦形成，五行生克的矛盾就不可避免。${sWu}克${neWu}：你的核心驱动力在消耗你最需要却最缺乏的功能底盘。${restrainerWu}克${sWu}的克者无力：约束的力量追不上核心驱动的速度。${sWu}生${childWu}的过度滋养：太多能量堆在传导链的下一环，吞吐量远超负荷。${motherWu}生${sWu}的滋养偏流：外部资源本该用于别处，却被你的核心驱动截流。这些不是偶然的摩擦——它们是你过去所有代偿选择在当前时刻的集中表达。`;
+
     return text;
   }
 
   // 启动
   renderPrecheck();
 })();
-</script>
-</body>
-</html>
