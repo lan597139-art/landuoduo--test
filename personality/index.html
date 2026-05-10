@@ -491,10 +491,9 @@ function getDEText(sb, label, energy) {
       MN: '你的 MN（意义导航）上的资源流动从未被启动。你从未深入思考过信念或意义的问题。',
       FN: '你的 FN（系统运转）上的资源流动从未被启动。你从未有意识地建立过自己的方法或流程系统。'
     };
-    if (inactiveDict[sb]) return inactiveDict[sb];
+     if (inactiveDict[sb]) return inactiveDict[sb];
   }
 
   // 兜底
   return `${sandboxNames[sb] || sb} 当前状态：${energy}。`;
 }
-</script>
