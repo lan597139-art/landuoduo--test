@@ -1,1 +1,75 @@
-
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人格动力测试平台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #fafaf8;
+            color: #2c2c2c;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .container { max-width: 680px; width: 100%; text-align: center; }
+        .subtitle { font-size: 0.95rem; color: #7a7a6e; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+        h1 { font-size: 2rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .welcome { font-size: 1rem; color: #555; margin-bottom: 2.5rem; line-height: 1.8; }
+        .test-grid { display: flex; flex-direction: column; gap: 1rem; align-items: center; }
+        .test-card {
+            width: 100%; max-width: 440px;
+            padding: 1.8rem 2rem;
+            border-radius: 14px;
+            text-decoration: none;
+            color: inherit;
+            background: #ffffff;
+            border: 1px solid #e8e8e2;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            transition: box-shadow 0.2s, transform 0.2s;
+            text-align: left;
+            display: block;
+        }
+        .test-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
+        .test-card h2 { font-size: 1.2rem; margin-bottom: 0.3rem; }
+        .test-card .tags { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+        .test-card .tag {
+            font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 20px;
+            background: #f3f3ee; color: #7a7a6e;
+        }
+        .test-card p { font-size: 0.9rem; color: #777; line-height: 1.7; }
+        .footer-note { margin-top: 3rem; font-size: 0.8rem; color: #b0b0a8; }
+        .badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 10px; background: #f0ebe0; color: #b09060; margin-left: 0.4rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p class="subtitle">PERSONALITY DYNAMICS TEST</p>
+        <h1>人格动力测试平台</h1>
+        <p class="welcome">三套独立测试，从不同深度探索你的人格结构。<br>请选择你要进行的测试。</p>
+        <div class="test-grid">
+            <a href="/career/" class="test-card">
+                <h2>🧭 职业性格测试 <span class="badge">免费</span></h2>
+                <div class="tags"><span class="tag">引擎配置</span><span class="tag">职业方向</span><span class="tag">能量状态</span></div>
+                <p>71题 · 约18分钟 · 回答“你是谁”——核心驱动力、力量主战场、协作角色与最适合的职业方向。</p>
+            </a>
+            <a href="/personality/" class="test-card">
+                <h2>🌱 人格深度测试</h2>
+                <div class="tags"><span class="tag">代偿演化</span><span class="tag">引擎矛盾</span><span class="tag">五行生克</span></div>
+                <p>32–52题 · 约10–15分钟 · 回答“你怎么变成这样”——沙盒花园的历史截面、引擎此刻的动态拉扯。</p>
+            </a>
+            <a href="/psychology/" class="test-card">
+                <h2>🔮 心理探索测试</h2>
+                <div class="tags"><span class="tag">种子探测</span><span class="tag">生命力定位</span><span class="tag">创伤感知</span></div>
+                <p>30题 · 约10分钟 · 回答“你的生命力在哪里断流了”——精准定位30颗引擎×沙盒种子的状态，识别被掩埋的生命力。</p>
+            </a>
+        </div>
+        <p class="footer-note">📖 <a href="/about/" style="color:#b0b0a8;">关于本测试 · 理论依据</a> &nbsp;|&nbsp; 首次使用建议先完成【职业性格测试】以获得完整画像</p>
+    </div>
+</body>
+</html>
