@@ -492,36 +492,3 @@
   // 兜底
   return `${sandboxNames[sb] || sb} 当前状态：${energy}。`;
 }
-  function getEFContradictions(engines) {
-    if (!engines) return '引擎数据不足，无法分析生克矛盾。';
-    // 此处为简化占位，实际需根据文档详细实现
-    return '基于你当前引擎力量分布，核心矛盾为：……（详细分析待补全）';
-  }
-
-  function getMinimalAction(engines) {
-    if (!engines) return '请先完成EF评估以获取建议。';
-    // 此处为简化占位
-    return '建议优先关注力量最弱的引擎，减少内耗。';
-  }
-
-  function buildStitching(sd, de, shutdown) {
-    if (!sd || !de || !shutdown) return '';
-    const sdMap = {
-      T: 'T-木-穿透（超越）',
-      O: 'O-金-收束（结构）',
-      D: 'D-火-突破（动力）',
-      E: 'E-水-漫延（扩张）',
-      V: 'V-土-承载（锚定）'
-    };
-    const mainEngine = sdMap[sd.S1] || sd.S1;
-    const mainSandbox = sd.N1 || 'FN';
-    const shutdownList = shutdown.join('、');
-    return `你的核心驱动力是 ${mainEngine}。由于 ${shutdownList} 沙盒在历史中遭遇冲击并断电，园丁将其上的生长资源集中引灌至你的主战场 ${mainSandbox}，造就了它如今的繁茂。这不是偶然的天赋，而是一次系统在高压下的生存策略。`;
-  }
-
-  // 初始启动
-  renderPrecheck();
-})();
-</script>
-</body>
-</html>
