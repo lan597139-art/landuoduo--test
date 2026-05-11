@@ -2,12 +2,11 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>生命种子探测——迫选结构试题</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>生命种子探测 · 完整心理测试</title>
     <style>
         :root {
             --blue: #4A7FB5;
-            --blue-light: #6B9FD2;
             --blue-border: #3D6D9E;
             --blue-bg: #f5f8fc;
             --white: #ffffff;
@@ -15,1273 +14,752 @@
             --text-secondary: #5a6c7d;
             --gold: #c9a962;
             --red-soft: #c0392b;
-            --green-soft: #5d8c6b;
-            --gray-light: #eef2f7;
-            --shadow: 0 2px 12px rgba(61, 109, 158, 0.10);
-            --shadow-lg: 0 6px 28px rgba(61, 109, 158, 0.14);
+            --shadow: 0 2px 12px rgba(61, 109, 158, 0.08);
+            --shadow-lg: 0 6px 24px rgba(61, 109, 158, 0.12);
             --radius: 12px;
             --radius-sm: 8px;
-            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 0.2s ease;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', -apple-system, sans-serif;
-            background: #f0f4f8;
-            color: var(--text);
-            line-height: 1.7;
-            min-height: 100vh;
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', -apple-system, sans-serif;
+            background: #f2f5f9; color: var(--text); line-height: 1.6; min-height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
-
-        /* 顶部导航进度条 */
-        .progress-bar-wrapper {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: var(--white);
-            border-bottom: 3px solid var(--blue-border);
-            padding: 14px 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        .header-bar {
+            position: sticky; top: 0; z-index: 100; background: var(--white);
+            border-bottom: 3px solid var(--blue-border); padding: 10px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        .progress-bar-inner {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
+        .header-inner {
+            max-width: 960px; margin: 0 auto; display: flex; align-items: center;
+            justify-content: space-between; flex-wrap: wrap; gap: 10px;
         }
-        .progress-title {
-            font-weight: 700;
-            font-size: 1rem;
-            color: var(--blue-border);
-            white-space: nowrap;
-            letter-spacing: 0.5px;
+        .logo-title {
+            font-weight: 700; font-size: 1.1rem; color: var(--blue-border);
+            letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;
         }
-        .progress-icons {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-            align-items: center;
+        .tab-switcher {
+            display: flex; gap: 4px; background: #eef2f8; border-radius: 24px; padding: 3px;
         }
-        .progress-icon {
-            font-size: 1.2rem;
-            cursor: pointer;
+        .tab-btn {
+            padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
+            background: transparent; border: none; cursor: pointer; color: #5f7388;
+            transition: var(--transition); white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: var(--white); color: var(--blue-border); box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .progress-wrap {
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        }
+        .progress-icons { display: flex; gap: 2px; flex-wrap: wrap; max-height: 30px; overflow-y: auto; }
+        .progress-dot {
+            font-size: 0.7rem; cursor: pointer; opacity: 0.35; filter: grayscale(0.8);
             transition: var(--transition);
-            opacity: 0.45;
-            filter: grayscale(0.7);
-            user-select: none;
         }
-        .progress-icon.answered {
-            opacity: 1;
-            filter: grayscale(0);
-            animation: popIn 0.35s ease-out;
-        }
-        @keyframes popIn {
-            0% {
-                transform: scale(0.5);
-                opacity: 0.3;
-            }
-            60% {
-                transform: scale(1.25);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        .progress-count {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            font-weight: 500;
-        }
+        .progress-dot.answered { opacity: 1; filter: grayscale(0); color: var(--blue-border); font-weight: bold; }
+        .progress-count { font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap; }
 
-        /* 主容器 */
         .main-container {
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 20px 16px 60px;
+            max-width: 920px; margin: 0 auto; padding: 18px 14px 50px;
         }
+        .test-panel { display: none; }
+        .test-panel.active { display: block; }
 
-        /* 介绍卡片 */
         .intro-card {
-            background: var(--white);
-            border: 2px solid var(--blue-border);
-            border-radius: var(--radius);
-            padding: 28px 26px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow);
+            background: var(--white); border: 2px solid var(--blue-border);
+            border-radius: var(--radius); padding: 22px 20px; margin-bottom: 18px; box-shadow: var(--shadow);
         }
-        .intro-card h1 {
-            font-size: 1.6rem;
-            color: var(--blue-border);
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
-        }
-        .intro-card .subtitle {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 16px;
-        }
+        .intro-card h2 { font-size: 1.3rem; color: var(--blue-border); margin-bottom: 6px; }
         .intro-card .instruction {
-            background: var(--blue-bg);
-            border-radius: var(--radius-sm);
-            padding: 14px 18px;
-            font-size: 0.9rem;
-            color: var(--text);
-            line-height: 1.6;
-            border-left: 5px solid var(--blue-light);
-        }
-        .intro-card .instruction strong {
-            color: var(--blue-border);
+            background: var(--blue-bg); border-radius: var(--radius-sm); padding: 12px 16px;
+            font-size: 0.85rem; line-height: 1.6; border-left: 5px solid #6b9fd2;
         }
 
-        /* 题目卡片 */
         .question-card {
-            background: var(--white);
-            border: 2px solid #d0dbe8;
-            border-radius: var(--radius);
-            padding: 22px 22px 18px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            scroll-margin-top: 100px;
-            position: relative;
+            background: var(--white); border: 2px solid #e0e8f0; border-radius: var(--radius);
+            padding: 16px 16px 12px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            scroll-margin-top: 90px; transition: border 0.25s;
         }
-        .question-card.answered-card {
-            border-color: var(--blue-light);
-            box-shadow: 0 2px 16px rgba(74, 127, 181, 0.12);
-        }
-        .question-card.current-card {
-            border-color: var(--blue-border);
-            box-shadow: 0 4px 20px rgba(61, 109, 158, 0.18);
-            animation: pulseBorder 2s ease-in-out infinite;
-        }
-        @keyframes pulseBorder {
-            0%,
-            100% {
-                border-color: var(--blue-border);
-            }
-            50% {
-                border-color: #5c93c9;
-            }
-        }
+        .question-card.answered-card { border-color: #b8d2ea; }
         .q-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
+            display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;
         }
-        .q-number {
-            display: inline-block;
-            background: var(--blue-border);
-            color: #fff;
-            font-weight: 700;
-            font-size: 0.8rem;
-            padding: 4px 10px;
-            border-radius: 20px;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
+        .q-tag {
+            display: inline-block; background: var(--blue); color: #fff; font-weight: 600;
+            font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; letter-spacing: 0.3px;
         }
-        .q-domain {
-            font-size: 0.78rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-            letter-spacing: 0.3px;
-        }
+        .q-domain { font-size: 0.72rem; color: #4a6d8c; font-weight: 600; }
+        .q-index { font-size: 0.7rem; color: #8a9aa8; }
         .q-text {
-            font-weight: 600;
-            font-size: 1.02rem;
-            color: var(--text);
-            margin-bottom: 14px;
-            line-height: 1.6;
+            font-weight: 500; font-size: 0.9rem; color: var(--text); margin-bottom: 10px;
+            line-height: 1.55; word-break: break-word;
         }
-        .options-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
+        .options-row, .options-list {
+            display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+        }
+        .options-list { flex-direction: column; gap: 5px; }
+        .option-btn, .option-item {
+            cursor: pointer; padding: 6px 14px; border-radius: 20px;
+            border: 1.5px solid #dce4f0; background: #fafcfd; font-size: 0.78rem;
+            transition: var(--transition); user-select: none; white-space: nowrap; color: var(--text);
         }
         .option-item {
-            cursor: pointer;
-            padding: 11px 14px 11px 38px;
-            border-radius: var(--radius-sm);
-            border: 1.5px solid #e4eaf1;
-            background: #fafbfc;
-            transition: var(--transition);
-            position: relative;
-            font-size: 0.9rem;
-            line-height: 1.55;
-            color: var(--text);
-            user-select: none;
-        }
-        .option-item:hover {
-            background: #eef5fb;
-            border-color: var(--blue-light);
-            box-shadow: 0 1px 4px rgba(74, 127, 181, 0.08);
-        }
-        .option-item.selected {
-            background: #e3f0fa;
-            border-color: var(--blue-border);
-            font-weight: 500;
-            box-shadow: 0 1px 6px rgba(61, 109, 158, 0.15);
-            color: #1a3a54;
+            border-radius: var(--radius-sm); padding: 8px 10px 8px 32px; position: relative;
+            white-space: normal; line-height: 1.45;
         }
         .option-radio {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid #c4cfda;
-            background: #fff;
-            flex-shrink: 0;
-            transition: var(--transition);
-            pointer-events: none;
+            position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+            width: 16px; height: 16px; border-radius: 50%; border: 2px solid #c4cfda;
+            background: #fff; pointer-events: none;
         }
         .option-item.selected .option-radio {
-            border-color: var(--blue-border);
-            background: var(--blue-border);
+            border-color: var(--blue-border); background: var(--blue-border);
             box-shadow: inset 0 0 0 4px #fff;
         }
-        .option-letter {
-            font-weight: 700;
-            margin-right: 6px;
-            color: var(--blue-border);
-            font-size: 0.85rem;
+        .option-btn.selected, .option-item.selected {
+            background: #e2effa; border-color: var(--blue-border); font-weight: 600;
+            color: #1a3a54; box-shadow: 0 1px 6px rgba(61,109,158,0.18);
         }
-        .option-item.selected .option-letter {
-            color: #1a3a54;
-        }
+        .option-btn:hover, .option-item:hover { background: #eef5fb; border-color: #6b9fd2; }
 
-        /* 提交按钮 */
-        .submit-section {
-            text-align: center;
-            margin-top: 20px;
-            padding: 16px 0 30px;
+        .submit-area { text-align: center; margin: 16px 0 30px; }
+        .btn {
+            background: var(--blue-border); color: #fff; border: none; padding: 12px 38px;
+            font-size: 0.95rem; font-weight: 700; border-radius: 30px; cursor: pointer;
+            letter-spacing: 0.6px; transition: var(--transition); box-shadow: 0 4px 14px rgba(61,109,158,0.25);
         }
-        .btn-submit {
-            background: var(--blue-border);
-            color: #fff;
-            border: none;
-            padding: 14px 44px;
-            font-size: 1.05rem;
-            font-weight: 700;
-            border-radius: 30px;
-            cursor: pointer;
-            letter-spacing: 1px;
-            transition: var(--transition);
-            box-shadow: 0 4px 14px rgba(61, 109, 158, 0.3);
-        }
-        .btn-submit:hover {
-            background: #2f5c89;
-            box-shadow: 0 6px 20px rgba(61, 109, 158, 0.4);
-            transform: translateY(-1px);
-        }
-        .btn-submit:disabled {
-            background: #b0c5d8;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-        .btn-submit:disabled:hover {
-            background: #b0c5d8;
-            transform: none;
-            box-shadow: none;
-        }
-        .incomplete-warning {
-            color: #c0392b;
-            font-size: 0.85rem;
-            margin-top: 6px;
-            display: none;
-        }
-        .incomplete-warning.show {
-            display: block;
-        }
+        .btn:hover { background: #2f5c89; box-shadow: 0 6px 18px rgba(61,109,158,0.35); transform: translateY(-1px); }
+        .btn:disabled { background: #b0c5d8; cursor: not-allowed; box-shadow: none; transform: none; }
+        .warning-text { color: #c0392b; font-size: 0.78rem; margin-top: 4px; display: none; }
+        .warning-text.show { display: block; }
 
-        /* 报告区域 */
-        .report-container {
-            display: none;
-            background: var(--white);
-            border: 2px solid var(--blue-border);
-            border-radius: var(--radius);
-            padding: 30px 26px;
-            box-shadow: var(--shadow-lg);
-            margin-top: 20px;
-            line-height: 1.8;
+        .report-box {
+            display: none; background: var(--white); border: 2px solid var(--blue-border);
+            border-radius: var(--radius); padding: 24px 20px; box-shadow: var(--shadow-lg);
+            margin-top: 16px; line-height: 1.8;
         }
-        .report-container.show {
-            display: block;
+        .report-box.show { display: block; }
+        .report-box h2 { font-size: 1.25rem; color: var(--blue-border); margin: 20px 0 8px; }
+        .report-box h3 { font-size: 1rem; color: #3d5f80; margin: 14px 0 4px; }
+        .highlight, .insight {
+            padding: 12px 16px; border-radius: 6px; margin: 10px 0; line-height: 1.7;
         }
-        .report-container h2 {
-            font-size: 1.4rem;
-            color: var(--blue-border);
-            margin: 28px 0 12px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #e8eef5;
-            letter-spacing: 0.5px;
+        .highlight { background: #f5f8fc; border-left: 4px solid #6b9fd2; }
+        .insight { background: #fdf8f0; border-left: 4px solid var(--gold); }
+        .matrix-table {
+            width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.75rem;
+            overflow-x: auto; display: block;
         }
-        .report-container h2:first-child {
-            margin-top: 0;
+        .matrix-table th, .matrix-table td {
+            border: 1px solid #dce6f0; padding: 5px 6px; text-align: center; white-space: nowrap;
         }
-        .report-container h3 {
-            font-size: 1.1rem;
-            color: #3d5f80;
-            margin: 20px 0 8px;
-            font-weight: 700;
-        }
-        .report-container h4 {
-            font-size: 0.95rem;
-            color: #4a6d8c;
-            margin: 14px 0 6px;
-            font-weight: 600;
-        }
-        .report-container p {
-            margin: 8px 0;
-            text-indent: 0;
-            color: var(--text);
-            line-height: 1.8;
-        }
-        .report-container .highlight-block {
-            background: var(--blue-bg);
-            border-left: 5px solid var(--blue-light);
-            padding: 14px 18px;
-            border-radius: var(--radius-sm);
-            margin: 14px 0;
-            line-height: 1.8;
-        }
-        .report-container .insight-block {
-            background: #fdf8f0;
-            border-left: 5px solid var(--gold);
-            padding: 14px 18px;
-            border-radius: var(--radius-sm);
-            margin: 14px 0;
-            line-height: 1.8;
-        }
-        .report-container .warn-block {
-            background: #fef6f5;
-            border-left: 5px solid var(--red-soft);
-            padding: 14px 18px;
-            border-radius: var(--radius-sm);
-            margin: 14px 0;
-            line-height: 1.8;
-        }
-        .report-container .section-divider {
-            border: none;
-            border-top: 1px dashed #d8e2ed;
-            margin: 22px 0;
-        }
-        .report-container .tag {
-            display: inline-block;
-            background: var(--blue-border);
-            color: #fff;
-            padding: 3px 10px;
-            border-radius: 14px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            letter-spacing: 0.4px;
-            margin: 2px 3px;
-        }
-        .report-container .tag-wood {
-            background: #6b8c5c;
-        }
-        .report-container .tag-metal {
-            background: #7b8ea0;
-        }
-        .report-container .tag-fire {
-            background: #c06c4a;
-        }
-        .report-container .tag-earth {
-            background: #b8936b;
-        }
-        .report-container .tag-water {
-            background: #5b8aaa;
-        }
-        .report-container .matrix-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 16px 0;
-            font-size: 0.82rem;
-            overflow-x: auto;
-            display: block;
-        }
-        .report-container .matrix-table th,
-        .report-container .matrix-table td {
-            border: 1px solid #dce6f0;
-            padding: 7px 8px;
-            text-align: center;
-            white-space: nowrap;
-        }
-        .report-container .matrix-table th {
-            background: #eef4f9;
-            font-weight: 700;
-            color: var(--blue-border);
-            font-size: 0.75rem;
-        }
-        .report-container .matrix-table td {
-            background: #fafcfd;
-        }
-        .report-container .matrix-table .state-fanmao {
-            color: #2d6a3f;
-            font-weight: 700;
-        }
-        .report-container .matrix-table .state-shengzhang {
-            color: #4a8c5c;
-        }
-        .report-container .matrix-table .state-juansuo {
-            color: #b8860b;
-        }
-        .report-container .matrix-table .state-beiyanmai {
-            color: #c0392b;
-            font-weight: 600;
-        }
+        .matrix-table th { background: #eef4f9; font-weight: 700; color: var(--blue-border); }
 
-        /* 响应式 */
-        @media (max-width: 600px) {
-            .q-text {
-                font-size: 0.9rem;
-            }
-            .option-item {
-                font-size: 0.82rem;
-                padding: 10px 10px 10px 32px;
-            }
-            .option-radio {
-                width: 17px;
-                height: 17px;
-                left: 8px;
-            }
-            .question-card {
-                padding: 16px 12px 14px;
-            }
-            .report-container {
-                padding: 18px 12px;
-            }
-            .progress-icons {
-                gap: 2px;
-            }
-            .progress-icon {
-                font-size: 1rem;
-            }
-            .btn-submit {
-                padding: 12px 30px;
-                font-size: 0.95rem;
-            }
-        }
-
-        /* 滚动条美化 */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #c4cfda;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a0b4c4;
-        }
-
-        /* 打印 */
-        @media print {
-            .progress-bar-wrapper {
-                position: relative;
-                box-shadow: none;
-            }
-            .btn-submit {
-                display: none;
-            }
-            .question-card {
-                break-inside: avoid;
-                box-shadow: none;
-            }
-            body {
-                background: #fff;
-            }
+        @media (max-width: 640px) {
+            .option-btn { font-size: 0.7rem; padding: 5px 10px; }
+            .option-item { font-size: 0.75rem; padding-left: 28px; }
+            .q-text { font-size: 0.82rem; }
+            .header-inner { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
 <body>
-
-    <!-- 顶部进度条 -->
-    <div class="progress-bar-wrapper" id="progressBarWrapper">
-        <div class="progress-bar-inner">
-            <span class="progress-title">🪴 生命种子探测</span>
-            <span class="progress-icons" id="progressIcons"></span>
-            <span class="progress-count" id="progressCount">0 / 18 题已答</span>
+<div class="header-bar">
+    <div class="header-inner">
+        <div class="logo-title">🪴 生命种子探测</div>
+        <div class="tab-switcher">
+            <button class="tab-btn active" data-tab="90">📋 90题频率选择</button>
+            <button class="tab-btn" data-tab="18">🎯 18题迫选结构</button>
+        </div>
+        <div class="progress-wrap">
+            <span class="progress-count" id="globalProgress">准备开始</span>
         </div>
     </div>
+</div>
 
-    <!-- 主容器 -->
-    <div class="main-container" id="mainContainer">
-
-        <!-- 介绍卡片 -->
-        <div class="intro-card" id="introCard">
-            <h1>🪴 生命种子探测</h1>
-            <p class="subtitle">迫选结构试题 · 18道题 · 6个现实域 × 3层探测</p>
+<div class="main-container">
+    <!-- ========== 90题频率选择面板 ========== -->
+    <div class="test-panel active" id="panel90">
+        <div class="intro-card">
+            <h2>🪴 生命种子探测 · 90题频率选择</h2>
             <div class="instruction">
-                <strong>作答说明：</strong>每题选择一个最接近你<strong>近一年真实感受</strong>的选项。如果有多个接近的，选那个让你<strong>最不想承认</strong>的——那往往是正确答案。<br>
-                本测试探测你在<strong>身体/资源、成长/能力、关系/亲密、群体/评价、意义/信念、机制/系统</strong>六个现实域中，五种驱动力的种子状态。
+                <strong>作答方式：</strong>每题选择最接近你<strong>近一年真实感受</strong>的一项。<br>
+                A. 从未有过这种感觉 &nbsp; B. 偶尔有，但很快就过去了 &nbsp; C. 有时会有这种感觉 &nbsp; D. 经常这样 &nbsp; E. 这就是我的常态
             </div>
         </div>
-
-        <!-- 题目区域 -->
-        <div id="questionsContainer"></div>
-
-        <!-- 提交按钮 -->
-        <div class="submit-section" id="submitSection">
-            <button class="btn-submit" id="btnSubmit" disabled onclick="submitAll()">提交全部答案，生成报告</button>
-            <p class="incomplete-warning" id="incompleteWarning">⚠️ 请完成所有18道题后再提交</p>
+        <div id="questions90"></div>
+        <div class="submit-area">
+            <button class="btn" id="btnSubmit90" disabled>提交90题，生成报告</button>
+            <p class="warning-text" id="warn90">⚠️ 请完成全部90道题后再提交</p>
         </div>
-
-        <!-- 报告区域 -->
-        <div class="report-container" id="reportContainer"></div>
+        <div class="report-box" id="report90"></div>
     </div>
 
-    <script>
-        (function() {
-            // ==================== 题目数据：18道迫选题，完整保留原文 ====================
-            const questionsData = [
-                // ---- PN 身体/空间/资源 ----
-                {
-                    id: 'PN-1',
-                    domain: '身体/空间/资源',
-                    domainShort: 'PN',
-                    qType: 'Q1',
-                    text: 'PN-1｜身体/空间/资源——你最依赖什么来稳住自己？',
-                    options: [
-                        'A. 靠在最熟悉的环境里待着，这里有我需要的安全感',
-                        'B. 靠自己把一切都整理好、按计划来——秩序让我感到踏实',
-                        'C. 靠手里的资源足够多、余地足够大——有后路就不慌',
-                        'D. 靠能随时调整状态、说动就能动起来的能力',
-                        'E. 靠跳出身体感受，从更高处看一切——这具身体只是载体'
-                    ]
-                }, {
-                    id: 'PN-2',
-                    domain: '身体/空间/资源',
-                    domainShort: 'PN',
-                    qType: 'Q2',
-                    text: 'PN-2｜身体/空间/资源——你最难忍受什么？',
-                    options: [
-                        'A. 身体和精力的透支——那之后我对消耗变得格外警惕',
-                        'B. 资源突然缩减——经历过一次不安全之后，我对储备特别在意',
-                        'C. 身体被困住动不了——那让我感觉像被活埋',
-                        'D. 长期处于"不太够"但没崩溃的灰色状态——慢性消耗比一次爆发更折磨',
-                        'E. 身体被过度关注——我不太愿意把注意力放在身体感受上'
-                    ]
-                }, {
-                    id: 'PN-3',
-                    domain: '身体/空间/资源',
-                    domainShort: 'PN',
-                    qType: 'Q3',
-                    text: 'PN-3｜身体/空间/资源——当身体报警时，你更倾向怎么做？',
-                    options: [
-                        'A. 先停一下，回到一个安全的地方缓一缓',
-                        'B. 硬撑着把事情做完，然后按计划休息',
-                        'C. 继续推进——还有机会和空间等着我去打开',
-                        'D. 越累越冲——撞过去就能突破极限',
-                        'E. 不太关注它——身体不舒服的时候，我就把注意力转移到思考上'
-                    ]
-                },
-                // ---- AN 成长/能力/路径 ----
-                {
-                    id: 'AN-1',
-                    domain: '成长/能力/路径',
-                    domainShort: 'AN',
-                    qType: 'Q1',
-                    text: 'AN-1｜成长/能力/路径——你在成长中最依赖什么？',
-                    options: [
-                        'A. 一个稳定的方向和身份锚点——让我知道自己一直在积累',
-                        'B. 清晰的规划和阶段目标——每一步都踏在预定的轨道上',
-                        'C. 不断有新的机会和可能性打开——让我看到更大的版图',
-                        'D. 持续突破瓶颈的快感——冲不过去的东西让我兴奋',
-                        'E. 跳出来重新定义"成长"本身——不被旧路径锁死'
-                    ]
-                }, {
-                    id: 'AN-2',
-                    domain: '成长/能力/路径',
-                    domainShort: 'AN',
-                    qType: 'Q2',
-                    text: 'AN-2｜成长/能力/路径——你经历过什么让你不再信任原有的成长方式？',
-                    options: [
-                        'A. 沿着别人设定的路努力了很久，突然觉得这些没意义了',
-                        'B. 花了很多时间提升某个能力，但发现它解决不了我真正在意的问题',
-                        'C. 遇到了一个很大的失败或挫折，在那之后我重新定义了成长',
-                        'D. 长期卡在一个地方，怎么都突破不了——对"变强"这件事失去了确定感',
-                        'E. 我似乎从未认真相信过任何一条成长路径'
-                    ]
-                }, {
-                    id: 'AN-3',
-                    domain: '成长/能力/路径',
-                    domainShort: 'AN',
-                    qType: 'Q3',
-                    text: 'AN-3｜成长/能力/路径——你最不想面对什么？',
-                    options: [
-                        'A. 发现自己一直走的路可能是错的，需要重新选择',
-                        'B. 计划被打乱——没有清晰路径的时候我会感到焦虑',
-                        'C. 只需要精耕一个方向的时候——我害怕错过了更多的可能性',
-                        'D. 成长太慢了——我需要感受到明显的进展',
-                        'E. 所有人都说这条路好，但我内心知道它不适合我'
-                    ]
-                },
-                // ---- RN 关系/亲密/协作 ----
-                {
-                    id: 'RN-1',
-                    domain: '关系/亲密/协作',
-                    domainShort: 'RN',
-                    qType: 'Q1',
-                    text: 'RN-1｜关系/亲密/协作——你在关系中最依赖什么？',
-                    options: [
-                        'A. 对方稳定的回应和陪伴——让我感到有安全底座',
-                        'B. 清晰的边界和分工——让我知道什么是我的、什么是对方的',
-                        'C. 关系能带来更多的连接和资源——让我的世界变得更大',
-                        'D. 能推动关系变化的冲动——冲突和张力让我感觉自己还活着',
-                        'E. 跳出情绪看清关系的底层模式——不被绑定'
-                    ]
-                }, {
-                    id: 'RN-2',
-                    domain: '关系/亲密/协作',
-                    domainShort: 'RN',
-                    qType: 'Q2',
-                    text: 'RN-2｜关系/亲密/协作——你经历过什么让你对"信任"变得谨慎？',
-                    options: [
-                        'A. 被过度索取或消耗——之后我对别人掏心掏肺的意愿明显降低了',
-                        'B. 被辜负过信任——之后我的信任门槛明显变高了',
-                        'C. 在协作中承担了太多责任却得不到对等的回报——之后我更倾向一个人做',
-                        'D. 在关系中被拖慢或干扰——一个人更高效',
-                        'E. 我本来就不太投入关系，所以谈不上变得更谨慎'
-                    ]
-                }, {
-                    id: 'RN-3',
-                    domain: '关系/亲密/协作',
-                    domainShort: 'RN',
-                    qType: 'Q3',
-                    text: 'RN-3｜关系/亲密/协作——你最不敢在关系中做什么？',
-                    options: [
-                        'A. 让对方看到我真实的需要——我怕被拒绝',
-                        'B. 打破沉默和僵局——我不确定冲突会不会让关系更糟',
-                        'C. 在关系混乱的时候提出明确的规则——我怕显得太冷',
-                        'D. 信任他人并在适当的时候依赖他们——我怕暴露弱点',
-                        'E. 主动结束一段已经不再滋养我的关系——我怕失去'
-                    ]
-                },
-                // ---- IN 群体/评价/位置 ----
-                {
-                    id: 'IN-1',
-                    domain: '群体/评价/位置',
-                    domainShort: 'IN',
-                    qType: 'Q1',
-                    text: 'IN-1｜群体/评价/位置——你在群体中最依赖什么？',
-                    options: [
-                        'A. 一个稳定的位置和归属感——让我在群体里有落点',
-                        'B. 清楚的规则和角色——让我知道怎样不乱位',
-                        'C. 足够大的活动半径和辐射力——让更多人看到我',
-                        'D. 能表达、竞争和争取位置的冲动——让我不被动吞没',
-                        'E. 跳出评价看透群体结构——不被舆论牵着走'
-                    ]
-                }, {
-                    id: 'IN-2',
-                    domain: '群体/评价/位置',
-                    domainShort: 'IN',
-                    qType: 'Q2',
-                    text: 'IN-2｜群体/评价/位置——你经历过什么让你对群体退避？',
-                    options: [
-                        'A. 被持续误解或贴上不准确的标签——之后我不再让外部评价定义我',
-                        'B. 因为不合群或坚持立场而付出代价——之后我减少了出头',
-                        'C. 曾经争取位置但发现规则不公——之后我退出了',
-                        'D. 我似乎从未真正关心过自己在群体里的位置',
-                        'E. 我在群体里一直能被人看到真实的样子——没有退避'
-                    ]
-                }, {
-                    id: 'IN-3',
-                    domain: '群体/评价/位置',
-                    domainShort: 'IN',
-                    qType: 'Q3',
-                    text: 'IN-3｜群体/评价/位置——你在群体中最怕什么？',
-                    options: [
-                        'A. 被孤立——没有一个人站在我这边',
-                        'B. 被评价体系裹挟——失去了自己的判断标准',
-                        'C. 位置被取代——我在群体里的位置和话语权动摇',
-                        'D. 被看到真实的自己——他们可能会发现我并不如表面那样',
-                        'E. 冲突升级——我本意只是想表达不同意见'
-                    ]
-                },
-                // ---- MN 意义/信念/目标 ----
-                {
-                    id: 'MN-1',
-                    domain: '意义/信念/目标',
-                    domainShort: 'MN',
-                    qType: 'Q1',
-                    text: 'MN-1｜意义/信念/目标——你在意义系统中最依赖什么？',
-                    options: [
-                        'A. 一个能长期确认自我认同的信念锚点——让我不漂移',
-                        'B. 一套清晰自洽的信念结构——让我的目标不散乱',
-                        'C. 让我的观念影响更多人——进入更大的现实空间',
-                        'D. 不断质疑和打破旧信念的冲动——让意义不僵化',
-                        'E. 从更高层重构意义的能力——让我获得精神自由'
-                    ]
-                }, {
-                    id: 'MN-2',
-                    domain: '意义/信念/目标',
-                    domainShort: 'MN',
-                    qType: 'Q2',
-                    text: 'MN-2｜意义/信念/目标——你经历过什么让你对"意义"变得警觉？',
-                    options: [
-                        'A. 曾经信过，后来发现它兑现不了——之后我对所有大道理都保持距离',
-                        'B. 信了之后发现那只是别人强加给我的期待——不是我真正想要的',
-                        'C. 被说得很好听但根本推不动的事情消耗过——之后我变得非常看重能不能落地',
-                        'D. 我从来就没真正信过什么宏大的东西',
-                        'E. 我仍然持有一个核心信念，它一直在给我方向'
-                    ]
-                }, {
-                    id: 'MN-3',
-                    domain: '意义/信念/目标',
-                    domainShort: 'MN',
-                    qType: 'Q3',
-                    text: 'MN-3｜意义/信念/目标——你在意义层面最不敢做什么？',
-                    options: [
-                        'A. 放弃一个曾经让我确信的信念——空窗期太可怕了',
-                        'B. 把我真正相信的东西说给别人听——我怕被嘲笑太理想化',
-                        'C. 改变方向——已经在这条路上投入太多了',
-                        'D. 承认自己其实没有真正相信什么东西——只是在表演',
-                        'E. 拒绝外部给定的目标——我怕辜负期待'
-                    ]
-                },
-                // ---- FN 机制/流程/系统 ----
-                {
-                    id: 'FN-1',
-                    domain: '机制/流程/系统',
-                    domainShort: 'FN',
-                    qType: 'Q1',
-                    text: 'FN-1｜机制/流程/系统——你在系统中最依赖什么？',
-                    options: [
-                        'A. 固定的习惯和可依赖的模板——让系统不因变化而失灵',
-                        'B. 清晰的流程和反馈闭环——让系统低损耗运行',
-                        'C. 可复制放大的结构——让系统规模越来越大',
-                        'D. 敢于打破旧流程的动力——不让系统被低效拖死',
-                        'E. 抽离出来理解底层逻辑的能力——获得更高维控制'
-                    ]
-                }, {
-                    id: 'FN-2',
-                    domain: '机制/流程/系统',
-                    domainShort: 'FN',
-                    qType: 'Q2',
-                    text: 'FN-2｜机制/流程/系统——你经历过什么让你不再信任外部系统？',
-                    options: [
-                        'A. 外部系统让我失望过——之后我自己给自己搭系统',
-                        'B. 我遵守好的系统并从中受益——更信任清晰的外部规则',
-                        'C. 外部环境太乱了——我不得不建一个自己能控制的空间',
-                        'D. 我试着建立过自己的系统，但很难坚持下来',
-                        'E. 我没有特别关注过外部系统的规则或流程'
-                    ]
-                }, {
-                    id: 'FN-3',
-                    domain: '机制/流程/系统',
-                    domainShort: 'FN',
-                    qType: 'Q3',
-                    text: 'FN-3｜机制/流程/系统——你建系统的时候，最怕什么发生？',
-                    options: [
-                        'A. 系统失效——我依赖的秩序崩塌了',
-                        'B. 规则太密把自己也困住了',
-                        'C. 规模超出承载——扩张失控',
-                        'D. 系统变旧后我没有推倒重来的勇气',
-                        'E. 沉浸在系统设计里，忽略了现实的执行和落地'
-                    ]
-                }
-            ];
+    <!-- ========== 18题迫选结构面板 ========== -->
+    <div class="test-panel" id="panel18">
+        <div class="intro-card">
+            <h2>🎯 生命种子探测 · 18题迫选结构</h2>
+            <div class="instruction">
+                <strong>作答说明：</strong>每题选择一个最接近你<strong>近一年真实感受</strong>的选项。如果有多个接近的，选那个让你<strong>最不想承认</strong>的——那往往是正确答案。
+            </div>
+        </div>
+        <div id="questions18"></div>
+        <div class="submit-area">
+            <button class="btn" id="btnSubmit18" disabled>提交18题，生成报告</button>
+            <p class="warning-text" id="warn18">⚠️ 请完成全部18道题后再提交</p>
+        </div>
+        <div class="report-box" id="report18"></div>
+    </div>
+</div>
 
-            const totalQuestions = questionsData.length; // 18道题
-
-            // 用户答案存储：{ questionId: selectedIndex (0-4) }
-            let userAnswers = {};
-
-            // ==================== 渲染题目 ====================
-            const questionsContainer = document.getElementById('questionsContainer');
-            const progressIcons = document.getElementById('progressIcons');
-            const progressCount = document.getElementById('progressCount');
-            const btnSubmit = document.getElementById('btnSubmit');
-            const incompleteWarning = document.getElementById('incompleteWarning');
-            const reportContainer = document.getElementById('reportContainer');
-
-            // 构建进度图标
-            function buildProgressIcons() {
-                progressIcons.innerHTML = '';
-                questionsData.forEach((q, idx) => {
-                    const span = document.createElement('span');
-                    span.className = 'progress-icon';
-                    span.textContent = '🌱';
-                    span.title = q.id;
-                    span.dataset.index = idx;
-                    span.addEventListener('click', () => {
-                        const card = document.getElementById('qCard-' + idx);
-                        if (card) {
-                            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            card.classList.add('current-card');
-                            setTimeout(() => card.classList.remove('current-card'), 2000);
-                        }
-                    });
-                    progressIcons.appendChild(span);
+<script>
+(function() {
+    // ===================== 90题数据（完整原文） =====================
+    const engines90 = [
+        { id:'O', short:'O｜结构引擎', element:'金' },
+        { id:'V', short:'V｜锚定引擎', element:'土' },
+        { id:'D', short:'D｜动力引擎', element:'火' },
+        { id:'E', short:'E｜扩张引擎', element:'水' },
+        { id:'T', short:'T｜超越引擎', element:'木' }
+    ];
+    const sandboxes90 = [
+        { id:'PN', short:'PN｜身体/空间/资源' },
+        { id:'AN', short:'AN｜成长/能力/路径' },
+        { id:'RN', short:'RN｜关系/亲密/协作' },
+        { id:'IN', short:'IN｜群体/评价/位置' },
+        { id:'MN', short:'MN｜意义/信念/目标' },
+        { id:'FN', short:'FN｜机制/流程/系统' }
+    ];
+    const questions90Raw = {
+        O: {
+            PN: [
+                '我能清晰感知自己身体的边界——什么时候该休息、什么时候还能继续。',
+                '我对钱、物资、生活空间有明确的规划和控制感。',
+                '当身体发出疲惫信号时，我能按自己定的规则停下来，而不是被外部压力推着继续。'
+            ],
+            AN: [
+                '我对自己的成长路径有清晰的阶段性规划。',
+                '我能按计划推进学习或能力提升，每一步都清楚自己在做什么。',
+                '复盘自己的进步和不足时，我能客观地看到规律，而不是笼统地觉得自己不够好。'
+            ],
+            RN: [
+                '在关系中，我清楚自己的边界在哪里——什么是我的责任，什么是对方的。',
+                '当关系中出现模糊地带时，我能够主动澄清规则或分工。',
+                '我能按照自己设定的互动规则维护一段长期关系，不觉得被消耗。'
+            ],
+            IN: [
+                '我在群体中清楚自己的角色和定位，不乱位。',
+                '面对群体中的隐性规则，我能看透并找到自己的行动边界。',
+                '我能用清晰的规则保护自己，不被群体评价裹挟。'
+            ],
+            MN: [
+                '我有一套自洽的信念体系来指导自己的选择。',
+                '当现实反馈和原有信念冲突时，我能重新调整框架而不崩溃。',
+                '我的目标和行动之间有一条清晰的逻辑链——我知道自己为什么在做这件事。'
+            ],
+            FN: [
+                '我能够为自己建立有效的工作或生活习惯系统。',
+                '我建立的流程或规则，能稳定运行而不需要反复重建。',
+                '当旧系统失效时，我能快速迭代出新的机制。'
+            ]
+        },
+        V: {
+            PN: [
+                '我的身体让我感到安全和踏实，不是负担。',
+                '我在自己的居住空间里感到安稳和归属。',
+                '我对自己的物质生活有稳定的安全感，不担心突然失去。'
+            ],
+            AN: [
+                '我对自己正在走的路有一种持续的确认感——不摇摆、不漂移。',
+                '即使成长速度不如预期，我仍然感到自己在正确的方向上。',
+                '回顾过去几年的积累，我确信这些东西属于我、不会消失。'
+            ],
+            RN: [
+                '我至少有一个让我感到安全、可以依赖的人。',
+                '在重要关系中，我相信对方不会轻易离开或伤害我。',
+                '当我需要支持时，我知道可以向谁寻求帮助。'
+            ],
+            IN: [
+                '我在某个群体中有稳定的归属感。',
+                '即使不被所有人喜欢，我仍感到自己在群体中有立足之地。',
+                '我不需要通过讨好来维持自己在群体中的位置。'
+            ],
+            MN: [
+                '我内心有一个稳定的价值锚点，让我觉得自己的人生有方向。',
+                '即使外部世界变化很快，我仍然相信某些东西是值得坚守的。',
+                '我没有感到自己在意义的海洋里漂泊——我有自己的坐标。'
+            ],
+            FN: [
+                '我依赖的日常习惯或系统让我感到踏实和安心。',
+                '即使遇到意外，我知道自己的常规系统能兜住大部分日常运转。',
+                '我不需要用尽意志力来维持基本的生活秩序——它们已经变成了稳定的习惯。'
+            ]
+        },
+        D: {
+            PN: [
+                '当我需要行动时，身体能给我足够的能量支撑。',
+                '我能主动调整身体状态——累了就休息，恢复后就行动，节奏在我手里。',
+                '面对体力上的挑战，我不害怕，甚至愿意试试自己能走多远。'
+            ],
+            AN: [
+                '遇到能力瓶颈时，我有推开它的冲动和能量。',
+                '我能主动向更难的目标发起冲刺，不需要别人催促。',
+                '即使在长期没有正反馈的阶段，我仍然保持着推进的动能。'
+            ],
+            RN: [
+                '当关系中出现沉默或僵局时，我愿意主动打破它。',
+                '我能推动一段关系向更真实、更深入的方向发展。',
+                '在关系中遇到冲突时，我不会立刻想逃——我能在这个张力中站住。'
+            ],
+            IN: [
+                '在群体中，我有表达自己立场和争取位置的冲动。',
+                '当群体方向走偏时，我愿意提出不同意见。',
+                '面对群体中的竞争或挑战，我不会退缩。'
+            ],
+            MN: [
+                '我对过时的信念有质疑和打破的冲动。',
+                '我能主动重写自己已经不再相信的目标，而不是停在原地。',
+                '当旧意义崩塌后，我有动力去寻找新的意义，而不是陷入虚无。'
+            ],
+            FN: [
+                '当旧流程不再适用时，我有推倒重来的魄力。',
+                '我能主动发起系统层面的变革，而不是被动修补。',
+                '面对低效或僵化的机制，我有推动重构的行动力。'
+            ]
+        },
+        E: {
+            PN: [
+                '我对自己能获得更多物质资源有信心。',
+                '我能够主动扩大自己的生活空间或资源边界。',
+                '面对新的资源机会时，我不会因为害怕失控而退缩。'
+            ],
+            AN: [
+                '我对新的技能、知识或成长方向保持好奇和尝试的冲动。',
+                '我能够在多个成长方向之间找到平衡，不觉得必须只选一条路。',
+                '面对一个新领域，我愿意投入时间去探索，即使短期内没有成果。'
+            ],
+            RN: [
+                '我愿意主动认识新的人，扩大自己的关系网络。',
+                '我能够同时维护多段关系，不让任何一段感到被忽略。',
+                '在关系网络中，我善于连接不同的人，让资源在中间流动。'
+            ],
+            IN: [
+                '我渴望进入更大的平台或更有影响力的圈层。',
+                '我能够主动扩大自己在群体中的话语权和可见度。',
+                '面对更多曝光和关注，我不会因为压力而收缩。'
+            ],
+            MN: [
+                '我希望自己的理念或信念能够影响更多人。',
+                '我能够将自己的价值观传播到更大的范围，而不只是自己默默相信。',
+                '当我的理念被更多人接受时，我感到充实而不是恐慌。'
+            ],
+            FN: [
+                '我能够将自己建立的系统复制到更大的范围。',
+                '面对规模扩张，我的机制能保持稳定而不是失控。',
+                '我善于将一个小范围有效的方法，放大为可规模化的流程。'
+            ]
+        },
+        T: {
+            PN: [
+                '我能够跳出身体的不适，从更高维度理解它背后的信号。',
+                '当被困在身体或物质的限制中时，我仍能保持精神的抽离和自由。',
+                '我能从身体和物质现实中提炼出规律或底层逻辑。'
+            ],
+            AN: [
+                '当原有成长路径失效时，我能重新定义什么是“成长”。',
+                '我能够跳出既定的能力评价标准，从更根本的角度看自己的发展。',
+                '我能从零散的经验中提炼出可迁移的规律或模型。'
+            ],
+            RN: [
+                '我能够跳出情绪，看清楚一段关系的本质模式。',
+                '当被困在关系纠结中时，我仍能抽离出来重新理解这段关系的底层动力学。',
+                '我能从过去的关系经验中提炼出规律，而不是每次都从零开始。'
+            ],
+            IN: [
+                '我能够跳出群体评价，观察权力结构和社会运行机制。',
+                '当被舆论裹挟时，我能抽离出来看清背后是谁在设置议题。',
+                '我能从群体的表面互动中看出深层的结构和逻辑。'
+            ],
+            MN: [
+                '当我原有信念体系崩溃时，我能从更高维度重构它。',
+                '我能够跳出自己相信的东西，审视它是否仍然成立。',
+                '我能将个人经验升华为对人类处境的更深理解。'
+            ],
+            FN: [
+                '我能够跳出具体流程，抽象出背后的底层机制和第一性原理。',
+                '当系统出现问题时，我能从模型层面诊断，而不是只修表面。',
+                '我能从不同领域的系统中提取共性规律，形成跨域的洞察。'
+            ]
+        }
+    };
+    const questions90List = [];
+    engines90.forEach(eng => {
+        sandboxes90.forEach(sb => {
+            questions90Raw[eng.id][sb.id].forEach((text, idx) => {
+                questions90List.push({
+                    id: eng.id+'-'+sb.id+'-'+(idx+1),
+                    engine: eng.short,
+                    sandbox: sb.short,
+                    text: text,
+                    fullId: eng.id+sb.id+(idx+1)
                 });
+            });
+        });
+    });
+
+    // ===================== 18题迫选数据（完整原文） =====================
+    const questions18List = [
+        { id:'PN-1', domain:'身体/空间/资源', qtype:'Q1',
+            text:'PN-1｜身体/空间/资源——你最依赖什么来稳住自己？',
+            options:[
+                'A. 靠在最熟悉的环境里待着，这里有我需要的安全感',
+                'B. 靠自己把一切都整理好、按计划来——秩序让我感到踏实',
+                'C. 靠手里的资源足够多、余地足够大——有后路就不慌',
+                'D. 靠能随时调整状态、说动就能动起来的能力',
+                'E. 靠跳出身体感受，从更高处看一切——这具身体只是载体'
+            ] },
+        { id:'PN-2', domain:'身体/空间/资源', qtype:'Q2',
+            text:'PN-2｜身体/空间/资源——你最难忍受什么？',
+            options:[
+                'A. 身体和精力的透支——那之后我对消耗变得格外警惕',
+                'B. 资源突然缩减——经历过一次不安全之后，我对储备特别在意',
+                'C. 身体被困住动不了——那让我感觉像被活埋',
+                'D. 长期处于“不太够”但没崩溃的灰色状态——慢性消耗比一次爆发更折磨',
+                'E. 身体被过度关注——我不太愿意把注意力放在身体感受上'
+            ] },
+        { id:'PN-3', domain:'身体/空间/资源', qtype:'Q3',
+            text:'PN-3｜身体/空间/资源——当身体报警时，你更倾向怎么做？',
+            options:[
+                'A. 先停一下，回到一个安全的地方缓一缓',
+                'B. 硬撑着把事情做完，然后按计划休息',
+                'C. 继续推进——还有机会和空间等着我去打开',
+                'D. 越累越冲——撞过去就能突破极限',
+                'E. 不太关注它——身体不舒服的时候，我就把注意力转移到思考上'
+            ] },
+        { id:'AN-1', domain:'成长/能力/路径', qtype:'Q1',
+            text:'AN-1｜成长/能力/路径——你在成长中最依赖什么？',
+            options:[
+                'A. 一个稳定的方向和身份锚点——让我知道自己一直在积累',
+                'B. 清晰的规划和阶段目标——每一步都踏在预定的轨道上',
+                'C. 不断有新的机会和可能性打开——让我看到更大的版图',
+                'D. 持续突破瓶颈的快感——冲不过去的东西让我兴奋',
+                'E. 跳出来重新定义“成长”本身——不被旧路径锁死'
+            ] },
+        { id:'AN-2', domain:'成长/能力/路径', qtype:'Q2',
+            text:'AN-2｜成长/能力/路径——你经历过什么让你不再信任原有的成长方式？',
+            options:[
+                'A. 沿着别人设定的路努力了很久，突然觉得这些没意义了',
+                'B. 花了很多时间提升某个能力，但发现它解决不了我真正在意的问题',
+                'C. 遇到了一个很大的失败或挫折，在那之后我重新定义了成长',
+                'D. 长期卡在一个地方，怎么都突破不了——对“变强”这件事失去了确定感',
+                'E. 我似乎从未认真相信过任何一条成长路径'
+            ] },
+        { id:'AN-3', domain:'成长/能力/路径', qtype:'Q3',
+            text:'AN-3｜成长/能力/路径——你最不想面对什么？',
+            options:[
+                'A. 发现自己一直走的路可能是错的，需要重新选择',
+                'B. 计划被打乱——没有清晰路径的时候我会感到焦虑',
+                'C. 只需要精耕一个方向的时候——我害怕错过了更多的可能性',
+                'D. 成长太慢了——我需要感受到明显的进展',
+                'E. 所有人都说这条路好，但我内心知道它不适合我'
+            ] },
+        { id:'RN-1', domain:'关系/亲密/协作', qtype:'Q1',
+            text:'RN-1｜关系/亲密/协作——你在关系中最依赖什么？',
+            options:[
+                'A. 对方稳定的回应和陪伴——让我感到有安全底座',
+                'B. 清晰的边界和分工——让我知道什么是我的、什么是对方的',
+                'C. 关系能带来更多的连接和资源——让我的世界变得更大',
+                'D. 能推动关系变化的冲动——冲突和张力让我感觉自己还活着',
+                'E. 跳出情绪看清关系的底层模式——不被绑定'
+            ] },
+        { id:'RN-2', domain:'关系/亲密/协作', qtype:'Q2',
+            text:'RN-2｜关系/亲密/协作——你经历过什么让你对“信任”变得谨慎？',
+            options:[
+                'A. 被过度索取或消耗——之后我对别人掏心掏肺的意愿明显降低了',
+                'B. 被辜负过信任——之后我的信任门槛明显变高了',
+                'C. 在协作中承担了太多责任却得不到对等的回报——之后我更倾向一个人做',
+                'D. 在关系中被拖慢或干扰——一个人更高效',
+                'E. 我本来就不太投入关系，所以谈不上变得更谨慎'
+            ] },
+        { id:'RN-3', domain:'关系/亲密/协作', qtype:'Q3',
+            text:'RN-3｜关系/亲密/协作——你最不敢在关系中做什么？',
+            options:[
+                'A. 让对方看到我真实的需要——我怕被拒绝',
+                'B. 打破沉默和僵局——我不确定冲突会不会让关系更糟',
+                'C. 在关系混乱的时候提出明确的规则——我怕显得太冷',
+                'D. 信任他人并在适当的时候依赖他们——我怕暴露弱点',
+                'E. 主动结束一段已经不再滋养我的关系——我怕失去'
+            ] },
+        { id:'IN-1', domain:'群体/评价/位置', qtype:'Q1',
+            text:'IN-1｜群体/评价/位置——你在群体中最依赖什么？',
+            options:[
+                'A. 一个稳定的位置和归属感——让我在群体里有落点',
+                'B. 清楚的规则和角色——让我知道怎样不乱位',
+                'C. 足够大的活动半径和辐射力——让更多人看到我',
+                'D. 能表达、竞争和争取位置的冲动——让我不被动吞没',
+                'E. 跳出评价看透群体结构——不被舆论牵着走'
+            ] },
+        { id:'IN-2', domain:'群体/评价/位置', qtype:'Q2',
+            text:'IN-2｜群体/评价/位置——你经历过什么让你对群体退避？',
+            options:[
+                'A. 被持续误解或贴上不准确的标签——之后我不再让外部评价定义我',
+                'B. 因为不合群或坚持立场而付出代价——之后我减少了出头',
+                'C. 曾经争取位置但发现规则不公——之后我退出了',
+                'D. 我似乎从未真正关心过自己在群体里的位置',
+                'E. 我在群体里一直能被人看到真实的样子——没有退避'
+            ] },
+        { id:'IN-3', domain:'群体/评价/位置', qtype:'Q3',
+            text:'IN-3｜群体/评价/位置——你在群体中最怕什么？',
+            options:[
+                'A. 被孤立——没有一个人站在我这边',
+                'B. 被评价体系裹挟——失去了自己的判断标准',
+                'C. 位置被取代——我在群体里的位置和话语权动摇',
+                'D. 被看到真实的自己——他们可能会发现我并不如表面那样',
+                'E. 冲突升级——我本意只是想表达不同意见'
+            ] },
+        { id:'MN-1', domain:'意义/信念/目标', qtype:'Q1',
+            text:'MN-1｜意义/信念/目标——你在意义系统中最依赖什么？',
+            options:[
+                'A. 一个能长期确认自我认同的信念锚点——让我不漂移',
+                'B. 一套清晰自洽的信念结构——让我的目标不散乱',
+                'C. 让我的观念影响更多人——进入更大的现实空间',
+                'D. 不断质疑和打破旧信念的冲动——让意义不僵化',
+                'E. 从更高层重构意义的能力——让我获得精神自由'
+            ] },
+        { id:'MN-2', domain:'意义/信念/目标', qtype:'Q2',
+            text:'MN-2｜意义/信念/目标——你经历过什么让你对“意义”变得警觉？',
+            options:[
+                'A. 曾经信过，后来发现它兑现不了——之后我对所有大道理都保持距离',
+                'B. 信了之后发现那只是别人强加给我的期待——不是我真正想要的',
+                'C. 被说得很好听但根本推不动的事情消耗过——之后我变得非常看重能不能落地',
+                'D. 我从来就没真正信过什么宏大的东西',
+                'E. 我仍然持有一个核心信念，它一直在给我方向'
+            ] },
+        { id:'MN-3', domain:'意义/信念/目标', qtype:'Q3',
+            text:'MN-3｜意义/信念/目标——你在意义层面最不敢做什么？',
+            options:[
+                'A. 放弃一个曾经让我确信的信念——空窗期太可怕了',
+                'B. 把我真正相信的东西说给别人听——我怕被嘲笑太理想化',
+                'C. 改变方向——已经在这条路上投入太多了',
+                'D. 承认自己其实没有真正相信什么东西——只是在表演',
+                'E. 拒绝外部给定的目标——我怕辜负期待'
+            ] },
+        { id:'FN-1', domain:'机制/流程/系统', qtype:'Q1',
+            text:'FN-1｜机制/流程/系统——你在系统中最依赖什么？',
+            options:[
+                'A. 固定的习惯和可依赖的模板——让系统不因变化而失灵',
+                'B. 清晰的流程和反馈闭环——让系统低损耗运行',
+                'C. 可复制放大的结构——让系统规模越来越大',
+                'D. 敢于打破旧流程的动力——不让系统被低效拖死',
+                'E. 抽离出来理解底层逻辑的能力——获得更高维控制'
+            ] },
+        { id:'FN-2', domain:'机制/流程/系统', qtype:'Q2',
+            text:'FN-2｜机制/流程/系统——你经历过什么让你不再信任外部系统？',
+            options:[
+                'A. 外部系统让我失望过——之后我自己给自己搭系统',
+                'B. 我遵守好的系统并从中受益——更信任清晰的外部规则',
+                'C. 外部环境太乱了——我不得不建一个自己能控制的空间',
+                'D. 我试着建立过自己的系统，但很难坚持下来',
+                'E. 我没有特别关注过外部系统的规则或流程'
+            ] },
+        { id:'FN-3', domain:'机制/流程/系统', qtype:'Q3',
+            text:'FN-3｜机制/流程/系统——你建系统的时候，最怕什么发生？',
+            options:[
+                'A. 系统失效——我依赖的秩序崩塌了',
+                'B. 规则太密把自己也困住了',
+                'C. 规模超出承载——扩张失控',
+                'D. 系统变旧后我没有推倒重来的勇气',
+                'E. 沉浸在系统设计里，忽略了现实的执行和落地'
+            ] }
+    ];
+
+    // 全局状态
+    const answers90 = {};   // { fullId: 1-5 }
+    const answers18 = {};   // { id: 0-4 }
+
+    // DOM元素
+    const panel90 = document.getElementById('panel90');
+    const panel18 = document.getElementById('panel18');
+    const questions90Div = document.getElementById('questions90');
+    const questions18Div = document.getElementById('questions18');
+    const report90Div = document.getElementById('report90');
+    const report18Div = document.getElementById('report18');
+    const btn90 = document.getElementById('btnSubmit90');
+    const btn18 = document.getElementById('btnSubmit18');
+    const warn90 = document.getElementById('warn90');
+    const warn18 = document.getElementById('warn18');
+    const globalProgress = document.getElementById('globalProgress');
+
+    // Tab切换
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tab = btn.dataset.tab;
+            if (tab === '90') { panel90.classList.add('active'); panel18.classList.remove('active'); }
+            else { panel18.classList.add('active'); panel90.classList.remove('active'); }
+            updateGlobalProgress();
+        });
+    });
+
+    // 渲染90题
+    function render90() {
+        questions90Div.innerHTML = '';
+        questions90List.forEach((q, idx) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = 'q90-'+idx;
+            const header = document.createElement('div');
+            header.className = 'q-header';
+            header.innerHTML = `<span class="q-tag">${q.engine}</span><span class="q-domain">${q.sandbox}</span><span class="q-index">#${idx+1}</span>`;
+            const qText = document.createElement('div');
+            qText.className = 'q-text';
+            qText.textContent = q.text;
+            const optionsRow = document.createElement('div');
+            optionsRow.className = 'options-row';
+            ['A','B','C','D','E'].forEach((lbl, oi) => {
+                const btn = document.createElement('span');
+                btn.className = 'option-btn';
+                btn.textContent = lbl;
+                if (answers90[q.fullId] === oi+1) btn.classList.add('selected');
+                btn.addEventListener('click', () => {
+                    answers90[q.fullId] = oi+1;
+                    optionsRow.querySelectorAll('.option-btn').forEach((b,i) => b.classList.toggle('selected', i===oi));
+                    card.classList.add('answered-card');
+                    update90Progress();
+                });
+                optionsRow.appendChild(btn);
+            });
+            card.appendChild(header);
+            card.appendChild(qText);
+            card.appendChild(optionsRow);
+            questions90Div.appendChild(card);
+        });
+    }
+
+    // 渲染18题
+    function render18() {
+        questions18Div.innerHTML = '';
+        questions18List.forEach((q, idx) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = 'q18-'+idx;
+            const header = document.createElement('div');
+            header.className = 'q-header';
+            header.innerHTML = `<span class="q-tag">${q.id}</span><span class="q-domain">${q.domain} · ${q.qtype}</span>`;
+            const qText = document.createElement('div');
+            qText.className = 'q-text';
+            qText.textContent = q.text;
+            const optionsList = document.createElement('div');
+            optionsList.className = 'options-list';
+            q.options.forEach((opt, oi) => {
+                const item = document.createElement('div');
+                item.className = 'option-item';
+                const radio = document.createElement('span');
+                radio.className = 'option-radio';
+                item.appendChild(radio);
+                item.appendChild(document.createTextNode(opt));
+                if (answers18[q.id] === oi) item.classList.add('selected');
+                item.addEventListener('click', () => {
+                    answers18[q.id] = oi;
+                    optionsList.querySelectorAll('.option-item').forEach((it,i) => it.classList.toggle('selected', i===oi));
+                    card.classList.add('answered-card');
+                    update18Progress();
+                });
+                optionsList.appendChild(item);
+            });
+            card.appendChild(header);
+            card.appendChild(qText);
+            card.appendChild(optionsList);
+            questions18Div.appendChild(card);
+        });
+    }
+
+    function update90Progress() {
+        const answered = Object.keys(answers90).length;
+        btn90.disabled = answered < 90;
+        warn90.classList.toggle('show', answered < 90);
+        updateGlobalProgress();
+    }
+    function update18Progress() {
+        const answered = Object.keys(answers18).length;
+        btn18.disabled = answered < 18;
+        warn18.classList.toggle('show', answered < 18);
+        updateGlobalProgress();
+    }
+    function updateGlobalProgress() {
+        const a90 = Object.keys(answers90).length;
+        const a18 = Object.keys(answers18).length;
+        const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+        if (activeTab === '90') globalProgress.textContent = `90题：${a90}/90 已答`;
+        else globalProgress.textContent = `18题：${a18}/18 已答`;
+    }
+
+    // 提交90题
+    function submit90() {
+        if (Object.keys(answers90).length < 90) {
+            warn90.classList.add('show');
+            return;
+        }
+        const locusScores = {};
+        questions90List.forEach(q => {
+            const key = q.engineId+'-'+q.sandboxId || q.fullId.slice(0,-1);
+            if (!locusScores[key]) locusScores[key] = 0;
+            locusScores[key] += answers90[q.fullId] || 1;
+        });
+        let html = '<h2>🪴 90题种子状态报告</h2>';
+        html += '<p>每个定位点3题总分（3-15），状态：13-15繁茂 | 10-12生长 | 6-9卷缩 | 3-5被掩埋</p>';
+        html += '<table class="matrix-table"><thead><tr><th>引擎</th>';
+        sandboxes90.forEach(s => html += '<th>'+s.short+'</th>');
+        html += '<th>总分</th></tr></thead><tbody>';
+        engines90.forEach(eng => {
+            html += '<tr><td><strong>'+eng.short+'</strong></td>';
+            let total = 0;
+            sandboxes90.forEach(sb => {
+                const key = eng.id+'-'+sb.id;
+                const sc = locusScores[key] || 0; total += sc;
+                html += `<td>${sc}</td>`;
+            });
+            html += `<td><strong>${total}</strong></td></tr>`;
+        });
+        html += '</tbody></table>';
+        report90Div.innerHTML = html;
+        report90Div.classList.add('show');
+        report90Div.scrollIntoView({behavior:'smooth'});
+    }
+
+    // 提交18题
+    function submit18() {
+        if (Object.keys(answers18).length < 18) {
+            warn18.classList.add('show');
+            return;
+        }
+        const q1Map = {0:'V-土-承载',1:'O-金-收束',2:'E-水-漫延',3:'D-火-突破',4:'T-木-穿透'};
+        let html = '<h2>🎯 18题迫选结构报告</h2>';
+        html += '<h3>各沙盒最依赖驱动力 (Q1)</h3>';
+        const q1Questions = questions18List.filter(q=>q.qtype==='Q1');
+        q1Questions.forEach(q=>{
+            const ans = answers18[q.id];
+            if (ans !== undefined) {
+                html += `<p><strong>${q.id.split('-')[0]}</strong>：依赖 ${q1Map[ans] || '未知'}（选${String.fromCharCode(65+ans)}）</p>`;
             }
+        });
+        html += '<div class="insight"><p>代偿模式分析：你不会在曾经受伤的地方继续使用原来的驱动力。在受伤的沙盒上，你把驱动力从“参与”切换成了“防御”。</p></div>';
+        report18Div.innerHTML = html;
+        report18Div.classList.add('show');
+        report18Div.scrollIntoView({behavior:'smooth'});
+    }
 
-            function updateProgressIcons() {
-                const icons = progressIcons.querySelectorAll('.progress-icon');
-                icons.forEach((icon, idx) => {
-                    const qId = questionsData[idx].id;
-                    if (userAnswers[qId] !== undefined) {
-                        icon.textContent = '🪴';
-                        icon.classList.add('answered');
-                    } else {
-                        icon.textContent = '🌱';
-                        icon.classList.remove('answered');
-                    }
-                });
-                const answeredCount = Object.keys(userAnswers).length;
-                progressCount.textContent = answeredCount + ' / ' + totalQuestions + ' 题已答';
-                btnSubmit.disabled = answeredCount < totalQuestions;
-                if (answeredCount < totalQuestions) {
-                    incompleteWarning.classList.add('show');
-                } else {
-                    incompleteWarning.classList.remove('show');
-                }
-            }
+    btn90.addEventListener('click', submit90);
+    btn18.addEventListener('click', submit18);
 
-            // 渲染所有题目
-            function renderAllQuestions() {
-                questionsContainer.innerHTML = '';
-                questionsData.forEach((q, idx) => {
-                    const card = document.createElement('div');
-                    card.className = 'question-card';
-                    card.id = 'qCard-' + idx;
-                    if (userAnswers[q.id] !== undefined) {
-                        card.classList.add('answered-card');
-                    }
-
-                    const header = document.createElement('div');
-                    header.className = 'q-header';
-                    const numSpan = document.createElement('span');
-                    numSpan.className = 'q-number';
-                    numSpan.textContent = q.id;
-                    const domainSpan = document.createElement('span');
-                    domainSpan.className = 'q-domain';
-                    domainSpan.textContent = q.domain + ' · ' + q.qType;
-                    header.appendChild(numSpan);
-                    header.appendChild(domainSpan);
-
-                    const qText = document.createElement('div');
-                    qText.className = 'q-text';
-                    qText.textContent = q.text;
-
-                    const optionsList = document.createElement('div');
-                    optionsList.className = 'options-list';
-
-                    q.options.forEach((optText, optIdx) => {
-                        const optItem = document.createElement('div');
-                        optItem.className = 'option-item';
-                        if (userAnswers[q.id] === optIdx) {
-                            optItem.classList.add('selected');
-                        }
-                        const radio = document.createElement('span');
-                        radio.className = 'option-radio';
-                        const letterSpan = document.createElement('span');
-                        letterSpan.className = 'option-letter';
-                        letterSpan.textContent = String.fromCharCode(65 + optIdx) + '.';
-                        optItem.appendChild(radio);
-                        optItem.appendChild(letterSpan);
-                        optItem.appendChild(document.createTextNode(' ' + optText.replace(
-                            /^[A-E]\.\s*/, '')));
-                        optItem.addEventListener('click', () => {
-                            selectOption(q.id, optIdx, card, optItem);
-                        });
-                        optionsList.appendChild(optItem);
-                    });
-
-                    card.appendChild(header);
-                    card.appendChild(qText);
-                    card.appendChild(optionsList);
-                    questionsContainer.appendChild(card);
-                });
-            }
-
-            function selectOption(qId, optIdx, card, optItem) {
-                userAnswers[qId] = optIdx;
-                // 更新该卡片内所有选项的样式
-                const allOptions = card.querySelectorAll('.option-item');
-                allOptions.forEach((item, i) => {
-                    if (i === optIdx) {
-                        item.classList.add('selected');
-                    } else {
-                        item.classList.remove('selected');
-                    }
-                });
-                card.classList.add('answered-card');
-                updateProgressIcons();
-            }
-
-            // ==================== 提交与报告生成 ====================
-            function submitAll() {
-                const answeredCount = Object.keys(userAnswers).length;
-                if (answeredCount < totalQuestions) {
-                    incompleteWarning.classList.add('show');
-                    // 滚动到第一个未回答的题目
-                    for (let idx = 0; idx < totalQuestions; idx++) {
-                        if (userAnswers[questionsData[idx].id] === undefined) {
-                            const card = document.getElementById('qCard-' + idx);
-                            if (card) {
-                                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                card.classList.add('current-card');
-                                setTimeout(() => card.classList.remove('current-card'), 2500);
-                            }
-                            break;
-                        }
-                    }
-                    return;
-                }
-                incompleteWarning.classList.remove('show');
-                generateReport();
-                reportContainer.classList.add('show');
-                reportContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                // 隐藏题目区域和提交按钮
-                document.getElementById('submitSection').style.display = 'none';
-                document.getElementById('introCard').style.display = 'none';
-                questionsContainer.style.display = 'none';
-            }
-
-            function generateReport() {
-                // ---- 数据整理 ----
-                // Q1映射：A=V-土-承载, B=O-金-收束, C=E-水-漫延, D=D-火-突破, E=T-木-穿透
-                const q1EngineMap = { 0: 'V', 1: 'O', 2: 'E', 3: 'D', 4: 'T' };
-                const engineNames = {
-                    'V': 'V-土-承载（锚定）',
-                    'O': 'O-金-收束（结构）',
-                    'D': 'D-火-突破（动力）',
-                    'E': 'E-水-漫延（扩张）',
-                    'T': 'T-木-穿透（超越）'
-                };
-                const engineShortNames = {
-                    'V': '锚定',
-                    'O': '结构',
-                    'D': '动力',
-                    'E': '扩张',
-                    'T': '超越'
-                };
-                const engineElement = { 'V': '土', 'O': '金', 'D': '火', 'E': '水', 'T': '木' };
-                const sandboxNames = {
-                    'PN': '身体/空间/资源',
-                    'AN': '成长/能力/路径',
-                    'RN': '关系/亲密/协作',
-                    'IN': '群体/评价/位置',
-                    'MN': '意义/信念/目标',
-                    'FN': '机制/流程/系统'
-                };
-                const sandboxShortNames = {
-                    'PN': '物理底盘',
-                    'AN': '能力进化',
-                    'RN': '深度连接',
-                    'IN': '社会舞台',
-                    'MN': '意义导航',
-                    'FN': '系统运转'
-                };
-
-                // 统计Q1各引擎被选次数（6个沙盒各1次Q1）
-                let q1EngineCounts = { 'V': 0, 'O': 0, 'D': 0, 'E': 0, 'T': 0 };
-                let q1SandboxEngine = {}; // {sandbox: engine}
-                const q1Questions = questionsData.filter(q => q.qType === 'Q1');
-                q1Questions.forEach(q => {
-                    const ans = userAnswers[q.id];
-                    if (ans !== undefined) {
-                        const eng = q1EngineMap[ans];
-                        q1EngineCounts[eng] = (q1EngineCounts[eng] || 0) + 1;
-                        q1SandboxEngine[q.domainShort] = eng;
-                    }
-                });
-
-                // 找出最强引擎（Q1中被选最多的）
-                let strongestEngine = 'T';
-                let maxCount = 0;
-                for (const [eng, cnt] of Object.entries(q1EngineCounts)) {
-                    if (cnt > maxCount) { maxCount = cnt;
-                        strongestEngine = eng; }
-                }
-                if (maxCount === 0) strongestEngine = 'T';
-
-                // 统计Q2创伤类型
-                const traumaTypeMap = {
-                    0: '被消耗/透支/过度付出',
-                    1: '被辜负/信任破裂/外部期待落空',
-                    2: '被压制/规则不公/努力无回报',
-                    3: '长期停滞/反复循环/无法突破',
-                    4: '从未真正投入/从未被激活/不适用'
-                };
-                let traumaCounts = {};
-                const q2Questions = questionsData.filter(q => q.qType === 'Q2');
-                q2Questions.forEach(q => {
-                    const ans = userAnswers[q.id];
-                    if (ans !== undefined) {
-                        const trauma = traumaTypeMap[ans];
-                        traumaCounts[trauma] = (traumaCounts[trauma] || 0) + 1;
-                    }
-                });
-
-                // 统计Q3恐惧类型
-                const fearTypeMap = {
-                    0: '失去依托/被拒绝/崩塌',
-                    1: '混乱/失控/被裹挟',
-                    2: '错过/被取代/不够大',
-                    3: '无力/被困/被压制',
-                    4: '不真实/表演/偏离本质'
-                };
-                let fearCounts = {};
-                const q3Questions = questionsData.filter(q => q.qType === 'Q3');
-                q3Questions.forEach(q => {
-                    const ans = userAnswers[q.id];
-                    if (ans !== undefined) {
-                        const fear = fearTypeMap[ans];
-                        fearCounts[fear] = (fearCounts[fear] || 0) + 1;
-                    }
-                });
-
-                // 找最频繁的创伤和恐惧
-                let topTrauma = '';
-                let topTraumaCount = 0;
-                for (const [t, c] of Object.entries(traumaCounts)) {
-                    if (c > topTraumaCount) { topTraumaCount = c;
-                        topTrauma = t; }
-                }
-                let topFear = '';
-                let topFearCount = 0;
-                for (const [f, c] of Object.entries(fearCounts)) {
-                    if (c > topFearCount) { topFearCount = c;
-                        topFear = f; }
-                }
-
-                // 主沙盒：FN默认最高（系统运转通常是代偿集中地），也可根据实际情况调整
-                const mainSandbox = 'FN';
-
-                // ==================== 构建报告HTML ====================
-                let html = '';
-
-                // 第一层报告
-                html += '<h2>🪴 第一层报告：现象与体感</h2>';
-
-                html += '<h3>你的引擎力量总览</h3>';
-                const engDescMap = {
-                    'T': '追问本质、抽离重构的驱动力在多个核心领域高度活跃，是你最依赖的认知工具。',
-                    'O': '规则意识和结构能力在多个关键领域高度活跃，你习惯用清晰的边界和流程来驾驭复杂局面。',
-                    'D': '行动力和破局冲动在多个核心领域高度活跃，你习惯用冲锋和突破来打开局面。',
-                    'V': '安全感和承载能力在多个关键领域保持稳定，你善于在动荡中守住自己的底盘。',
-                    'E': '扩张冲动和连接欲望在多个核心领域高度活跃，你习惯用突围和连接来打开新的可能。'
-                };
-                html += '<p>你最繁茂的引擎是 <strong>' + engineNames[strongestEngine] +
-                    '</strong>，在 ' + maxCount + ' 个沙盒的Q1中被标记为最依赖的驱动力。' + (engDescMap[strongestEngine] ||
-                        '') + '</p>';
-
-                // Q1各沙盒的依赖分布
-                html += '<h4>各沙盒最依赖的驱动力（Q1迫选结果）</h4>';
-                html += '<div class="highlight-block"><p>';
-                for (const [sandbox, eng] of Object.entries(q1SandboxEngine)) {
-                    html += '<strong>' + sandbox + '</strong>（' + sandboxNames[sandbox] + '）：依赖 <span class="tag">' +
-                        engineShortNames[eng] + '</span> —— ';
-                    const q1q = q1Questions.find(q => q.domainShort === sandbox);
-                    if (q1q && userAnswers[q1q.id] !== undefined) {
-                        const optLetter = String.fromCharCode(65 + userAnswers[q1q.id]);
-                        html += '选' + optLetter + '：' + engineNames[eng];
-                    }
-                    html += '<br>';
-                }
-                html += '</p></div>';
-
-                html += '<div class="section-divider"></div>';
-                html += '<h3>创伤与恐惧模式</h3>';
-                html += '<p>在Q2（历史创伤）中，最频繁出现的创伤类型是：<strong>"' + topTrauma + '"</strong>（出现 ' +
-                    topTraumaCount + ' 次）。</p>';
-                html += '<p>在Q3（最深恐惧）中，最频繁出现的恐惧类型是：<strong>"' + topFear + '"</strong>（出现 ' + topFearCount +
-                    ' 次）。</p>';
-
-                // 创伤详情
-                html += '<h4>各沙盒创伤详情（Q2）</h4>';
-                html += '<div class="highlight-block"><p>';
-                q2Questions.forEach(q => {
-                    const ans = userAnswers[q.id];
-                    if (ans !== undefined) {
-                        const trauma = traumaTypeMap[ans];
-                        const optLetter = String.fromCharCode(65 + ans);
-                        html += '<strong>' + q.domainShort + '</strong>：' + trauma + '（选' + optLetter +
-                            '）<br>';
-                    }
-                });
-                html += '</p></div>';
-
-                // 恐惧详情
-                html += '<h4>各沙盒最深恐惧详情（Q3）</h4>';
-                html += '<div class="warn-block"><p>';
-                q3Questions.forEach(q => {
-                    const ans = userAnswers[q.id];
-                    if (ans !== undefined) {
-                        const fear = fearTypeMap[ans];
-                        const optLetter = String.fromCharCode(65 + ans);
-                        html += '<strong>' + q.domainShort + '</strong>：' + fear + '（选' + optLetter +
-                        '）<br>';
-                    }
-                });
-                html += '</p></div>';
-
-                html += '<div class="section-divider"></div>';
-                html += '<h3>能量分布体感</h3>';
-                html += '<p>你在<strong>' + sandboxNames[mainSandbox] +
-                    '</strong>（系统运转）上集中了最多的结构化能量——这里是你的<strong>主沙盒</strong>，当其他花园能量供给被切断时，系统防御性地将资源集中于此。</p>';
-
-                html += '<div class="insight-block"><p>🪴 <strong>核心体感：</strong>你善于建立规则和结构来保护自己，对秩序和闭环有强烈的需求。在关系中你可能经历过消耗，在群体中你可能感受过误解，但这些能量并未消失——它们被重新分配到了你能够完全掌控的系统搭建上。</p></div>';
-
-                // 第二层报告
-                html += '<h2>🔍 第二层报告：因果溯源</h2>';
-                html += '<h3>代偿倾向分析</h3>';
-                html += '<p>基于Q1的迫选结果，你在不同沙盒中使用了不同的驱动力作为"最依赖工具"。以下代偿模式值得注意：</p>';
-
-                // 分析各沙盒的代偿
-                const sandboxOrder = ['PN', 'AN', 'RN', 'IN', 'MN', 'FN'];
-                let substitutionInsights = [];
-                sandboxOrder.forEach(sb => {
-                    const eng = q1SandboxEngine[sb];
-                    if (eng) {
-                        const sbName = sandboxShortNames[sb];
-                        substitutionInsights.push('在<strong>' + sbName + '</strong>上，你依赖<strong>' +
-                            engineShortNames[eng] + '</strong>（' + engineNames[eng] + '）来稳住自己。');
-                    }
-                });
-
-                html += '<div class="highlight-block"><p>' + substitutionInsights.join('<br>') + '</p></div>';
-
-                html += '<p>这意味着：<strong>你不会在曾经受伤的地方继续使用原来的驱动力。</strong>代偿的本质——在受伤的沙盒上，你把驱动力从"参与"切换成了"防御"。</p>';
-
-                html += '<div class="section-divider"></div>';
-                html += '<h3>五行生克初步分析</h3>';
-                const engEl = engineElement[strongestEngine];
-                html += '<p>你的最强引擎<strong>' + engineNames[strongestEngine] + '</strong>（五行属<strong>' + engEl +
-                    '</strong>）在多个沙盒中占据主导。这意味着：</p>';
-
-                const elementInsights = {
-                    '木': '追问本质的冲动持续活跃，你不断穿透表象、重构意义。但这可能松动安全底盘的土壤——过度追问让"踏实感"难以扎根。',
-                    '金': '规则意识和边界守护极为突出，你善于建立清晰的流程和结构。但过度收束可能让扩张的冲动被压抑，创新和连接受到限制。',
-                    '火': '行动力和破局冲动充沛，你不停推动变化、打破僵局。但快速冲锋可能让规则和边界被践踏，结构来不及重建。',
-                    '土': '安全感和承载能力深厚，你能在动荡中守住底盘。但过度守成可能让扩张的欲望被堤坝困住，新机会难以进入。',
-                    '水': '扩张冲动和连接欲望活跃，你对新机会保持敏锐。但多元方向可能分散行动力，让深度突破变得困难。'
-                };
-                html += '<div class="insight-block"><p>' + (elementInsights[engEl] || '') + '</p></div>';
-
-                // 恐惧与五行对应
-                html += '<div class="section-divider"></div>';
-                html += '<h3>恐惧禁区与五行格局</h3>';
-                html += '<p>你在深度探测中暴露的最深恐惧——<strong>"' + topFear + '"</strong>——与你的五行生克格局直接对应。这不是病理，这是你的系统在极端条件下的最优解。</p>';
-
-                html += '<div class="warn-block"><p>每一处繁茂，都是对一处凋零的回应。看懂这场资源改道，就是看懂了你的系统在历史中做出的所有妥协。</p></div>';
-
-                // 第三层报告
-                html += '<h2>🗺️ 第三层报告：结构映射</h2>';
-                html += '<p>以下呈现你系统中值得注意的结构呼应——两个不同沙盒上的驱动力状态被并置在一起，形成功能组合。它们可能互相强化，也可能互相抵消，请结合自身经验判断。</p>';
-
-                // 基于Q1数据生成结构映射
-                let mappingPairs = [];
-                const allSandboxes = ['PN', 'AN', 'RN', 'IN', 'MN', 'FN'];
-                for (let i = 0; i < allSandboxes.length; i++) {
-                    for (let j = i + 1; j < allSandboxes.length; j++) {
-                        const engA = q1SandboxEngine[allSandboxes[i]];
-                        const engB = q1SandboxEngine[allSandboxes[j]];
-                        if (engA && engB && engA === engB) {
-                            mappingPairs.push({
-                                sbA: allSandboxes[i],
-                                sbB: allSandboxes[j],
-                                eng: engA,
-                                type: '同引擎异沙盒'
-                            });
-                        }
-                    }
-                }
-
-                if (mappingPairs.length > 0) {
-                    // 取前3组
-                    const displayPairs = mappingPairs.slice(0, 3);
-                    displayPairs.forEach(pair => {
-                        html += '<div class="highlight-block">';
-                        html += '<p><strong>' + sandboxShortNames[pair.sbA] + '</strong>上<strong>' +
-                            engineShortNames[pair.eng] + '</strong>的高度活跃 × <strong>' + sandboxShortNames[
-                                pair.sbB] + '</strong>上<strong>' + engineShortNames[pair.eng] +
-                            '</strong>的高度活跃。</p>';
-                        html += '<p>你把<strong>' + engineShortNames[pair.eng] + '</strong>的驱动力同时用在了<strong>' +
-                            sandboxShortNames[pair.sbA] + '</strong>和<strong>' + sandboxShortNames[pair
-                                .sbB] + '</strong>上。同一种驱动力在不同领域形成了功能上的互补或张力。</p>';
-                        html += '</div>';
-                    });
-                } else {
-                    html += '<div class="highlight-block"><p>各沙盒的驱动力分布较为分散，未检测到明显的同引擎跨域集中模式。你的系统可能在不同领域灵活调用不同的驱动力。</p></div>';
-                }
-
-                // 额外：跨引擎结构呼应
-                html += '<div class="section-divider"></div>';
-                html += '<h4>跨引擎结构呼应</h4>';
-                const engPairs = [
-                    { a: 'PN', b: 'FN', desc: '身体底盘与系统运转之间的呼应——底层硬件基座的能量状态，会向上传导到系统搭建的稳定性。' },
-                    { a: 'RN', b: 'IN', desc: '关系连接与群体归属之间的呼应——点到点的信任和面到面的归属，构成了连接层的完整图谱。' },
-                    { a: 'AN', b: 'MN', desc: '成长路径与意义导航之间的呼应——你往哪里走，决定了你相信什么值得走。' },
-                ];
-                engPairs.forEach(pair => {
-                    const engA = q1SandboxEngine[pair.a];
-                    const engB = q1SandboxEngine[pair.b];
-                    if (engA && engB) {
-                        html += '<div class="insight-block"><p><strong>' + sandboxShortNames[pair.a] +
-                            '</strong>（依赖' + engineShortNames[engA] + '）与<strong>' + sandboxShortNames[
-                                pair.b] + '</strong>（依赖' + engineShortNames[engB] + '）：' + pair.desc +
-                            '</p></div>';
-                    }
-                });
-
-                // 结尾
-                html += '<div class="section-divider"></div>';
-                html += '<div class="insight-block">';
-                html += '<p>🪴 <strong>总结：</strong>这不是病理。这是你的系统在极端条件下的最优解。';
-                const endMap = {
-                    'T': '追问是自我保护的方式，结构是自我容身的堡垒，抽离是避免误读的策略。',
-                    'O': '规则是自我保护的方式，闭环是自我容身的堡垒，边界是避免消耗的策略。',
-                    'D': '冲锋是自我保护的方式，突破是自我容身的堡垒，冲击是避免停滞的策略。',
-                    'V': '守护是自我保护的方式，承载是自我容身的堡垒，兜底是避免崩塌的策略。',
-                    'E': '突围是自我保护的方式，连接是自我容身的堡垒，渗透是避免封闭的策略。'
-                };
-                html += (endMap[strongestEngine] || '') + '</p>';
-                html += '<p>每一处繁茂，都是对一处凋零的回应。看懂这场资源改道，就是看懂了你的系统在历史中做出的所有妥协。</p>';
-                html += '</div>';
-
-                reportContainer.innerHTML = html;
-            }
-
-            // ==================== 初始化 ====================
-            function init() {
-                buildProgressIcons();
-                renderAllQuestions();
-                updateProgressIcons();
-                // 初始状态下报告隐藏
-                reportContainer.classList.remove('show');
-                document.getElementById('submitSection').style.display = 'block';
-                document.getElementById('introCard').style.display = 'block';
-                questionsContainer.style.display = 'block';
-            }
-
-            // 暴露提交函数到全局
-            window.submitAll = submitAll;
-
-            init();
-        })();
-    </script>
+    // 初始化
+    render90();
+    render18();
+    updateGlobalProgress();
+})();
+</script>
 </body>
 </html>
