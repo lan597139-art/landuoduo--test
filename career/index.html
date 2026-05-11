@@ -1,280 +1,353 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>职业性格测试</title>
-  <style>
-    /* ═══════════════════════════════════════════
-       styles.css — 纯答题界面通用样式
-       适用于：职业性格测试(71题, 5组)
-       特点：蓝色边框白色卡片 · 顶部进度 · 选项悬停高亮
-       不包含任何报告/矩阵/结果展示样式
-       ═══════════════════════════════════════════ */
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>职业性格测试</title>
+    <style>
+        /* ═══════════════════════════════════════════
+           styles.css — 纯答题界面通用样式
+           包含：顶部导航栏、题目卡片、选项列表、
+                 提交按钮、响应式适配
+           ═══════════════════════════════════════════ */
+        :root {
+            --blue-50: #eff6ff;
+            --blue-100: #e8f2fb;
+            --blue-200: #c5ddf5;
+            --blue-300: #9dc5ed;
+            --blue-400: #6da8e0;
+            --blue-500: #4a90d9;
+            --blue-600: #3578b8;
+            --blue-700: #2a5f94;
+            --blue-800: #1e4570;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --green-500: #22c55e;
+            --amber-500: #f59e0b;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --font-sans: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+            --transition: 0.2s ease;
+        }
 
-    :root {
-      --blue-50: #eff6ff;
-      --blue-100: #e8f2fb;
-      --blue-200: #c5ddf5;
-      --blue-300: #9dc5ed;
-      --blue-400: #6da8e0;
-      --blue-500: #4a90d9;
-      --blue-600: #3578b8;
-      --blue-700: #2a5f94;
-      --blue-800: #1e4570;
-      --white: #ffffff;
-      --gray-50: #f9fafb;
-      --gray-100: #f3f4f6;
-      --gray-200: #e5e7eb;
-      --gray-300: #d1d5db;
-      --gray-400: #9ca3af;
-      --gray-500: #6b7280;
-      --gray-600: #4b5563;
-      --gray-700: #374151;
-      --gray-800: #1f2937;
-      --green-500: #22c55e;
-      --amber-500: #f59e0b;
-      --purple-500: #a855f7;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
-      --radius-sm: 6px;
-      --radius: 8px;
-      --radius-lg: 12px;
-      --font-sans: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
-      --transition: 0.2s ease;
-    }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    *,
-    *::before,
-    *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
 
-    html { scroll-behavior: smooth; font-size: 16px; }
+        body {
+            font-family: var(--font-sans);
+            background: #f0f4f8;
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
 
-    body {
-      font-family: var(--font-sans);
-      background: #f0f4f8;
-      color: var(--gray-800);
-      line-height: 1.6;
-      min-height: 100vh;
-    }
+        /* ── 顶部导航栏 ── */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--white);
+            border-bottom: 2px solid var(--blue-300);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+        .top-bar .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--blue-700);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .top-bar .logo .icon-plant {
+            font-size: 1.4rem;
+            animation: sway 3s ease-in-out infinite;
+        }
+        @keyframes sway {
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(5deg);
+            }
+            75% {
+                transform: rotate(-5deg);
+            }
+        }
+        .top-bar .progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            max-width: 400px;
+            min-width: 150px;
+        }
+        .top-bar .progress-bar-outer {
+            flex: 1;
+            height: 10px;
+            background: var(--gray-200);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        .top-bar .progress-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, var(--blue-400), var(--blue-600));
+            border-radius: 99px;
+            transition: width 0.35s ease;
+            width: 0%;
+        }
+        .top-bar .progress-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--blue-700);
+            white-space: nowrap;
+        }
+        .top-bar .section-indicator {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            white-space: nowrap;
+            background: var(--gray-100);
+            padding: 4px 10px;
+            border-radius: 99px;
+        }
 
-    .container {
-      max-width: 780px;
-      margin: 0 auto;
-      padding: 20px 16px 60px;
-    }
+        /* ── 主容器 ── */
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 20px 16px 60px;
+        }
 
-    /* 头部 */
-    .header {
-      text-align: center;
-      padding: 40px 20px;
-      background: var(--white);
-      border: 2px solid var(--blue-300);
-      border-radius: var(--radius-lg);
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-    }
-    .header h1 {
-      color: var(--blue-700);
-      font-size: 1.6rem;
-      margin-bottom: 8px;
-    }
-    .header p {
-      color: var(--gray-600);
-      font-size: 0.9rem;
-    }
+        /* 头部 */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--white);
+            border: 2px solid var(--blue-300);
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        .header h1 {
+            color: var(--blue-700);
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
 
-    /* 进度条 */
-    .progress-wrap {
-      margin-bottom: 24px;
-      background: var(--white);
-      border: 2px solid var(--blue-300);
-      border-radius: var(--radius);
-      padding: 12px 16px;
-      box-shadow: var(--shadow-sm);
-    }
-    .progress-bar {
-      height: 10px;
-      background: var(--gray-200);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .progress-bar::after {
-      content: '';
-      display: block;
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--blue-400), var(--blue-600));
-      border-radius: 99px;
-      transition: width 0.35s ease;
-    }
-    #progressBar {
-      height: 10px;
-      background: var(--gray-200);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    #progressBar::after {
-      content: '';
-      display: block;
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--blue-400), var(--blue-600));
-      border-radius: 99px;
-      transition: width 0.35s ease;
-    }
+        /* 卡片 */
+        .card {
+            background: var(--white);
+            border: 2px solid var(--blue-300);
+            border-radius: var(--radius-lg);
+            padding: 20px 18px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        .card:hover {
+            border-color: var(--blue-400);
+            box-shadow: var(--shadow-md);
+        }
+        .card.answered {
+            border-left: 4px solid var(--green-500);
+            border-color: var(--green-500);
+        }
+        .card-num {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--blue-600);
+            margin-bottom: 6px;
+            background: var(--blue-50);
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 99px;
+        }
+        .card-text {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
 
-    /* 卡片 */
-    .card {
-      background: var(--white);
-      border: 2px solid var(--blue-300);
-      border-radius: var(--radius-lg);
-      padding: 20px 18px;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow);
-      transition: var(--transition);
-    }
-    .card:hover {
-      border-color: var(--blue-400);
-      box-shadow: var(--shadow-md);
-    }
-    .card.answered {
-      border-left: 4px solid var(--green-500);
-      border-color: var(--green-500);
-    }
-    .card-num {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--blue-600);
-      margin-bottom: 6px;
-      background: var(--blue-50);
-      display: inline-block;
-      padding: 2px 12px;
-      border-radius: 99px;
-    }
-    .card-text {
-      font-weight: 600;
-      font-size: 1rem;
-      margin-bottom: 12px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
+        /* 选项 */
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius);
+            background: var(--gray-50);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 6px;
+            user-select: none;
+        }
+        .option:hover {
+            border-color: var(--blue-400);
+            background: var(--blue-100);
+        }
+        .option input[type="radio"] {
+            accent-color: var(--blue-600);
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .option.selected {
+            border-color: var(--blue-500);
+            background: var(--blue-50);
+            box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.1);
+        }
+        .option.selected strong {
+            color: var(--blue-700);
+        }
+        .option strong {
+            margin-right: 4px;
+        }
 
-    /* 选项 */
-    .option {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border: 1.5px solid var(--gray-200);
-      border-radius: var(--radius);
-      background: var(--gray-50);
-      cursor: pointer;
-      transition: var(--transition);
-      font-size: 0.9rem;
-      line-height: 1.4;
-      margin-bottom: 6px;
-      user-select: none;
-    }
-    .option:hover {
-      border-color: var(--blue-400);
-      background: var(--blue-100);
-    }
-    .option input[type="radio"] {
-      accent-color: var(--blue-600);
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-    .option.selected {
-      border-color: var(--blue-500);
-      background: #e8f2fb;
-      box-shadow: 0 0 0 3px rgba(74,144,217,0.1);
-    }
-    .option.selected strong {
-      color: var(--blue-700);
-    }
-    .option strong {
-      margin-right: 4px;
-    }
+        /* 提交按钮 */
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: var(--blue-600);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 99px;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+        .btn:hover {
+            background: var(--blue-700);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-1px);
+        }
+        .btn:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        .submit-wrap {
+            text-align: center;
+            margin-top: 30px;
+        }
 
-    /* 提交按钮 */
-    .btn {
-      display: inline-block;
-      padding: 12px 28px;
-      background: var(--blue-600);
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 99px;
-      cursor: pointer;
-      letter-spacing: 0.3px;
-      transition: var(--transition);
-      box-shadow: var(--shadow-md);
-      text-align: center;
-    }
-    .btn:hover {
-      background: var(--blue-700);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.12);
-      transform: translateY(-1px);
-    }
-    .btn:disabled {
-      background: var(--gray-300);
-      cursor: not-allowed;
-      box-shadow: none;
-      transform: none;
-    }
-    .submit-wrap {
-      text-align: center;
-      margin-top: 30px;
-    }
+        /* 报告容器 */
+        .report {
+            display: none;
+            margin-top: 30px;
+            background: var(--white);
+            border: 2px solid var(--blue-200);
+            border-radius: var(--radius-lg);
+            padding: 28px 22px;
+            box-shadow: var(--shadow);
+            line-height: 1.8;
+        }
+        .report h2 {
+            color: var(--blue-800);
+            margin: 20px 0 10px;
+            border-bottom: 2px solid var(--blue-200);
+            padding-bottom: 6px;
+        }
 
-    /* 报告容器（仅初始隐藏，样式可自行扩展） */
-    .report {
-      display: none;
-      margin-top: 30px;
-      background: var(--white);
-      border: 2px solid var(--blue-200);
-      border-radius: var(--radius-lg);
-      padding: 28px 22px;
-      box-shadow: var(--shadow);
-      line-height: 1.8;
-    }
-    .report h2 {
-      color: var(--blue-800);
-      margin: 20px 0 10px;
-      border-bottom: 2px solid var(--blue-200);
-      padding-bottom: 6px;
-    }
-
-    @media (max-width: 600px) {
-      .container { padding: 12px 10px 40px; }
-      .card { padding: 16px 12px; }
-      .card-text { font-size: 0.9rem; }
-      .option { padding: 8px 10px; font-size: 0.82rem; }
-    }
-  </style>
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .top-bar {
+                padding: 8px 12px;
+                gap: 6px;
+            }
+            .top-bar .logo {
+                font-size: 0.9rem;
+            }
+            .container {
+                padding: 12px 10px 40px;
+            }
+            .card {
+                padding: 16px 12px;
+            }
+            .card-text {
+                font-size: 0.9rem;
+            }
+            .option {
+                padding: 8px 10px;
+                font-size: 0.82rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <div class="header" id="headerBox">
-    <h1>职业性格测试</h1>
-    <p>了解你的心智动力结构、压力弹性与代谢模式<br>共71题，预计用时15-20分钟</p>
-    <button class="btn" id="btnStart" style="margin-top:16px;">开始测试</button>
-  </div>
-  <div id="quizArea" style="display:none;">
-    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
-    <div id="quizList"></div>
-    <div class="submit-wrap"><button class="btn" id="btnSubmit" disabled>提交答案</button></div>
-  </div>
-  <div class="report" id="reportBox"></div>
-</div>
 
-<script>
+    <!-- ═══════════ 顶部导航栏 ═══════════ -->
+    <div class="top-bar" id="topBar">
+        <div class="logo">
+            <span class="icon-plant">🪴</span> 职业性格测试
+        </div>
+        <div class="progress-wrap">
+            <div class="progress-bar-outer">
+                <div class="progress-bar-inner" id="progressBarFill"></div>
+            </div>
+            <span class="progress-text" id="progressText">0 / 71</span>
+        </div>
+        <span class="section-indicator" id="sectionLabel">未开始</span>
+    </div>
+
+    <!-- ═══════════ 主容器 ═══════════ -->
+    <div class="container">
+        <div class="header" id="headerBox">
+            <h1>职业性格测试</h1>
+            <p>了解你的心智动力结构、压力弹性与代谢模式<br>共71题，预计用时15-20分钟</p>
+            <button class="btn" id="btnStart" style="margin-top:16px;">开始测试</button>
+        </div>
+        <div id="quizArea" style="display:none;">
+            <div id="quizList"></div>
+            <div class="submit-wrap"><button class="btn" id="btnSubmit" disabled>提交答案</button></div>
+        </div>
+        <div class="report" id="reportBox"></div>
+    </div>
+
+    <script>
 // ==================== 题库 (71题) ====================
 var ALL_QUESTIONS = [
   {"id":"S-C01","text":"PN-身体底盘\n作息、健康、房间、座位、钱、物资、现金流、共同空间、生活资源。当这一块要长期稳定运转时，你最需要的是什么？","options":[{"label":"A","text":"O-结构 (Order)：清晰的秩序、规则和整理结构，让生活底盘不失控。不过如果生活节奏本身变化很快、突发状况多，这种靠规则维持的稳定性会容易松动。"},{"label":"B","text":"V-锚定 (Anchor)：熟悉的环境、足够的储备和明确的安全边界，让自己不悬空。不过一旦进入完全陌生的环境，没了这些依托，自己站稳的难度会变大。"},{"label":"C","text":"D-动力 (Drive)：能主动调整状态、打破僵局的能量，让身体和生活重新活起来。不过如果需要长期低刺激的维护，一直靠动力驱动会容易后劲不足。"},{"label":"D","text":"E-扩张 (Expand)：更多可调用的资源、空间和余地，让自己手里有更大的控制范围。不过资源一旦太多太散，边界变薄，注意力容易被拉散而不是聚焦。"},{"label":"E","text":"T-超越 (Transcend)：能抽离出来、从更远处理解身体和现实限制的视角，不让自己被眼前的条件完全绑死。不过如果问题必须持续落地处理，光靠抽离不够，还是得回到具体的身体参与和执行。"}]},
