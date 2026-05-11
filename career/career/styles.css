@@ -6,7 +6,6 @@
    ═══════════════════════════════════════════ */
 
 :root {
-  /* 主色调 */
   --blue-50: #eff6ff;
   --blue-100: #e8f2fb;
   --blue-200: #c5ddf5;
@@ -17,8 +16,6 @@
   --blue-700: #2a5f94;
   --blue-800: #1e4570;
   --white: #ffffff;
-
-  /* 中性色 */
   --gray-50: #f9fafb;
   --gray-100: #f3f4f6;
   --gray-200: #e5e7eb;
@@ -28,32 +25,30 @@
   --gray-600: #4b5563;
   --gray-700: #374151;
   --gray-800: #1f2937;
-
-  /* 功能色 */
   --green-500: #22c55e;
   --amber-500: #f59e0b;
-  --purple-500: #a855f7;
-
-  /* 阴影 */
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
   --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
-
-  /* 圆角 */
   --radius-sm: 6px;
   --radius: 8px;
   --radius-lg: 12px;
-
   --font-sans: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
   --transition: 0.2s ease;
 }
 
-/* ═══════════ 重置 ═══════════ */
 *,
 *::before,
-*::after { box-sizing: border-box; margin: 0; padding: 0; }
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-html { scroll-behavior: smooth; font-size: 16px; }
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
 
 body {
   font-family: var(--font-sans);
@@ -63,176 +58,95 @@ body {
   min-height: 100vh;
 }
 
-/* ═══════════ 顶部导航栏 ═══════════ */
-.top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--white);
-  border-bottom: 2px solid var(--blue-300);
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-  box-shadow: var(--shadow-sm);
-}
-
-.top-bar .logo {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--blue-700);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-
-.top-bar .progress-wrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  max-width: 400px;
-  min-width: 150px;
-}
-
-.progress-bar-outer {
-  flex: 1;
-  height: 10px;
-  background: var(--gray-200);
-  border-radius: 99px;
-  overflow: hidden;
-}
-
-.progress-bar-inner {
-  height: 100%;
-  background: linear-gradient(90deg, var(--blue-400), var(--blue-600));
-  border-radius: 99px;
-  transition: width 0.35s ease;
-  width: 0%;
-}
-
-.progress-text {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--blue-700);
-  white-space: nowrap;
-}
-
-.section-indicator {
-  font-size: 0.8rem;
-  color: var(--gray-500);
-  background: var(--gray-100);
-  padding: 4px 10px;
-  border-radius: 99px;
-  white-space: nowrap;
-}
-
-/* ═══════════ 主容器 ═══════════ */
-.main-container {
+.container {
   max-width: 780px;
   margin: 0 auto;
   padding: 20px 16px 60px;
 }
 
-/* ═══════════ 题目卡片（蓝色边框/白色背景） ═══════════ */
+/* 头部 */
+.header {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--white);
+  border: 2px solid var(--blue-300);
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+.header h1 {
+  color: var(--blue-700);
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+.header p {
+  color: var(--gray-600);
+  font-size: 0.9rem;
+}
+
+/* 进度条 */
+.progress-wrap {
+  margin-bottom: 24px;
+  background: var(--white);
+  border: 2px solid var(--blue-300);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  box-shadow: var(--shadow-sm);
+}
+.progress-bar {
+  height: 10px;
+  background: var(--gray-200);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-bar::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--blue-400), var(--blue-600));
+  border-radius: 99px;
+  transition: width 0.35s ease;
+}
+
+/* 卡片 */
 .card {
   background: var(--white);
   border: 2px solid var(--blue-300);
   border-radius: var(--radius-lg);
-  padding: 24px 20px;
-  margin-bottom: 20px;
+  padding: 20px 18px;
+  margin-bottom: 16px;
   box-shadow: var(--shadow);
   transition: var(--transition);
 }
-
 .card:hover {
   border-color: var(--blue-400);
   box-shadow: var(--shadow-md);
 }
-
-/* 已回答状态：左侧绿色强调 */
 .card.answered {
   border-left: 4px solid var(--green-500);
   border-color: var(--green-500);
 }
-
-/* 跳过（未答但已触碰）状态 */
-.card.skipped {
-  border-left: 4px solid var(--amber-500);
-  border-color: var(--amber-500);
-}
-
-/* 迫选题特殊样式（如有需要） */
-.card.forced-choice {
-  border-color: var(--purple-500);
-}
-.card.forced-choice.answered {
-  border-left: 4px solid var(--purple-500);
-  border-color: var(--purple-500);
-}
-
-/* ═══════════ 题号与题文 ═══════════ */
-.q-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: var(--blue-500);
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.9rem;
-  border-radius: 50%;
-  margin-right: 10px;
-  flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
-}
-
-.card.forced-choice .q-number {
-  background: var(--purple-500);
-}
-
-.q-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.q-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-/* 组别/维度标签（如“核心身份 · 第1组”） */
-.q-section-label {
-  font-size: 0.75rem;
-  color: var(--blue-600);
+.card-num {
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.3px;
+  color: var(--blue-600);
+  margin-bottom: 6px;
+  background: var(--blue-50);
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 99px;
 }
-
-.q-text {
+.card-text {
   font-weight: 600;
   font-size: 1rem;
-  color: var(--gray-800);
+  margin-bottom: 12px;
   line-height: 1.5;
+  white-space: pre-wrap;
 }
 
-/* ═══════════ 选项列表 ═══════════ */
-.options-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.options-list label {
+/* 选项 */
+.option {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -244,81 +158,76 @@ body {
   transition: var(--transition);
   font-size: 0.9rem;
   line-height: 1.4;
+  margin-bottom: 6px;
   user-select: none;
 }
-
-.options-list label:hover {
+.option:hover {
   border-color: var(--blue-400);
   background: var(--blue-100);
 }
-
-.options-list input[type="radio"] {
+.option input[type="radio"] {
   accent-color: var(--blue-600);
   width: 18px;
   height: 18px;
   flex-shrink: 0;
   cursor: pointer;
 }
-
-.options-list input[type="radio"]:checked + span {
-  font-weight: 600;
-  color: var(--blue-700);
-}
-
-/* 选中状态视觉反馈 */
-.options-list label:has(input:checked) {
+.option.selected {
   border-color: var(--blue-500);
   background: var(--blue-50);
   box-shadow: 0 0 0 3px rgba(74,144,217,0.1);
 }
+.option.selected strong {
+  color: var(--blue-700);
+}
+.option strong {
+  margin-right: 4px;
+}
 
-/* ═══════════ 提交按钮 ═══════════ */
-.btn-submit {
-  display: block;
-  width: 100%;
-  max-width: 400px;
-  margin: 30px auto;
-  padding: 14px 28px;
+/* 提交按钮 */
+.btn {
+  display: inline-block;
+  padding: 12px 28px;
   background: var(--blue-600);
   color: #fff;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
   border: none;
   border-radius: 99px;
   cursor: pointer;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
   transition: var(--transition);
   box-shadow: var(--shadow-md);
   text-align: center;
 }
-
-.btn-submit:hover {
+.btn:hover {
   background: var(--blue-700);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
   transform: translateY(-1px);
 }
-
-.btn-submit:disabled {
+.btn:disabled {
   background: var(--gray-300);
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
 }
+.submit-wrap {
+  text-align: center;
+  margin-top: 30px;
+}
 
-/* ═══════════ 响应式 ═══════════ */
+/* 响应式 */
 @media (max-width: 600px) {
-  .top-bar {
-    padding: 8px 12px;
-    gap: 6px;
+  .container {
+    padding: 12px 10px 40px;
   }
   .card {
     padding: 16px 12px;
-    border-radius: var(--radius);
   }
-  .q-text {
+  .card-text {
     font-size: 0.9rem;
   }
-  .options-list label {
+  .option {
     padding: 8px 10px;
     font-size: 0.82rem;
   }
