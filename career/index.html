@@ -4,15 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>职业性格测试</title>
- /* ═══════════════════════════════════════════
-   styles.css — 纯答题界面通用样式
-   适用：职业性格测试(71题, 5组)
-   特点：蓝色边框白色卡片 · 顶部进度 · 选项悬停高亮
-   不包含任何报告/矩阵/结果展示样式
-   ═══════════════════════════════════════════ */
-
-:root {
-  /* 主色调 */
+<style>
+        :root {
   --blue-50: #eff6ff;
   --blue-100: #e8f2fb;
   --blue-200: #c5ddf5;
@@ -23,8 +16,6 @@
   --blue-700: #2a5f94;
   --blue-800: #1e4570;
   --white: #ffffff;
-
-  /* 中性色 */
   --gray-50: #f9fafb;
   --gray-100: #f3f4f6;
   --gray-200: #e5e7eb;
@@ -34,18 +25,12 @@
   --gray-600: #4b5563;
   --gray-700: #374151;
   --gray-800: #1f2937;
-
-  /* 功能色 */
   --green-500: #22c55e;
   --amber-500: #f59e0b;
   --purple-500: #a855f7;
-
-  /* 阴影 */
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
   --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
-
-  /* 圆角 */
   --radius-sm: 6px;
   --radius: 8px;
   --radius-lg: 12px;
@@ -53,11 +38,7 @@
   --font-sans: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
   --transition: 0.2s ease;
 }
-
-/* ═══════════ 重置 ═══════════ */
-*,
-*::before,
-*::after { box-sizing: border-box; margin: 0; padding: 0; }
+ { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; font-size: 16px; }
 
@@ -158,20 +139,14 @@ body {
   border-color: var(--blue-400);
   box-shadow: var(--shadow-md);
 }
-
-/* 已回答状态：左侧绿色强调 */
 .card.answered {
   border-left: 4px solid var(--green-500);
   border-color: var(--green-500);
 }
-
-/* 跳过（未答但已触碰）状态 */
 .card.skipped {
   border-left: 4px solid var(--amber-500);
   border-color: var(--amber-500);
 }
-
-/* 迫选题特殊样式（如有需要） */
 .card.forced-choice {
   border-color: var(--purple-500);
 }
@@ -180,7 +155,7 @@ body {
   border-color: var(--purple-500);
 }
 
-/* ═══════════ 题号与题文 ═══════════ */
+/* ═══════════ 题目编号 ═══════════ */
 .q-number {
   display: inline-flex;
   align-items: center;
@@ -329,6 +304,7 @@ body {
     font-size: 0.82rem;
   }
 }
+   </style>
 </head>
 <body>
 <div class="container">
