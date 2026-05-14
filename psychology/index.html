@@ -230,6 +230,30 @@
 </div>
 
 <script>
+      // ========== 全局解释文本（供点击弹窗） ==========
+    const explanations = {
+        energy: {
+            '繁茂': '🌳 繁茂 → 【天赋冲动 / 过载代偿】\n能量高度活跃，可能处于天赋本能释放或过度补偿状态。',
+            '生长': '🌱 生长 → 【自然舒展 / 基准稳态】\n能量自然流动，处于健康基准状态。',
+            '卷缩': '🐚 卷缩 → 【休眠警惕 / 假死态】\n能量收缩防御，可能处于休眠或警惕状态。',
+            '被掩埋': '🪦 被掩埋 → 【物理断电 / 创伤禁区】\n能量被阻断，存在创伤或完全失联区域。'
+        },
+        engines: {
+            'O-金-收束': 'O｜结构性 (Order) —— 结晶本能\n核心：追求秩序与可预测性，对抗混乱。\n表现：像晶体一样冷峻，致力于把模糊变清晰。通过制定计划、修剪变量、定规矩来止血。\n用户体感：“我需要一切都在掌控中，确定的结果让我感到安全。”',
+            'V-土-承载': 'V｜锚定性 (Validation) —— 回声本能\n核心：追求被看见与被反馈，确认自我坐标。\n表现：像回声一样，需要外界反应证明存在。将外部反馈当作短效稳压器，为内心托底。\n用户体感：“我需要知道我在客观实体的眼里是什么样，反馈让我知道自己没走偏。”',
+            'D-火-突破': 'D｜动力性 (Dynamics) —— 燃烧本能\n核心：追求变化与新鲜感，寻找点燃热情的燃料。\n表现：像氧化剂，渴望破局和冲锋。主动碰撞边界、制造变量。\n用户体感：“停滞不前让我窒息，我渴望挑战和热血瞬间。”',
+            'E-水-漫延': 'E｜扩张性 (Sovereignty-Need) —— 狩猎本能\n核心：吞噬变量，对无限可能性的极度饥渴，通过持续狩猎换取绝对自由与反控制。\n表现：产生向外的斥力，拒绝被现状困住，本能地嗅探、收编并统治未知变量。演化路径：嗅探夺取→建立规则→掌握Root权限。\n用户体感：“拒绝死水。我要不断吞噬变量，直到我的地盘我说了算。”',
+            'T-木-穿透': 'T｜超越性 (Transcendence) —— 聚变本能\n核心：追求神性与永恒，渴望与绝对真理融合。\n表现：像核聚变产生极高能量，冷酷追问本质，拆解焚毁虚伪表象，看清底层逻辑。\n用户体感：“我不关心表面的热闹，我只想看透这个世界的终极真相。”'
+        },
+        sandboxes: {
+            'PN': 'PN 生理叙事 · 物理底盘-单机硬件\n维持生物性存活的物质边界，即不依赖任何虚假承诺的物理实感。\n工具：体能、现金流、生活物资。\n规则：作息时间表、安全距离、生理底线。\n架构：身体素质、资产配置、私人领地布局。\n惯性：身体记忆与天赋、避险本能、地盘意识。',
+            'AN': 'AN 自我叙事 · 能力进化-单机系统\n单机系统的自我迭代算法，即即便世界断网，我也能独立生存的确定性。\n工具：技能、履历、项目经验。\n规则：进阶标准、能力边界、试错纪律。\n架构：个人演化蓝图、知识图谱、志业体系。\n惯性：进取心、专业直觉、持续升级的强迫症。',
+            'RN': 'RN 关系叙事 · 深度连接-局域网\n基于灵魂信任的局部局域网，即被看见、被接纳、不孤立的归属感。\n工具：陪伴、情绪价值、1V1互助。\n规则：忠诚契约、沟通默契、情感边界。\n架构：核心社交圈、亲密关系模型、合伙人协议。\n惯性：信任本能、共情反射、双向奔赴。',
+            'IN': 'IN 社会叙事 · 社会舞台-广域网\n广域生态网中的坐标定位仪，即通过占领核心生态位而获得的统治力。\n工具：人脉、话语权、社会信用。\n规则：等级与阶级、圈层礼仪、风评标准。\n架构：组织架构图、权力拓扑、身份标签系统。\n惯性：地位直觉、公众形象管理、江湖座次感。',
+            'FN': 'FN 功能叙事 · 系统运转-共识层\n脱离具体人的意志也能跑起来的结构，即免于人治的干扰的确定性。\n工具：SOP、模板、计算器。\n规则：禁令、法律、红线。\n架构：商业模式、组织架构、系统蓝图。\n惯性：习惯、常识、默契。',
+            'MN': 'MN 宏大叙事 · 意义导航-统摄层\n统摄全盘做功的终极解释权，即忍受现实摩擦的终极精神止痛药。\n工具：使命感、愿景、人生格言。\n规则：价值排序、道德底线、终极追问。\n架构：信念系统、世界模型、人生剧本。\n惯性：天职感、信仰、对庸俗的免疫力。'
+        }
+    };
     // --------------------------------------------------------------
     // 1. 引擎与沙盒基础映射
     // --------------------------------------------------------------
@@ -461,48 +485,6 @@
             for(let s of sandboxes) total += (engineScores[e][s] || 0);
             engineTotals[e] = total;
         }
-        // ========= 概念解释（固定文本，显示在报告最前面） =========
-        const conceptHtml = `
-<style>
-    .concept-section { margin: 1.5rem 0; padding: 0.5rem 1rem; background: #f5f9ff; border-radius: 24px; border-left: 4px solid #1e4bd2; }
-    .concept-section h4 { color: #1e3a8a; margin: 0.5rem 0; }
-    .concept-section ul, .concept-section p { margin: 0.25rem 0 0.5rem 1rem; }
-    .engine-grid, .sandbox-grid { display: flex; flex-wrap: wrap; gap: 12px; margin: 10px 0; }
-    .engine-card, .sandbox-card { background: white; border: 1px solid #bfd9ff; border-radius: 16px; padding: 8px 12px; flex: 1 1 180px; }
-    .engine-card strong, .sandbox-card strong { color: #1e4bd2; display: block; }
-</style>
-<div class="concept-section">
-    <h4>1️⃣ 五行能量状态</h4>
-    <ul>
-        <li>🌳 繁茂 → 【天赋冲动 / 过载代偿】</li>
-        <li>🌱 生长 → 【自然舒展 / 基准稳态】</li>
-        <li>🐚 卷缩 → 【休眠警惕 / 假死态】</li>
-        <li>🪦 被掩埋 → 【物理断电 / 创伤禁区】</li>
-    </ul>
-</div>
-<div class="concept-section">
-    <h4>2️⃣ 引擎概念（五种驱动力）</h4>
-    <div class="engine-grid">
-        <div class="engine-card"><strong>O｜结构性 (Order)</strong><br>结晶本能：追求秩序与可预测性。用户体感：“我需要一切都在掌控中”。</div>
-        <div class="engine-card"><strong>V｜锚定性 (Validation)</strong><br>回声本能：追求被看见与被反馈。用户体感：“我需要知道我在客观实体眼里是什么样”。</div>
-        <div class="engine-card"><strong>D｜动力性 (Dynamics)</strong><br>燃烧本能：追求变化与新鲜感。用户体感：“停滞让我窒息，渴望热血瞬间”。</div>
-        <div class="engine-card"><strong>E｜扩张性 (Sovereignty-Need)</strong><br>狩猎本能：吞噬变量，追求绝对自由。用户体感：“我要不断吞噬变量，直到我的地盘我说了算”。</div>
-        <div class="engine-card"><strong>T｜超越性 (Transcendence)</strong><br>聚变本能：追求神性与终极真理。用户体感：“我只想看透这个世界的终极真相”。</div>
-    </div>
-</div>
-<div class="concept-section">
-    <h4>3️⃣ 沙盒概念（六个现实域）</h4>
-    <div class="sandbox-grid">
-        <div class="sandbox-card"><strong>PN 物理底盘</strong><br>生物性存活边界：身体、资产、安全底线。</div>
-        <div class="sandbox-card"><strong>AN 能力进化</strong><br>自我迭代算法：技能、知识、成长路径。</div>
-        <div class="sandbox-card"><strong>RN 深度连接</strong><br>灵魂信任局域网：亲密关系、核心社交。</div>
-        <div class="sandbox-card"><strong>IN 社会舞台</strong><br>生态位坐标仪：群体归属、话语权、位置。</div>
-        <div class="sandbox-card"><strong>FN 系统运转</strong><br>共识层结构：SOP、规则、自动化机制。</div>
-        <div class="sandbox-card"><strong>MN 意义导航</strong><br>统摄层解释权：信念、价值观、人生剧本。</div>
-    </div>
-</div>
-<hr style="margin: 20px 0; border-color: #bfd9ff;">
-`;
         // ====================================================
         // 状态矩阵
         let seedStatus = {};
@@ -725,22 +707,29 @@
         }
         fearHtml += `</tbody></table>`;
         
-        // 总览矩阵表格（带颜色）
-        let matrixHtml = `<h3>一、🌡️ 总览矩阵</h3><h4>引擎 × 沙盒 热度图</h4><table><thead><tr><th>项目\\沙盒</th><th>PN</th><th>AN</th><th>RN</th><th>IN</th><th>MN</th><th>FN</th><th>总分</th></tr></thead><tbody>`;
+        // 总览矩阵表格（可点击弹出解释）
+        let matrixHtml = `<h3>一、🌡️ 总览矩阵</h3><h4>引擎 × 沙盒 热度图（点击引擎名/沙盒名/状态词查看详细解释）</h4><table><thead><tr><th>项目\\沙盒</th>`;
+        for(let s of sandboxes) {
+            matrixHtml += `<th style="cursor:pointer; text-decoration:underline dotted;" onclick="alert(explanations.sandboxes['${s}'])">${s}</th>`;
+        }
+        matrixHtml += `<th>总分</th> </thead><tbody>`;
         for(let e of engines) {
-            matrixHtml += `<tr><td style="font-weight:600">${engineFull[e]}</td>`;
+            let engineDisplay = `<span style="cursor:pointer; text-decoration:underline dotted;" onclick="alert(explanations.engines['${engineFull[e]}'])">${engineFull[e]}</span>`;
+            matrixHtml += `<tr><td style="font-weight:600">${engineDisplay}</td>`;
             for(let s of sandboxes) {
                 let sc = engineScores[e][s] || 0;
                 let st = seedStatus[e][s];
                 let colorClass = st==='繁茂'?'status-bloom':(st==='生长'?'status-grow':(st==='卷缩'?'status-shrink':'status-buried'));
-                matrixHtml += `<td class="${colorClass}">${sc}<br>${st}</td>`;
+                let statusDisplay = `<span style="cursor:pointer; border-bottom:1px dashed #666;" onclick="alert(explanations.energy['${st}'])">${st}</span>`;
+                matrixHtml += `<td class="${colorClass}">${sc}<br>${statusDisplay}</td>`;
             }
-            matrixHtml += `<td><strong>${engineTotals[e]}</strong></td></tr>`;
+            matrixHtml += `<td><strong>${engineTotals[e]}</strong></td>`;
+            matrixHtml += `</tr>`;
         }
         matrixHtml += `<tr style="background:#f5f9ff;"><td style="font-weight:600">沙盒总分</td>`;
         for(let s of sandboxes) matrixHtml += `<td><strong>${sandboxTotals[s]}</strong></td>`;
-        matrixHtml += `<td>——</td></tr></tbody></table>`;
-        
+        matrixHtml += `<td>—</td> </tr></tbody></table>`;
+
         let statsHtml = `<div class="stat-badge">🌳 繁茂：${countFM}个 🌱 生长：${countSZ}个 🐚 卷缩：${countJS}个 🪦 被掩埋：${countBYM}个</div>
         <div><strong>🧩 综合判定</strong> ${verdict}</div>`;
         
