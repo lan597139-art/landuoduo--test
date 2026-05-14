@@ -461,6 +461,49 @@
             for(let s of sandboxes) total += (engineScores[e][s] || 0);
             engineTotals[e] = total;
         }
+        // ========= 概念解释（固定文本，显示在报告最前面） =========
+        const conceptHtml = `
+<style>
+    .concept-section { margin: 1.5rem 0; padding: 0.5rem 1rem; background: #f5f9ff; border-radius: 24px; border-left: 4px solid #1e4bd2; }
+    .concept-section h4 { color: #1e3a8a; margin: 0.5rem 0; }
+    .concept-section ul, .concept-section p { margin: 0.25rem 0 0.5rem 1rem; }
+    .engine-grid, .sandbox-grid { display: flex; flex-wrap: wrap; gap: 12px; margin: 10px 0; }
+    .engine-card, .sandbox-card { background: white; border: 1px solid #bfd9ff; border-radius: 16px; padding: 8px 12px; flex: 1 1 180px; }
+    .engine-card strong, .sandbox-card strong { color: #1e4bd2; display: block; }
+</style>
+<div class="concept-section">
+    <h4>1️⃣ 五行能量状态</h4>
+    <ul>
+        <li>🌳 繁茂 → 【天赋冲动 / 过载代偿】</li>
+        <li>🌱 生长 → 【自然舒展 / 基准稳态】</li>
+        <li>🐚 卷缩 → 【休眠警惕 / 假死态】</li>
+        <li>🪦 被掩埋 → 【物理断电 / 创伤禁区】</li>
+    </ul>
+</div>
+<div class="concept-section">
+    <h4>2️⃣ 引擎概念（五种驱动力）</h4>
+    <div class="engine-grid">
+        <div class="engine-card"><strong>O｜结构性 (Order)</strong><br>结晶本能：追求秩序与可预测性。用户体感：“我需要一切都在掌控中”。</div>
+        <div class="engine-card"><strong>V｜锚定性 (Validation)</strong><br>回声本能：追求被看见与被反馈。用户体感：“我需要知道我在客观实体眼里是什么样”。</div>
+        <div class="engine-card"><strong>D｜动力性 (Dynamics)</strong><br>燃烧本能：追求变化与新鲜感。用户体感：“停滞让我窒息，渴望热血瞬间”。</div>
+        <div class="engine-card"><strong>E｜扩张性 (Sovereignty-Need)</strong><br>狩猎本能：吞噬变量，追求绝对自由。用户体感：“我要不断吞噬变量，直到我的地盘我说了算”。</div>
+        <div class="engine-card"><strong>T｜超越性 (Transcendence)</strong><br>聚变本能：追求神性与终极真理。用户体感：“我只想看透这个世界的终极真相”。</div>
+    </div>
+</div>
+<div class="concept-section">
+    <h4>3️⃣ 沙盒概念（六个现实域）</h4>
+    <div class="sandbox-grid">
+        <div class="sandbox-card"><strong>PN 物理底盘</strong><br>生物性存活边界：身体、资产、安全底线。</div>
+        <div class="sandbox-card"><strong>AN 能力进化</strong><br>自我迭代算法：技能、知识、成长路径。</div>
+        <div class="sandbox-card"><strong>RN 深度连接</strong><br>灵魂信任局域网：亲密关系、核心社交。</div>
+        <div class="sandbox-card"><strong>IN 社会舞台</strong><br>生态位坐标仪：群体归属、话语权、位置。</div>
+        <div class="sandbox-card"><strong>FN 系统运转</strong><br>共识层结构：SOP、规则、自动化机制。</div>
+        <div class="sandbox-card"><strong>MN 意义导航</strong><br>统摄层解释权：信念、价值观、人生剧本。</div>
+    </div>
+</div>
+<hr style="margin: 20px 0; border-color: #bfd9ff;">
+`;
+        // ====================================================
         // 状态矩阵
         let seedStatus = {};
         for(let e of engines) {
@@ -728,6 +771,43 @@
     });
     
     renderAllQuestions();
+</script>
+<!-- AI 提示词模块，放在 footer 上方 -->
+<div style="margin-top: 48px; padding: 20px; background: #f0f5ff; border-radius: 24px; border: 1px solid #bfd9ff;">
+    <h3 style="color: #1e3a8a; margin-bottom: 12px;">🤖 与 AI 深入分析 · 操作说明</h3>
+    <p style="margin-bottom: 12px;">【具体沙盒与具体引擎】之间的五行生克关系，可借助 AI 进行个性化推演。测量工具的价值在于提供一个阿基米德支点，而非穷尽真理。人类的体感是流动的。强行在六个沙盒里塞满描述，不仅耗费极高的创作成本，还容易因作者自身经验的盲区导致“翻车”。</p>
+    <p style="margin-bottom: 12px;"><strong>👉 复制下方文字，粘贴并发送给任意 AI：</strong></p>
+    <textarea id="aiPromptTemplate" rows="10" style="width: 100%; background: white; border: 1px solid #bfd9ff; border-radius: 16px; padding: 12px; font-family: monospace; font-size: 0.85rem;" readonly>
+对话背景：我完成了一套名为心灵地图 · 五行驱动力与沙盒的心理测试。我会提供我的底层代码和具体的沙盒数据，请帮我推演它在现实生活中是怎么卡住我的。
+
+我的关心的底层代码（生克关系）：
+【请从上方报告中复制“触发的因果链”中的某一条，例如：旺T克衰V，描述...】
+
+我现在针对的（沙盒）：
+【例如：RN 深度连接-局域网，或附上你的引擎×沙盒热度图截图】
+
+我的具体烦恼：
+【在这里写下你最近心烦的一件事，越具体越好】
+
+请帮我分析：
+1. 看破根因：结合这个沙盒里各引擎的得分（繁茂/生长/卷缩/被掩埋），直接告诉我为什么我的“底层代码”在这个场景里失灵了？
+2. 推演后果：如果我顺着本能不管它，在这个具体的沙盒，这件事最后会烂成什么样？
+3. 给个“解药”：给我一个反本能的、立刻就能做的物理动作，帮我强行制衡目前的局面。
+
+要求：说话直接点，简单点，别绕弯子，别给鸡汤。
+    </textarea>
+    <div style="margin-top: 12px; display: flex; gap: 12px; justify-content: flex-end;">
+        <button id="copyPromptBtn" style="background: #1e4bd2; border: none; color: white; padding: 6px 16px; border-radius: 30px; cursor: pointer;">📋 复制提示词</button>
+    </div>
+    <p style="font-size: 0.75rem; color: #5b6e8c; margin-top: 12px;">💡 提示：您可以先复制上方因果链中的具体描述，填入“底层代码”位置；再选择您感到困惑的沙盒（如PN、RN等），描述具体烦恼，AI 会给出针对性建议。</p>
+</div>
+<script>
+    document.getElementById('copyPromptBtn')?.addEventListener('click', function() {
+        const textarea = document.getElementById('aiPromptTemplate');
+        textarea.select();
+        document.execCommand('copy');
+        alert('提示词已复制，可粘贴到 AI 对话中');
+    });
 </script>
 </body>
 </html>
