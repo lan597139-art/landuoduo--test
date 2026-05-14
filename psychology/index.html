@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>心灵地图 · 五行驱动力与沙盒生态探测</title>
+    <title>心灵地图 · 五行驱动力与沙盒生态探测 | 完整版</title>
     <style>
         * {
             margin: 0;
@@ -11,17 +11,16 @@
             box-sizing: border-box;
         }
         body {
-            background: #eef2ff;  /* 高纯度蓝色调外背景 */
+            background: #eef2ff;
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
             padding: 24px 20px;
             color: #0f172a;
         }
-        /* 主容器白色背景，蓝色边框 */
         .app-container {
             max-width: 1400px;
             margin: 0 auto;
             background: #ffffff;
-            border: 2px solid #1e4bd2;   /* 高纯度蓝色边框 */
+            border: 2px solid #1e4bd2;
             border-radius: 28px;
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
             overflow: hidden;
@@ -193,16 +192,10 @@
             margin: 18px 0;
             font-weight: 500;
         }
-        .status-bloom { background-color: rgba(144, 238, 144, 0.55); }   /* 草绿透明 */
-        .status-grow { background-color: rgba(173, 216, 230, 0.6); }    /* 淡蓝 */
-        .status-shrink { background-color: rgba(255, 255, 0, 0.45); }   /* 淡黄透明 */
-        .status-buried { background-color: rgba(255, 99, 71, 0.45); }    /* 红透 */
-        .inline-status {
-            padding: 2px 8px;
-            border-radius: 30px;
-            font-weight: 500;
-            font-size: 0.75rem;
-        }
+        .status-bloom { background-color: rgba(144, 238, 144, 0.55); }
+        .status-grow { background-color: rgba(173, 216, 230, 0.6); }
+        .status-shrink { background-color: rgba(255, 255, 0, 0.45); }
+        .status-buried { background-color: rgba(255, 99, 71, 0.45); }
         .missing-warning {
             color: #b91c1c;
             font-size: 0.8rem;
@@ -218,7 +211,7 @@
 <div class="app-container" id="app">
     <h1>🧭 心灵地图 · 五行驱动力与沙盒生态探测</h1>
     <div class="sub">
-        <span>90道频率题 + 18道迫选结构题 | 绘制内在能量分布</span>
+        <span>90道频率题 + 18道迫选结构题 | 绘制内在能量地图</span>
         <div class="progress-box" id="progressDisplay">📋 进度 0 / 108</div>
     </div>
 
@@ -238,14 +231,15 @@
 
 <script>
     // --------------------------------------------------------------
-    // 1. 完整题库构建 (90道频率题 + 18迫选)  题干严格按原文档原文
+    // 1. 引擎与沙盒基础映射
     // --------------------------------------------------------------
     const engines = ['O','V','D','E','T'];
     const sandboxes = ['PN','AN','RN','IN','MN','FN'];
     const engineFull = { O:'O-金-收束', V:'V-土-承载', D:'D-火-突破', E:'E-水-漫延', T:'T-木-穿透' };
     const sandboxFull = { PN:'物理底盘', AN:'能力进化', RN:'深度连接', IN:'社会舞台', MN:'意义导航', FN:'系统运转' };
-
-    // 频率题完整题干 (依据文档原文，每个引擎×沙盒3题)
+    const elementMap = { O:'金', V:'土', D:'火', E:'水', T:'木' };
+    
+    // 频率题完整题干 (依据原文档)
     const freqTexts = {
         'O_PN': ['我能清晰感知自己身体的边界——什么时候该休息、什么时候还能继续。','我对钱、物资、生活空间有明确的规划和控制感。','当身体发出疲惫信号时，我能按自己定的规则停下来，而不是被外部压力推着继续。'],
         'O_AN': ['我对自己的成长路径有清晰的阶段性规划。','我能按计划推进学习或能力提升，每一步都清楚自己在做什么。','复盘自己的进步和不足时，我能客观地看到规律，而不是笼统地觉得自己不够好。'],
@@ -279,12 +273,13 @@
         'T_FN': ['我能够跳出具体流程，抽象出背后的底层机制和第一性原理。','当系统出现问题时，我能从模型层面诊断，而不是只修表面。','我能从不同领域的系统中提取共性规律，形成跨域的洞察。']
     };
     
+    // 构建频率题列表
     let freqQuestions = [];
     let qid = 0;
     for(let e of engines) {
         for(let s of sandboxes) {
             const key = `${e}_${s}`;
-            const texts = freqTexts[key] || [`${engineFull[e]}在${sandboxFull[s]}探测1`,'探测2','探测3'];
+            const texts = freqTexts[key];
             for(let idx=0; idx<3; idx++) {
                 freqQuestions.push({
                     id: qid++,
@@ -299,7 +294,7 @@
         }
     }
     
-    // 18道迫选题完整 (依据文档 Q1/Q2/Q3)
+    // 18道迫选题完整 (包含所有选项原文)
     const forcedQuestions = [
         { id: 200, sandbox:'PN', qtype:'Q1', text:'你最依赖什么来稳住自己？', opts:['A. 靠在最熟悉的环境里待着，这里有我需要的安全感','B. 靠自己把一切都整理好、按计划来——秩序让我感到踏实','C. 靠手里的资源足够多、余地足够大——有后路就不慌','D. 靠能随时调整状态、说动就能动起来的能力','E. 靠跳出身体感受，从更高处看一切——这具身体只是载体'] },
         { id: 201, sandbox:'PN', qtype:'Q2', text:'你最难忍受什么？', opts:['A. 身体和精力的透支——那之后我对消耗变得格外警惕','B. 资源突然缩减——经历过一次不安全之后，我对储备特别在意','C. 身体被困住动不了——那让我感觉像被活埋','D. 长期处于匮乏但没崩溃的灰色状态——慢性消耗比一次爆发更折磨','E. 身体被过度关注——我不太愿意把注意力放在身体感受上'] },
@@ -324,6 +319,15 @@
     // 答案存储
     let answers = { freq: {}, forced: {} };
     
+    // 频率选项完整文字
+    const freqOptionTexts = {
+        'A': 'A. 从未有过这种感觉',
+        'B': 'B. 偶尔有，但很快就过去了',
+        'C': 'C. 有时会有这种感觉',
+        'D': 'D. 经常这样',
+        'E': 'E. 这就是我的常态'
+    };
+    
     // 渲染全部题目
     function renderAllQuestions() {
         let html = '';
@@ -336,7 +340,7 @@
                         <div class="q-title">${q.label}</div>
                         <div class="q-text">${q.text}</div>
                         <div class="options">
-                            ${['A','B','C','D','E'].map(opt => `<label><input type="radio" name="freq_${q.id}" value="${opt}" ${ans===opt ? 'checked' : ''}> ${opt}</label>`).join('')}
+                            ${['A','B','C','D','E'].map(opt => `<label><input type="radio" name="freq_${q.id}" value="${opt}" ${ans===opt ? 'checked' : ''}> ${freqOptionTexts[opt]}</label>`).join('')}
                         </div>
                     </div>`;
         });
@@ -399,9 +403,50 @@
         }
     }
     
-    // 后台计算核心 (同之前逻辑, 细化)
-    function computeFullReport() {
-        // 构建engineScores, sandboxTotals, 状态等
+    // 辅助：获取状态文字及颜色类
+    function getState(score) { if(score<=5) return '被掩埋'; else if(score<=9) return '卷缩'; else if(score<=12) return '生长'; else return '繁茂'; }
+    
+    // 引擎体感关键词词典
+    function getEngineKeyword(engine, total) {
+        if(total>=65) {
+            if(engine==='T') return '思考极深、能看透本质、追问不断';
+            if(engine==='O') return '规则意识强、边界清晰、追求闭环';
+            if(engine==='D') return '行动力强、破局冲动充沛、能推动变化';
+            if(engine==='V') return '安全感足、能承载波动、有踏实底座';
+            if(engine==='E') return '愿尝试新事物、能拓展连接、版图意识强';
+        } else if(total>=50) {
+            if(engine==='T') return '思考活跃、常追问为什么、能穿透表象';
+            if(engine==='O') return '边界维持耗能增加，闭环勉强完成';
+            if(engine==='D') return '破局动能存在但释放滞后，行动力间歇性';
+            if(engine==='V') return '底座轻微摇摆，承载依赖外部补偿';
+            if(engine==='E') return '扩张动能受阻，连接停留在浅层';
+        } else if(total>=35) {
+            if(engine==='T') return '思考时有中断、追问冲动被压制';
+            if(engine==='O') return '规则意识松动、边界被侵蚀';
+            if(engine==='D') return '行动力受损、破局冲动减弱';
+            if(engine==='V') return '安全感缺失、底座松动';
+            if(engine==='E') return '拓展意愿减弱、连接萎缩';
+        } else {
+            if(engine==='T') return '认知僵化、丧失追问意愿';
+            if(engine==='O') return '结构解体、边界完全丧失';
+            if(engine==='D') return '行动力瘫痪、破局冲动熄灭';
+            if(engine==='V') return '安全感崩塌、底座瓦解';
+            if(engine==='E') return '绝对孤立、切断外部连接';
+        }
+        return '';
+    }
+    
+    // 沙盒体感mid描述
+    function getSandboxMidDesc(sandbox, total) {
+        if(total>=50) return '底盘稳固/活力充沛';
+        if(total>=40) return '基本可运转但有消耗';
+        if(total>=30) return '边界模糊/承压';
+        return '濒临崩塌/资源焦虑';
+    }
+    
+    // 完整报告生成（无缩水）
+    function generateFullReport() {
+        // 计算引擎得分
         let engineScores = { O:{}, V:{}, D:{}, E:{}, T:{} };
         freqQuestions.forEach(q => {
             let ans = answers.freq[q.id];
@@ -409,80 +454,151 @@
             engineScores[q.engine][q.sandbox] = (engineScores[q.engine][q.sandbox] || 0) + score;
         });
         let sandboxTotals = { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
-        for(let e of engines) {
-            for(let s of sandboxes) {
-                let sc = engineScores[e][s] || 0;
-                sandboxTotals[s] += sc;
-            }
-        }
+        for(let e of engines) for(let s of sandboxes) sandboxTotals[s] += (engineScores[e][s] || 0);
         let engineTotals = {};
         for(let e of engines) {
             let total = 0;
             for(let s of sandboxes) total += (engineScores[e][s] || 0);
             engineTotals[e] = total;
         }
-        function getState(score) { if(score<=5) return '被掩埋'; else if(score<=9) return '卷缩'; else if(score<=12) return '生长'; else return '繁茂'; }
+        // 状态矩阵
         let seedStatus = {};
         for(let e of engines) {
             seedStatus[e] = {};
-            for(let s of sandboxes) {
-                let sc = engineScores[e][s];
-                seedStatus[e][s] = getState(sc);
-            }
+            for(let s of sandboxes) seedStatus[e][s] = getState(engineScores[e][s]);
         }
-        let countFM=0, countSZ=0, countJS=0, countBYM=0;
+        // 统计计数
+        let countFM=0,countSZ=0,countJS=0,countBYM=0;
         for(let e of engines) for(let s of sandboxes) {
             let st = seedStatus[e][s];
             if(st==='繁茂') countFM++; else if(st==='生长') countSZ++; else if(st==='卷缩') countJS++; else countBYM++;
         }
+        // 综合判定
         let maxE = Object.keys(engineTotals).reduce((a,b)=> engineTotals[a]>engineTotals[b]?a:b);
-        let minE = Object.keys(engineTotals).reduce((a,b)=> engineTotals[a]<engineTotals[b]?a:b);
+        let secondMax = Object.keys(engineTotals).sort((a,b)=>engineTotals[b]-engineTotals[a])[1];
+        let verdict = '';
+        if(countFM>=10 && countBYM<=3) verdict = '整体生命活力充沛，多引擎协同活跃，能量格局呈多点开花态势。';
+        else if(countFM<=5 && (countJS+countBYM)>=20 && engineTotals[maxE] > engineTotals[secondMax]*1.3) verdict = '整体生命活力偏低，能量格局呈单引擎独旺、其余全面收缩的失衡状态。';
+        else if(countJS >= 30) verdict = '整体偏向保守收缩，多股驱动力处于休眠待激活状态。';
+        else verdict = '整体能量分布不均，存在明显的优势区和薄弱区。';
         
-        // 表格渲染带颜色样式
-        let tableHtml = `<table><thead><tr><th>项目\\沙盒</th><th>PN</th><th>AN</th><th>RN</th><th>IN</th><th>MN</th><th>FN</th><th>总分</th></tr></thead><tbody>`;
+        // 引擎体感判定表
+        let engineBodyHtml = `<h3>二、⚙️ 引擎体感判定</h3><table><thead><tr><th>引擎</th><th>覆盖面积</th><th>体感描述</th></tr></thead><tbody>`;
         for(let e of engines) {
-            let row = `<tr><td style="font-weight:600">${engineFull[e]}</td>`;
-            for(let s of sandboxes) {
-                let sc = engineScores[e][s];
-                let st = seedStatus[e][s];
-                let colorClass = '';
-                if(st==='繁茂') colorClass = 'status-bloom';
-                else if(st==='生长') colorClass = 'status-grow';
-                else if(st==='卷缩') colorClass = 'status-shrink';
-                else if(st==='被掩埋') colorClass = 'status-buried';
-                row += `<td class="${colorClass}">${sc}<br>${st}</td>`;
-            }
-            row += `<td><strong>${engineTotals[e]}</strong></td></tr>`;
-            tableHtml += row;
+            let fm = Object.values(seedStatus[e]).filter(v=>v==='繁茂').length;
+            let sz = Object.values(seedStatus[e]).filter(v=>v==='生长').length;
+            let js = Object.values(seedStatus[e]).filter(v=>v==='卷缩').length;
+            let bym = Object.values(seedStatus[e]).filter(v=>v==='被掩埋').length;
+            let keyword = getEngineKeyword(e, engineTotals[e]);
+            engineBodyHtml += `<tr><td>${engineFull[e]}</td><td>繁茂${fm}个、生长${sz}个、卷缩${js}个、被掩埋${bym}个</td><td>${keyword}</td></tr>`;
         }
-        tableHtml += `<tr style="background:#f5f9ff;"><td style="font-weight:600">沙盒总分</td>`;
-        for(let s of sandboxes) tableHtml += `<td><strong>${sandboxTotals[s]}</strong></td>`;
-        tableHtml += `<td>—</td></tr></tbody></table>`;
+        engineBodyHtml += `</tbody></table>`;
         
-        let verdict = (countFM>=10 && countBYM<=3) ? '整体生命活力充沛，多引擎协同活跃' : (countFM<=5 && (countJS+countBYM)>=20 && engineTotals[maxE]>(engineTotals[Object.keys(engineTotals).sort((a,b)=>engineTotals[b]-engineTotals[a])[1]]*1.3) ? '单引擎独旺，其余全面收缩' : (countJS>=30 ? '偏向保守收缩，多股驱动力休眠待激活' : '能量分布不均，优势区和薄弱区并存'));
+        // 沙盒体感判定表
+        let sandboxBodyHtml = `<h3>三、🧩 沙盒体感判定</h3><table><thead><tr><th>沙盒</th><th>意象</th><th>体感分数</th><th>体感描述</th></tr></thead><tbody>`;
+        for(let s of sandboxes) {
+            let total = sandboxTotals[s];
+            let midDesc = getSandboxMidDesc(s, total);
+            sandboxBodyHtml += `<tr><td>${s}</td><td>${sandboxFull[s]}</td><td>${total}</td><td>${midDesc}</td></tr>`;
+        }
+        sandboxBodyHtml += `</tbody></table>`;
         
-        let chainMsg = [];
-        const ke = { T:'V', V:'E', E:'D', D:'O', O:'T' };
-        const sheng = { T:'D', D:'V', V:'O', O:'E', E:'T' };
+        // 9号追选题记录
+        let forcedRecords = `<h3>四、🔍 9号追选题作答记录</h3><table><thead><tr><th>沙盒</th><th>Q1 最依赖的驱动力</th><th>Q2 经历过的创伤</th><th>Q3 最深的恐惧</th></tr></thead><tbody>`;
+        for(let s of sandboxes) {
+            let q1 = forcedQuestions.find(f => f.sandbox===s && f.qtype==='Q1');
+            let q2 = forcedQuestions.find(f => f.sandbox===s && f.qtype==='Q2');
+            let q3 = forcedQuestions.find(f => f.sandbox===s && f.qtype==='Q3');
+            let q1Ans = answers.forced[q1?.id] || '';
+            let q2Ans = answers.forced[q2?.id] || '';
+            let q3Ans = answers.forced[q3?.id] || '';
+            let q1Text = q1Ans ? (q1.opts[parseInt(q1Ans.charCodeAt(0)-65)] || '') : '';
+            let q2Text = q2Ans ? (q2.opts[parseInt(q2Ans.charCodeAt(0)-65)] || '') : '';
+            let q3Text = q3Ans ? (q3.opts[parseInt(q3Ans.charCodeAt(0)-65)] || '') : '';
+            forcedRecords += `<tr><td>${sandboxFull[s]}</td><td>${q1Ans} – ${q1Text}</td><td>${q2Ans} – ${q2Text}</td><td>${q3Ans} – ${q3Text}</td></tr>`;
+        }
+        forcedRecords += `</tbody></table>`;
+        
+        // 因果链分析（旺衰判定及触发机制）
         function isWang(e) { return engineTotals[e]>=65 || Object.values(seedStatus[e]).filter(v=>v==='繁茂').length>=3; }
         function isShuai(e) { return engineTotals[e]<35 || Object.values(seedStatus[e]).filter(v=>v==='被掩埋').length>=1; }
-        if(isWang(maxE) && isShuai(minE) && ke[maxE]===minE) chainMsg.push(`旺克衰 · ${engineFull[maxE]}克${engineFull[minE]}：克者势如破竹，被克者无力招架。`);
-        if(isWang(minE) && isShuai(maxE) && ke[minE]===maxE) chainMsg.push(`衰克旺 · ${engineFull[minE]}克${engineFull[maxE]}：钝刀砍树，刀崩树长。`);
-        let bothWang = Object.keys(engineTotals).filter(e=>isWang(e));
-        if(bothWang.length>=2) chainMsg.push(`检测到强引擎共存：${bothWang.map(e=>engineFull[e]).join(',')}，可能存在旺克旺或旺生旺演化。`);
+        let wangList = engines.filter(e => isWang(e)).map(e=>engineFull[e]);
+        let shuaiList = engines.filter(e => isShuai(e)).map(e=>engineFull[e]);
+        let healthyList = engines.filter(e => !Object.values(seedStatus[e]).includes('被掩埋')).map(e=>engineFull[e]);
+        // 生克映射
+        const shengMap = { T:'D', D:'V', V:'O', O:'E', E:'T' };
+        const keMap = { T:'V', V:'E', E:'D', D:'O', O:'T' };
+        let chainText = [];
+        // 找最高最低分引擎
+        let maxE_key = maxE, minE_key = Object.keys(engineTotals).reduce((a,b)=> engineTotals[a]<engineTotals[b]?a:b);
+        if(isWang(maxE_key) && isShuai(minE_key) && keMap[maxE_key]===minE_key) {
+            chainText.push(`➤ 旺克衰（${engineFull[maxE_key]}克${engineFull[minE_key]}）：克者势如破竹，被克者无力招架。核心动态：强势驱动力不断消耗弱势底盘。`);
+        }
+        if(isShuai(maxE_key) && isWang(minE_key) && keMap[minE_key]===maxE_key) {
+            chainText.push(`➤ 衰克旺（${engineFull[minE_key]}克${engineFull[maxE_key]}）：钝刀砍树，刀崩树长。弱势约束强势反而耗尽自身。`);
+        }
+        if(isWang(maxE_key) && isShuai(minE_key) && shengMap[maxE_key]===minE_key) {
+            chainText.push(`➤ 旺生衰（${engineFull[maxE_key]}生${engineFull[minE_key]}）：生者太旺压垮被生者，燃料堆太厚反而活埋火种。`);
+        }
+        if(isShuai(maxE_key) && isWang(minE_key) && shengMap[minE_key]===maxE_key) {
+            chainText.push(`➤ 衰生旺（${engineFull[minE_key]}生${engineFull[maxE_key]}）：生者太弱被反噬，稀薄资源被过度抽干。`);
+        }
+        // 强强组合
+        let bothWangPairs = [];
+        for(let i=0;i<engines.length;i++) {
+            for(let j=i+1;j<engines.length;j++) {
+                if(isWang(engines[i]) && isWang(engines[j])) bothWangPairs.push([engines[i],engines[j]]);
+            }
+        }
+        for(let [a,b] of bothWangPairs) {
+            if(keMap[a]===b) {
+                let hasBuried = Object.values(seedStatus[a]).includes('被掩埋') || Object.values(seedStatus[b]).includes('被掩埋');
+                if(hasBuried) chainText.push(`➤ 旺克旺·过载态（${engineFull[a]}克${engineFull[b]}）：强强相克但存在创伤断点，陷入互耗磨损。`);
+                else chainText.push(`➤ 旺克旺·健康态（${engineFull[a]}克${engineFull[b]}）：克者精准修剪，被克者因修剪更茁壮。`);
+            }
+            if(shengMap[a]===b) {
+                let hasBuried = Object.values(seedStatus[a]).includes('被掩埋') || Object.values(seedStatus[b]).includes('被掩埋');
+                if(hasBuried) chainText.push(`➤ 旺生旺·过载态（${engineFull[a]}生${engineFull[b]}）：能量过载，结构超压，催熟而难消化。`);
+                else chainText.push(`➤ 旺生旺·健康态（${engineFull[a]}生${engineFull[b]}）：能量顺畅传导，螺旋攀升。`);
+            }
+        }
+        if(chainText.length===0) chainText.push('未触发典型旺衰生克链，引擎间关系相对平衡。');
         
-        // 恐惧映射 (Q3)
-        const fearMeaning = { 'A':'失去依托/被拒绝/崩塌','B':'混乱/失控/被裹挟','C':'错过/被取代/不够大','D':'无力/被困/被压制','E':'不真实/表演/偏离本质' };
-        let q3Map = {};
-        forcedQuestions.filter(fq => fq.qtype === 'Q3').forEach(fq => { if(answers.forced[fq.id]) q3Map[fq.sandbox] = answers.forced[fq.id]; });
-        let fearHtml = `<table><thead><tr><th>沙盒</th><th>选项</th><th>恐惧含义</th></tr></thead><tbody>`;
+        let chainHtml = `<h3>五、⛓️ 因果链与层级流动分析</h3>
+        <p><strong>基础设定</strong><br>生循环：T🌲→ D🔥→ V⛰️→ O💎→ E🌊→ T🌲<br>克循环：T🌲→ V⛰️→ E🌊→ D🔥→ O💎→ T🌲</p>
+        <p><strong>引擎旺衰判定</strong><br>旺（总分≥65 或 繁茂≥3）：${wangList.join(', ') || '无'}<br>衰（总分&lt;35 或 至少1个被掩埋）：${shuaiList.join(', ') || '无'}<br>健康校验（无被掩埋）：${healthyList.join(', ') || '无'}</p>
+        <p><strong>触发的因果链</strong></p>${chainText.map(c=>`<p>${c}</p>`).join('')}`;
+        
+        // 恐惧禁区
+        let fearMap = { 'A':'失去依托/被拒绝/崩塌','B':'混乱/失控/被裹挟','C':'错过/被取代/不够大','D':'无力/被困/被压制','E':'不真实/表演/偏离本质' };
+        let fearHtml = `<h3>六、😨 恐惧禁区映射（Q3汇总）</h3><table><thead><tr><th>沙盒</th><th>Q3选项</th><th>恐惧含义</th></tr></thead><tbody>`;
         for(let s of sandboxes) {
-            let opt = q3Map[s] || '—';
-            fearHtml += `<tr><td>${sandboxFull[s]}</td><td>${opt}</td><td>${fearMeaning[opt] || '未选'}</td></tr>`;
+            let q3 = forcedQuestions.find(f => f.sandbox===s && f.qtype==='Q3');
+            let opt = answers.forced[q3?.id] || '—';
+            fearHtml += `<tr><td>${sandboxFull[s]}</td><td>${opt}</td><td>${fearMap[opt] || '未选'}</td></tr>`;
         }
         fearHtml += `</tbody></table>`;
         
-        return { tableHtml, countFM, countSZ, countJS, countBYM, verdict, chainMsg, fearHtml, engineTotals, seedStatus };
+        // 总览矩阵表格（带颜色）
+        let matrixHtml = `<h3>一、🌡️ 总览矩阵</h3><h4>引擎 × 沙盒 热度图</h4><table><thead><tr><th>项目\\沙盒</th><th>PN</th><th>AN</th><th>RN</th><th>IN</th><th>MN</th><th>FN</th><th>总分</th></tr></thead><tbody>`;
+        for(let e of engines) {
+            matrixHtml += `<tr><td style="font-weight:600">${engineFull[e]}</td>`;
+            for(let s of sandboxes) {
+                let sc = engineScores[e][s] || 0;
+                let st = seedStatus[e][s];
+                let colorClass = st==='繁茂'?'status-bloom':(st==='生长'?'status-grow':(st==='卷缩'?'status-shrink':'status-buried'));
+                matrixHtml += `<td class="${colorClass}">${sc}<br>${st}</td>`;
+            }
+            matrixHtml += `<td><strong>${engineTotals[e]}</strong></td></tr>`;
+        }
+        matrixHtml += `<tr style="background:#f5f9ff;"><td style="font-weight:600">沙盒总分</td>`;
+        for(let s of sandboxes) matrixHtml += `<td><strong>${sandboxTotals[s]}</strong></td>`;
+        matrixHtml += `<td>——</td></tr></tbody></table>`;
+        
+        let statsHtml = `<div class="stat-badge">🌳 繁茂：${countFM}个 🌱 生长：${countSZ}个 🐚 卷缩：${countJS}个 🪦 被掩埋：${countBYM}个</div>
+        <div><strong>🧩 综合判定</strong> ${verdict}</div>`;
+        
+        return matrixHtml + statsHtml + engineBodyHtml + sandboxBodyHtml + forcedRecords + chainHtml + fearHtml;
     }
     
     document.getElementById('submitReport').addEventListener('click', () => {
@@ -495,15 +611,8 @@
             scrollToFirstMissing();
             return;
         }
-        const rep = computeFullReport();
-        let fullHtml = `<div>${rep.tableHtml}</div>
-        <div class="stat-badge">🌳 繁茂:${rep.countFM} &nbsp; 🌱 生长:${rep.countSZ} &nbsp; 🐚 卷缩:${rep.countJS} &nbsp; 🪦 被掩埋:${rep.countBYM}</div>
-        <div><strong>🧩 综合判定：</strong>${rep.verdict}</div>
-        <h3>⚙️ 引擎体感简析</h3><ul>${Object.keys(rep.engineTotals).map(e => `<li>${engineFull[e]} (总分${rep.engineTotals[e]})</li>`).join('')}</ul>
-        <h3>⛓️ 因果链简析</h3><div>${rep.chainMsg.map(m=>`<p>${m}</p>`).join('')}</div>
-        <h3>😨 恐惧禁区 (Q3)</h3>${rep.fearHtml}
-        <p style="margin-top:20px; font-size:0.75rem;">报告基于90频率+18迫选生成 | 五行能量状态以表格颜色标注</p>`;
-        document.getElementById('reportHtml').innerHTML = fullHtml;
+        const fullReport = generateFullReport();
+        document.getElementById('reportHtml').innerHTML = fullReport;
         document.getElementById('reportSection').style.display = 'block';
         window.scrollTo({ top: document.getElementById('reportSection').offsetTop - 30, behavior: 'smooth' });
     });
