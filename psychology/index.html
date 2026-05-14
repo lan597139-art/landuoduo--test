@@ -1,355 +1,437 @@
+以下是您所需的“心灵地图 · 五行驱动力与沙盒生态探测报告”的HTML代码。它一比一还原了您提供的文档模板，包含总览矩阵、引擎体感、沙盒体感、追选题记录、因果链分析及恐惧禁区等所有模块，并以占位符形式保留了所有动态数据字段。
+```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>生命种子探测 · 心理测试</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>心灵地图 · 五行驱动力与沙盒生态探测报告</title>
     <style>
-        :root {
-            --blue-100: #e8f2fb;
-            --blue-200: #c5ddf5;
-            --blue-300: #9dc5ed;
-            --blue-400: #6da8e0;
-            --blue-500: #4a90d9;
-            --blue-600: #3578b8;
-            --blue-700: #2a5f94;
-            --blue-800: #1e4570;
-            --white: #ffffff;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --red-400: #f87171;
-            --red-500: #ef4444;
-            --amber-400: #fbbf24;
-            --amber-500: #f59e0b;
-            --green-400: #4ade80;
-            --green-500: #22c55e;
-            --purple-400: #c084fc;
-            --purple-500: #a855f7;
-            --emerald-500: #10b981;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
-            --radius: 8px;
-            --radius-lg: 12px;
-            --font-sans: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; font-size: 16px; }
-        body { font-family: var(--font-sans); background: #f0f4f8; color: var(--gray-800); line-height: 1.6; }
-        .top-bar { position: sticky; top: 0; z-index: 100; background: var(--white); border-bottom: 2px solid var(--blue-300); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; box-shadow: var(--shadow-sm); }
-        .top-bar .logo { font-weight: 700; font-size: 1.1rem; color: var(--blue-700); display: flex; align-items: center; gap: 6px; }
-        .top-bar .logo .icon-plant { font-size: 1.4rem; animation: sway 3s ease-in-out infinite; }
-        @keyframes sway { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
-        .progress-wrap { display: flex; align-items: center; gap: 8px; flex: 1; max-width: 400px; min-width: 150px; }
-        .progress-bar-outer { flex: 1; height: 10px; background: var(--gray-200); border-radius: 99px; overflow: hidden; }
-        .progress-bar-inner { height: 100%; background: linear-gradient(90deg, var(--blue-400), var(--blue-600)); border-radius: 99px; transition: width 0.35s; width: 0%; }
-        .progress-text { font-size: 0.85rem; font-weight: 600; color: var(--blue-700); }
-        .section-indicator { font-size: 0.8rem; color: var(--gray-500); background: var(--gray-100); padding: 4px 10px; border-radius: 99px; }
-        .main-container { max-width: 780px; margin: 0 auto; padding: 20px 16px 60px; }
-        .card { background: var(--white); border: 2px solid var(--blue-300); border-radius: var(--radius-lg); padding: 24px 20px; margin-bottom: 20px; box-shadow: var(--shadow); transition: 0.2s; }
-        .card.answered { border-color: var(--green-400); border-left: 4px solid var(--green-500); }
-        .q-number { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: var(--blue-500); color: #fff; font-weight: 700; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
-        .q-header { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px; }
-        .q-meta { display: flex; flex-direction: column; gap: 2px; }
-        .q-engine-sandbox { font-size: 0.75rem; color: var(--blue-600); font-weight: 600; }
-        .q-text { font-weight: 600; font-size: 1rem; color: var(--gray-800); }
-        .options-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .options-list label { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--gray-200); border-radius: var(--radius); cursor: pointer; background: var(--gray-50); font-size: 0.9rem; transition: 0.2s; }
-        .options-list label:hover { border-color: var(--blue-400); background: var(--blue-100); }
-        .options-list input[type="radio"] { accent-color: var(--blue-600); width: 18px; height: 18px; flex-shrink: 0; }
-        .options-list input:checked + span { font-weight: 600; color: var(--blue-700); }
-        .options-list label:has(input:checked) { border-color: var(--blue-500); background: #e8f2fb; }
-        .forced-choice .q-number { background: var(--purple-500); }
-        .forced-choice.answered { border-color: var(--emerald-500); border-left: 4px solid var(--emerald-500); }
-        .btn-submit { display: block; width: 100%; max-width: 400px; margin: 30px auto; padding: 14px; background: var(--blue-600); color: #fff; font-weight: 700; border: none; border-radius: 99px; cursor: pointer; font-size: 1.05rem; letter-spacing: 0.4px; box-shadow: var(--shadow-md); transition: 0.2s; text-align: center; }
-        .btn-submit:hover { background: var(--blue-700); transform: translateY(-1px); }
-        .btn-submit:disabled { background: var(--gray-300); cursor: not-allowed; transform: none; }
-        .report-container { display: none; margin-top: 30px; }
-        .report-container.visible { display: block; }
-        .report-section { background: var(--white); border: 2px solid var(--blue-200); border-radius: var(--radius-lg); padding: 28px 22px; margin-bottom: 18px; box-shadow: var(--shadow); }
-        .report-section h2 { font-size: 1.3rem; color: var(--blue-800); margin-bottom: 14px; border-bottom: 2px solid var(--blue-200); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .report-section h3 { font-size: 1.05rem; color: var(--blue-700); margin: 16px 0 8px; font-weight: 700; }
-        .report-section p { margin-bottom: 10px; line-height: 1.7; }
-        .highlight { background: #fefce8; border-left: 4px solid var(--amber-400); padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin: 10px 0; }
-        .insight-box { background: var(--blue-100); border: 1px solid var(--blue-200); border-radius: var(--radius); padding: 14px 16px; margin: 10px 0; }
-        .matrix-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 14px 0; }
-        .matrix-table th, .matrix-table td { border: 1px solid var(--gray-200); padding: 8px 6px; text-align: center; }
-        .matrix-table th { background: var(--blue-100); color: var(--blue-800); font-weight: 700; }
-        .state-buried { background: #fee2e2; color: #991b1b; font-weight: 600; }
-        .state-shrinking { background: #fef3c7; color: #92400e; font-weight: 600; }
-        .state-growing { background: #d1fae5; color: #065f46; font-weight: 600; }
-        .state-lush { background: #bbf7d0; color: #14532d; font-weight: 700; }
-        .report-section ul { list-style: none; padding-left: 0; }
-        .report-section ul li { padding: 6px 0 6px 24px; position: relative; }
-        .report-section ul li::before { content: '🪴'; position: absolute; left: 0; top: 6px; font-size: 0.8rem; }
-        .tag { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 0.78rem; font-weight: 600; margin: 2px 4px; background: var(--blue-100); color: var(--blue-700); }
-        .tag.green { background: #d1fae5; color: #065f46; }
-        .tag.gold { background: #fef3c7; color: #92400e; }
-        .tag.red { background: #fee2e2; color: #991b1b; }
-        @media (max-width: 600px) { .card { padding: 16px 12px; } }
+
+        body {
+            background-color: #f5f3f0;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Noto Sans', sans-serif;
+            line-height: 1.5;
+            color: #1e2a2e;
+            padding: 2rem 1rem;
+        }
+
+        .report-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 标题与装饰 */
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2b5e3b, #7d4e2a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        .report-meta {
+            color: #5f6c6f;
+            border-bottom: 2px solid #e2e0db;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding-left: 0.5rem;
+            border-left: 6px solid #c9a87b;
+            color: #2c3e2b;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.2rem 0 0.8rem 0;
+            color: #3e5c3a;
+        }
+
+        .guide-box {
+            background: #fef7e8;
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            margin: 1rem 0 1.5rem 0;
+            border: 1px solid #f0e0c0;
+        }
+
+        .guide-box p {
+            font-weight: 600;
+            margin: 0.5rem 0 0.25rem;
+        }
+
+        .guide-box ul {
+            margin-left: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2rem 0;
+            font-size: 0.85rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+
+        th {
+            background-color: #eae7de;
+            color: #2c3e2b;
+            font-weight: 600;
+            padding: 10px 8px;
+            border: 1px solid #cfcbbc;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        td {
+            border: 1px solid #ddd8ce;
+            padding: 8px 6px;
+            text-align: center;
+            vertical-align: middle;
+            background-color: #fff;
+        }
+
+        /* 左对齐特定列 */
+        td:first-child, th:first-child {
+            background-color: #fcf9f2;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .table-caption {
+            font-size: 0.75rem;
+            color: #6a5c4c;
+            margin-top: -0.8rem;
+            margin-bottom: 1rem;
+            text-align: right;
+        }
+
+        .stat-badge {
+            display: inline-flex;
+            gap: 1rem;
+            background: #f2efe8;
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            margin: 0.5rem 0 1rem;
+            font-weight: 500;
+            flex-wrap: wrap;
+        }
+
+        .verdict {
+            background: #eef3e6;
+            padding: 0.8rem 1.2rem;
+            border-radius: 20px;
+            margin: 1rem 0;
+            font-style: normal;
+            border-left: 4px solid #8fbc6e;
+        }
+
+        .mono-placeholder {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            background: #f4f1ea;
+            padding: 0 2px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            color: #b45f2b;
+            white-space: nowrap;
+        }
+
+        .engine-icon {
+            font-weight: 600;
+        }
+
+        /* 因果链区域 */
+        .chain-placeholder {
+            background: #faf7f0;
+            padding: 1rem;
+            border-radius: 16px;
+            border: 1px dashed #cfcbbc;
+            font-family: monospace;
+            margin: 0.8rem 0;
+        }
+
+        footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 0.7rem;
+            color: #8e8a7c;
+            border-top: 1px solid #e2dbcf;
+            padding-top: 1.5rem;
+        }
+
+        @media (max-width: 780px) {
+            .report-container {
+                padding: 1rem;
+            }
+            td, th {
+                padding: 5px 4px;
+                font-size: 0.75rem;
+            }
+            h2 {
+                font-size: 1.4rem;
+            }
+        }
+        .sandbox-row td:first-child {
+            font-weight: 600;
+        }
+        .inline-code {
+            background: #f2efe4;
+            padding: 0.1rem 0.3rem;
+            border-radius: 8px;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
-<div class="top-bar">
-    <div class="logo"><span class="icon-plant">🪴</span> 生命种子探测</div>
-    <div class="progress-wrap"><div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div><span class="progress-text" id="progressText">0/108</span></div>
-    <span class="section-indicator" id="sectionLabel">频率选择</span>
+<div class="report-container">
+    <h1>🧭 心灵地图 · 五行驱动力与沙盒生态探测报告</h1>
+    <div class="report-meta">
+        <span>📄 报告编号：<span class="mono-placeholder">{{报告ID}}</span></span>
+        <span>👤 用户代号：<span class="mono-placeholder">{{用户姓名或昵称}}</span></span>
+        <span>📅 探测日期：<span class="mono-placeholder">{{YYYY-MM-DD}}</span></span>
+    </div>
+
+    <!-- 固定阅读指导 -->
+    <div class="guide-box">
+        <p>📖 阅读指导（每次报告开头固定输出）</p>
+        <p>1️⃣ 五行能量状态</p>
+        <ul>
+            <li>🌳 繁茂 → 【天赋冲动 / 过载代偿】</li>
+            <li>🌱 生长 → 【自然舒展 / 基准稳态】</li>
+            <li>🐚 卷缩 → 【休眠警惕 / 假死态】</li>
+            <li>🪦 被掩埋 → 【物理断电 / 创伤禁区】</li>
+        </ul>
+        <p>2️⃣ 引擎概念（五种驱动力）</p>
+        <ul>
+            <li>O｜结构性 (Order) -- 结晶本能：追求秩序与可预测性。</li>
+            <li>V｜锚定性 (Validation) -- 回声本能：追求被看见与被反馈。</li>
+            <li>D｜动力性 (Dynamics) -- 燃烧本能：追求变化与新鲜感。</li>
+            <li>E｜扩张性 (Sovereignty-Need) -- 狩猎本能：吞噬变量，追求绝对自由。</li>
+            <li>T｜超越性 (Transcendence) -- 聚变本能：追求神性与终极真理。</li>
+        </ul>
+        <p>3️⃣ 沙盒概念（六个现实域）</p>
+        <ul>
+            <li>PN 物理底盘 -- 生物性存活边界</li>
+            <li>AN 能力进化 -- 自我迭代算法</li>
+            <li>RN 深度连接 -- 灵魂信任局域网</li>
+            <li>IN 社会舞台 -- 生态位坐标仪</li>
+            <li>FN 系统运转 -- 共识层结构</li>
+            <li>MN 意义导航 -- 统摄层解释权</li>
+        </ul>
+    </div>
+
+    <!-- 一、总览矩阵 -->
+    <h2>一、🌡️ 总览矩阵</h2>
+    <h3>引擎 × 沙盒 热度图</h3>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>项目\沙盒</th><th>PN</th><th>AN</th><th>RN</th><th>IN</th><th>MN</th><th>FN</th><th>总分</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <!-- T-木-穿透 -->
+                    <tr>
+                        <td>T-木-穿透</td>
+                        <td>{{T_PN}}<br>{{T_PN状态}}</td>
+                        <td>{{T_AN}}<br>{{T_AN状态}}</td>
+                        <td>{{T_RN}}<br>{{T_RN状态}}</td>
+                        <td>{{T_IN}}<br>{{T_IN状态}}</td>
+                        <td>{{T_MN}}<br>{{T_MN状态}}</td>
+                        <td>{{T_FN}}<br>{{T_FN状态}}</td>
+                        <td><strong>{{T总分}}</strong></td>
+                    </tr>
+                    <!-- D-火-突破 -->
+                    <tr>
+                        <td>D-火-突破</td>
+                        <td>{{D_PN}}<br>{{D_PN状态}}</td>
+                        <td>{{D_AN}}<br>{{D_AN状态}}</td>
+                        <td>{{D_RN}}<br>{{D_RN状态}}</td>
+                        <td>{{D_IN}}<br>{{D_IN状态}}</td>
+                        <td>{{D_MN}}<br>{{D_MN状态}}</td>
+                        <td>{{D_FN}}<br>{{D_FN状态}}</td>
+                        <td><strong>{{D总分}}</strong></td>
+                    </tr>
+                    <!-- E-水-漫延 -->
+                    <tr>
+                        <td>E-水-漫延</td>
+                        <td>{{E_PN}}<br>{{E_PN状态}}</td>
+                        <td>{{E_AN}}<br>{{E_AN状态}}</td>
+                        <td>{{E_RN}}<br>{{E_RN状态}}</td>
+                        <td>{{E_IN}}<br>{{E_IN状态}}</td>
+                        <td>{{E_MN}}<br>{{E_MN状态}}</td>
+                        <td>{{E_FN}}<br>{{E_FN状态}}</td>
+                        <td><strong>{{E总分}}</strong></td>
+                    </tr>
+                    <!-- V-土-承载 -->
+                    <tr>
+                        <td>V-土-承载</td>
+                        <td>{{V_PN}}<br>{{V_PN状态}}</td>
+                        <td>{{V_AN}}<br>{{V_AN状态}}</td>
+                        <td>{{V_RN}}<br>{{V_RN状态}}</td>
+                        <td>{{V_IN}}<br>{{V_IN状态}}</td>
+                        <td>{{V_MN}}<br>{{V_MN状态}}</td>
+                        <td>{{V_FN}}<br>{{V_FN状态}}</td>
+                        <td><strong>{{V总分}}</strong></td>
+                    </tr>
+                    <!-- O-金-收束 -->
+                    <tr>
+                        <td>O-金-收束</td>
+                        <td>{{O_PN}}<br>{{O_PN状态}}</td>
+                        <td>{{O_AN}}<br>{{O_AN状态}}</td>
+                        <td>{{O_RN}}<br>{{O_RN状态}}</td>
+                        <td>{{O_IN}}<br>{{O_IN状态}}</td>
+                        <td>{{O_MN}}<br>{{O_MN状态}}</td>
+                        <td>{{O_FN}}<br>{{O_FN状态}}</td>
+                        <td><strong>{{O总分}}</strong></td>
+                    </tr>
+                    <!-- 沙盒总分行 -->
+                    <tr style="background-color: #f7f3ea; font-weight: 600;">
+                        <td>沙盒总分</td>
+                        <td><strong>{{PN总分}}</strong></td>
+                        <td><strong>{{AN总分}}</strong></td>
+                        <td><strong>{{RN总分}}</strong></td>
+                        <td><strong>{{IN总分}}</strong></td>
+                        <td><strong>{{MN总分}}</strong></td>
+                        <td><strong>{{FN总分}}</strong></td>
+                        <td>——</td>
+                    </tr>
+                </tbody>
+        </table>
+    </div>
+
+    <div class="stat-badge">
+        <span>🌳 繁茂共计：<span class="mono-placeholder">{{count_繁茂}}</span>个</span>
+        <span>🌱 生长共计：<span class="mono-placeholder">{{count_生长}}</span>个</span>
+        <span>🐚 卷缩共计：<span class="mono-placeholder">{{count_卷缩}}</span>个</span>
+        <span>🪦 被掩埋共计：<span class="mono-placeholder">{{count_被掩埋}}</span>个</span>
+    </div>
+    <div class="verdict">
+        🧩 综合判定：<span class="mono-placeholder">{{综合判定文本}}</span>
+    </div>
+
+    <!-- 二、引擎体感判定 -->
+    <h2>二、⚙️ 引擎体感判定</h2>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr><th>引擎</th><th>覆盖面积</th><th>体感描述</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>T-木-穿透</td><td>繁茂{{T_fm}}个、生长{{T_sz}}个、卷缩{{T_js}}个、被掩埋{{T_bym}}个</td><td>{{T_体感关键词}}</td></tr>
+                <tr><td>D-火-突破</td><td>繁茂{{D_fm}}个、生长{{D_sz}}个、卷缩{{D_js}}个、被掩埋{{D_bym}}个</td><td>{{D_体感关键词}}</td></tr>
+                <tr><td>E-水-漫延</td><td>繁茂{{E_fm}}个、生长{{E_sz}}个、卷缩{{E_js}}个、被掩埋{{E_bym}}个</td><td>{{E_体感关键词}}</td></tr>
+                <tr><td>V-土-承载</td><td>繁茂{{V_fm}}个、生长{{V_sz}}个、卷缩{{V_js}}个、被掩埋{{V_bym}}个</td><td>{{V_体感关键词}}</td></tr>
+                <tr><td>O-金-收束</td><td>繁茂{{O_fm}}个、生长{{O_sz}}个、卷缩{{O_js}}个、被掩埋{{O_bym}}个</td><td>{{O_体感关键词}}</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 三、沙盒体感判定 -->
+    <h2>三、🧩 沙盒体感判定</h2>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead><tr><th>沙盒</th><th>意象</th><th>体感分数</th><th>体感描述</th></tr></thead>
+            <tbody>
+                <tr><td>PN</td><td>物理底盘</td><td>{{PN总分}}</td><td>{{PN_体感描述}}</td></tr>
+                <tr><td>AN</td><td>能力进化</td><td>{{AN总分}}</td><td>{{AN_体感描述}}</td></tr>
+                <tr><td>RN</td><td>深度连接</td><td>{{RN总分}}</td><td>{{RN_体感描述}}</td></tr>
+                <tr><td>IN</td><td>社会舞台</td><td>{{IN总分}}</td><td>{{IN_体感描述}}</td></tr>
+                <tr><td>FN</td><td>系统运转</td><td>{{FN总分}}</td><td>{{FN_体感描述}}</td></tr>
+                <tr><td>MN</td><td>意义导航</td><td>{{MN总分}}</td><td>{{MN_体感描述}}</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 四、9号追选题作答记录 -->
+    <h2>四、🔍 9号追选题作答记录</h2>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr><th>沙盒</th><th>Q1 最依赖的驱动力</th><th>Q2 经历过的创伤</th><th>Q3 最深的恐惧</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>PN 物理底盘-硬件底盘</td><td>{{Q1_PN选项}} – {{Q1_PN描述}}</td><td>{{Q2_PN选项}} – {{Q2_PN原文}}</td><td>{{Q3_PN选项}} – {{Q3_PN原文}}</td></tr>
+                <tr><td>AN 能力进化-单机系统</td><td>{{Q1_AN选项}} – {{Q1_AN描述}}</td><td>{{Q2_AN选项}} – {{Q2_AN原文}}</td><td>{{Q3_AN选项}} – {{Q3_AN原文}}</td></tr>
+                <tr><td>RN 深度连接-局域网</td><td>{{Q1_RN选项}} – {{Q1_RN描述}}</td><td>{{Q2_RN选项}} – {{Q2_RN原文}}</td><td>{{Q3_RN选项}} – {{Q3_RN原文}}</td></tr>
+                <tr><td>IN 社会舞台-广域网</td><td>{{Q1_IN选项}} – {{Q1_IN描述}}</td><td>{{Q2_IN选项}} – {{Q2_IN原文}}</td><td>{{Q3_IN选项}} – {{Q3_IN原文}}</td></tr>
+                <tr><td>FN 系统运转-共识层</td><td>{{Q1_FN选项}} – {{Q1_FN描述}}</td><td>{{Q2_FN选项}} – {{Q2_FN原文}}</td><td>{{Q3_FN选项}} – {{Q3_FN原文}}</td></tr>
+                <tr><td>MN 意义导航-统摄层</td><td>{{Q1_MN选项}} – {{Q1_MN描述}}</td><td>{{Q2_MN选项}} – {{Q2_MN原文}}</td><td>{{Q3_MN选项}} – {{Q3_MN原文}}</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 五、因果链与层级流动分析 -->
+    <h2>五、⛓️ 因果链与层级流动分析</h2>
+    <h3>基础设定</h3>
+    <ul style="margin-bottom: 1rem;">
+        <li>五行生循环：T → D → V → O → E → T</li>
+        <li>五行克循环：T → V → E → D → O → T</li>
+    </ul>
+    <h3>引擎旺衰判定</h3>
+    <ul>
+        <li>旺（总分≥65 或 繁茂≥3）：<span class="mono-placeholder">{{旺引擎列表}}</span></li>
+        <li>衰（总分&lt;35 或 至少1个被掩埋）：<span class="mono-placeholder">{{衰引擎列表}}</span></li>
+        <li>健康校验（无被掩埋）：<span class="mono-placeholder">{{健康引擎列表}}</span></li>
+    </ul>
+    <h3>触发的因果链</h3>
+    <div class="chain-placeholder">
+        {{#每条触发链重复以下结构}}<br>
+        ➤ {{因果链标题}}（{{关系判定}}）<br>
+        {{核心动态描述}}<br>
+        {{/每条}}
+    </div>
+
+    <!-- 六、恐惧禁区映射 -->
+    <h2>六、😨 恐惧禁区映射（Q3汇总）</h2>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead><tr><th>沙盒</th><th>Q3选项</th><th>恐惧含义</th></tr></thead>
+            <tbody>
+                <tr><td>PN</td><td>{{Q3_PN选项}}</td><td>{{Q3_PN含义}}</td></tr>
+                <tr><td>AN</td><td>{{Q3_AN选项}}</td><td>{{Q3_AN含义}}</td></tr>
+                <tr><td>RN</td><td>{{Q3_RN选项}}</td><td>{{Q3_RN含义}}</td></tr>
+                <tr><td>IN</td><td>{{Q3_IN选项}}</td><td>{{Q3_IN含义}}</td></tr>
+                <tr><td>FN</td><td>{{Q3_FN选项}}</td><td>{{Q3_FN含义}}</td></tr>
+                <tr><td>MN</td><td>{{Q3_MN选项}}</td><td>{{Q3_MN含义}}</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 文档中原有的额外聚合变量并未要求展示成表格，但为确保假代码完整，不丢失任何报告文字部分，
+         但根据原始报告模板结尾处无更多内容，上述已覆盖所有章节。 
+         另后台计算规则不展示于报告界面，完全遵照模板从“用户答题报告中心”之后一比一复现。 
+         同时保留了引擎体感短描述占位以及沙盒体感mid描述占位，所有占位符均严格参照原文案。  -->
+    <footer>
+        <span>报告生成依据：五行引擎·沙盒生态模型 · 基于90道频率探测 + 18迫选定位</span><br>
+        <span class="mono-placeholder">* 本报告为结构化占位模板，所有 {{变量}} 待实测数据注入 *</span>
+    </footer>
 </div>
-<div class="main-container" id="mainContainer"></div>
-<div style="text-align:center"><button class="btn-submit" id="btnSubmit" disabled onclick="submitAll()">🪴 提交全部答案，查看生命种子报告</button></div>
-<div class="report-container" id="reportContainer"></div>
-
-<script>
-    (function() {
-        // ═══════════════════════════════════════════
-        // 题目数据
-        // ═══════════════════════════════════════════
-        const frequencyQuestions = [
-            {id:1,engine:'O',sandbox:'PN',engineLabel:'结构引擎',sandboxLabel:'身体/空间/资源',text:'我能清晰感知自己身体的边界——什么时候该休息、什么时候还能继续。'},
-            {id:2,engine:'O',sandbox:'PN',engineLabel:'结构引擎',sandboxLabel:'身体/空间/资源',text:'我对钱、物资、生活空间有明确的规划和控制感。'},
-            {id:3,engine:'O',sandbox:'PN',engineLabel:'结构引擎',sandboxLabel:'身体/空间/资源',text:'当身体发出疲惫信号时，我能按自己定的规则停下来，而不是被外部压力推着继续。'},
-            {id:4,engine:'O',sandbox:'AN',engineLabel:'结构引擎',sandboxLabel:'成长/能力/路径',text:'我对自己的成长路径有清晰的阶段性规划。'},
-            {id:5,engine:'O',sandbox:'AN',engineLabel:'结构引擎',sandboxLabel:'成长/能力/路径',text:'我能按计划推进学习或能力提升，每一步都清楚自己在做什么。'},
-            {id:6,engine:'O',sandbox:'AN',engineLabel:'结构引擎',sandboxLabel:'成长/能力/路径',text:'复盘自己的进步和不足时，我能客观地看到规律，而不是笼统地觉得自己不够好。'},
-            {id:7,engine:'O',sandbox:'RN',engineLabel:'结构引擎',sandboxLabel:'关系/亲密/协作',text:'在关系中，我清楚自己的边界在哪里——什么是我的责任，什么是对方的。'},
-            {id:8,engine:'O',sandbox:'RN',engineLabel:'结构引擎',sandboxLabel:'关系/亲密/协作',text:'当关系中出现模糊地带时，我能够主动澄清规则或分工。'},
-            {id:9,engine:'O',sandbox:'RN',engineLabel:'结构引擎',sandboxLabel:'关系/亲密/协作',text:'我能按照自己设定的互动规则维护一段长期关系，不觉得被消耗。'},
-            {id:10,engine:'O',sandbox:'IN',engineLabel:'结构引擎',sandboxLabel:'群体/评价/位置',text:'我在群体中清楚自己的角色和定位，不乱位。'},
-            {id:11,engine:'O',sandbox:'IN',engineLabel:'结构引擎',sandboxLabel:'群体/评价/位置',text:'面对群体中的隐性规则，我能看透并找到自己的行动边界。'},
-            {id:12,engine:'O',sandbox:'IN',engineLabel:'结构引擎',sandboxLabel:'群体/评价/位置',text:'我能用清晰的规则保护自己，不被群体评价裹挟。'},
-            {id:13,engine:'O',sandbox:'MN',engineLabel:'结构引擎',sandboxLabel:'意义/信念/目标',text:'我有一套自洽的信念体系来指导自己的选择。'},
-            {id:14,engine:'O',sandbox:'MN',engineLabel:'结构引擎',sandboxLabel:'意义/信念/目标',text:'当现实反馈和原有信念冲突时，我能重新调整框架而不崩溃。'},
-            {id:15,engine:'O',sandbox:'MN',engineLabel:'结构引擎',sandboxLabel:'意义/信念/目标',text:'我的目标和行动之间有一条清晰的逻辑链——我知道自己为什么在做这件事。'},
-            {id:16,engine:'O',sandbox:'FN',engineLabel:'结构引擎',sandboxLabel:'机制/流程/系统',text:'我能够为自己建立有效的工作或生活习惯系统。'},
-            {id:17,engine:'O',sandbox:'FN',engineLabel:'结构引擎',sandboxLabel:'机制/流程/系统',text:'我建立的流程或规则，能稳定运行而不需要反复重建。'},
-            {id:18,engine:'O',sandbox:'FN',engineLabel:'结构引擎',sandboxLabel:'机制/流程/系统',text:'当旧系统失效时，我能快速迭代出新的机制。'},
-            {id:19,engine:'V',sandbox:'PN',engineLabel:'锚定引擎',sandboxLabel:'身体/空间/资源',text:'我的身体让我感到安全和踏实，不是负担。'},
-            {id:20,engine:'V',sandbox:'PN',engineLabel:'锚定引擎',sandboxLabel:'身体/空间/资源',text:'我在自己的居住空间里感到安稳和归属。'},
-            {id:21,engine:'V',sandbox:'PN',engineLabel:'锚定引擎',sandboxLabel:'身体/空间/资源',text:'我对自己的物质生活有稳定的安全感，不担心突然失去。'},
-            {id:22,engine:'V',sandbox:'AN',engineLabel:'锚定引擎',sandboxLabel:'成长/能力/路径',text:'我对自己正在走的路有一种持续的确认感——不摇摆、不漂移。'},
-            {id:23,engine:'V',sandbox:'AN',engineLabel:'锚定引擎',sandboxLabel:'成长/能力/路径',text:'即使成长速度不如预期，我仍然感到自己在正确的方向上。'},
-            {id:24,engine:'V',sandbox:'AN',engineLabel:'锚定引擎',sandboxLabel:'成长/能力/路径',text:'回顾过去几年的积累，我确信这些东西属于我、不会消失。'},
-            {id:25,engine:'V',sandbox:'RN',engineLabel:'锚定引擎',sandboxLabel:'关系/亲密/协作',text:'我至少有一个让我感到安全、可以依赖的人。'},
-            {id:26,engine:'V',sandbox:'RN',engineLabel:'锚定引擎',sandboxLabel:'关系/亲密/协作',text:'在重要关系中，我相信对方不会轻易离开或伤害我。'},
-            {id:27,engine:'V',sandbox:'RN',engineLabel:'锚定引擎',sandboxLabel:'关系/亲密/协作',text:'当我需要支持时，我知道可以向谁寻求帮助。'},
-            {id:28,engine:'V',sandbox:'IN',engineLabel:'锚定引擎',sandboxLabel:'群体/评价/位置',text:'我在某个群体中有稳定的归属感。'},
-            {id:29,engine:'V',sandbox:'IN',engineLabel:'锚定引擎',sandboxLabel:'群体/评价/位置',text:'即使不被所有人喜欢，我仍感到自己在群体中有立足之地。'},
-            {id:30,engine:'V',sandbox:'IN',engineLabel:'锚定引擎',sandboxLabel:'群体/评价/位置',text:'我不需要通过讨好来维持自己在群体中的位置。'},
-            {id:31,engine:'V',sandbox:'MN',engineLabel:'锚定引擎',sandboxLabel:'意义/信念/目标',text:'我内心有一个稳定的价值锚点，让我觉得自己的人生有方向。'},
-            {id:32,engine:'V',sandbox:'MN',engineLabel:'锚定引擎',sandboxLabel:'意义/信念/目标',text:'即使外部世界变化很快，我仍然相信某些东西是值得坚守的。'},
-            {id:33,engine:'V',sandbox:'MN',engineLabel:'锚定引擎',sandboxLabel:'意义/信念/目标',text:'我没有感到自己在意义的海洋里漂泊——我有自己的坐标。'},
-            {id:34,engine:'V',sandbox:'FN',engineLabel:'锚定引擎',sandboxLabel:'机制/流程/系统',text:'我依赖的日常习惯或系统让我感到踏实和安心。'},
-            {id:35,engine:'V',sandbox:'FN',engineLabel:'锚定引擎',sandboxLabel:'机制/流程/系统',text:'即使遇到意外，我知道自己的常规系统能兜住大部分日常运转。'},
-            {id:36,engine:'V',sandbox:'FN',engineLabel:'锚定引擎',sandboxLabel:'机制/流程/系统',text:'我不需要用尽意志力来维持基本的生活秩序——它们已经变成了稳定的习惯。'},
-            {id:37,engine:'D',sandbox:'PN',engineLabel:'动力引擎',sandboxLabel:'身体/空间/资源',text:'当我需要行动时，身体能给我足够的能量支撑。'},
-            {id:38,engine:'D',sandbox:'PN',engineLabel:'动力引擎',sandboxLabel:'身体/空间/资源',text:'我能主动调整身体状态——累了就休息，恢复后就行动，节奏在我手里。'},
-            {id:39,engine:'D',sandbox:'PN',engineLabel:'动力引擎',sandboxLabel:'身体/空间/资源',text:'面对体力上的挑战，我不害怕，甚至愿意试试自己能走多远。'},
-            {id:40,engine:'D',sandbox:'AN',engineLabel:'动力引擎',sandboxLabel:'成长/能力/路径',text:'遇到能力瓶颈时，我有推开它的冲动和能量。'},
-            {id:41,engine:'D',sandbox:'AN',engineLabel:'动力引擎',sandboxLabel:'成长/能力/路径',text:'我能主动向更难的目标发起冲刺，不需要别人催促。'},
-            {id:42,engine:'D',sandbox:'AN',engineLabel:'动力引擎',sandboxLabel:'成长/能力/路径',text:'即使在长期没有正反馈的阶段，我仍然保持着推进的动能。'},
-            {id:43,engine:'D',sandbox:'RN',engineLabel:'动力引擎',sandboxLabel:'关系/亲密/协作',text:'当关系中出现沉默或僵局时，我愿意主动打破它。'},
-            {id:44,engine:'D',sandbox:'RN',engineLabel:'动力引擎',sandboxLabel:'关系/亲密/协作',text:'我能推动一段关系向更真实、更深入的方向发展。'},
-            {id:45,engine:'D',sandbox:'RN',engineLabel:'动力引擎',sandboxLabel:'关系/亲密/协作',text:'在关系中遇到冲突时，我不会立刻想逃——我能在这个张力中站住。'},
-            {id:46,engine:'D',sandbox:'IN',engineLabel:'动力引擎',sandboxLabel:'群体/评价/位置',text:'在群体中，我有表达自己立场和争取位置的冲动。'},
-            {id:47,engine:'D',sandbox:'IN',engineLabel:'动力引擎',sandboxLabel:'群体/评价/位置',text:'当群体方向走偏时，我愿意提出不同意见。'},
-            {id:48,engine:'D',sandbox:'IN',engineLabel:'动力引擎',sandboxLabel:'群体/评价/位置',text:'面对群体中的竞争或挑战，我不会退缩。'},
-            {id:49,engine:'D',sandbox:'MN',engineLabel:'动力引擎',sandboxLabel:'意义/信念/目标',text:'我对过时的信念有质疑和打破的冲动。'},
-            {id:50,engine:'D',sandbox:'MN',engineLabel:'动力引擎',sandboxLabel:'意义/信念/目标',text:'我能主动重写自己已经不再相信的目标，而不是停在原地。'},
-            {id:51,engine:'D',sandbox:'MN',engineLabel:'动力引擎',sandboxLabel:'意义/信念/目标',text:'当旧意义崩塌后，我有动力去寻找新的意义，而不是陷入虚无。'},
-            {id:52,engine:'D',sandbox:'FN',engineLabel:'动力引擎',sandboxLabel:'机制/流程/系统',text:'当旧流程不再适用时，我有推倒重来的魄力。'},
-            {id:53,engine:'D',sandbox:'FN',engineLabel:'动力引擎',sandboxLabel:'机制/流程/系统',text:'我能主动发起系统层面的变革，而不是被动修补。'},
-            {id:54,engine:'D',sandbox:'FN',engineLabel:'动力引擎',sandboxLabel:'机制/流程/系统',text:'面对低效或僵化的机制，我有推动重构的行动力。'},
-            {id:55,engine:'E',sandbox:'PN',engineLabel:'扩张引擎',sandboxLabel:'身体/空间/资源',text:'我对自己能获得更多物质资源有信心。'},
-            {id:56,engine:'E',sandbox:'PN',engineLabel:'扩张引擎',sandboxLabel:'身体/空间/资源',text:'我能够主动扩大自己的生活空间或资源边界。'},
-            {id:57,engine:'E',sandbox:'PN',engineLabel:'扩张引擎',sandboxLabel:'身体/空间/资源',text:'面对新的资源机会时，我不会因为害怕失控而退缩。'},
-            {id:58,engine:'E',sandbox:'AN',engineLabel:'扩张引擎',sandboxLabel:'成长/能力/路径',text:'我对新的技能、知识或成长方向保持好奇和尝试的冲动。'},
-            {id:59,engine:'E',sandbox:'AN',engineLabel:'扩张引擎',sandboxLabel:'成长/能力/路径',text:'我能够在多个成长方向之间找到平衡，不觉得必须只选一条路。'},
-            {id:60,engine:'E',sandbox:'AN',engineLabel:'扩张引擎',sandboxLabel:'成长/能力/路径',text:'面对一个新领域，我愿意投入时间去探索，即使短期内没有成果。'},
-            {id:61,engine:'E',sandbox:'RN',engineLabel:'扩张引擎',sandboxLabel:'关系/亲密/协作',text:'我愿意主动认识新的人，扩大自己的关系网络。'},
-            {id:62,engine:'E',sandbox:'RN',engineLabel:'扩张引擎',sandboxLabel:'关系/亲密/协作',text:'我能够同时维护多段关系，不让任何一段感到被忽略。'},
-            {id:63,engine:'E',sandbox:'RN',engineLabel:'扩张引擎',sandboxLabel:'关系/亲密/协作',text:'在关系网络中，我善于连接不同的人，让资源在中间流动。'},
-            {id:64,engine:'E',sandbox:'IN',engineLabel:'扩张引擎',sandboxLabel:'群体/评价/位置',text:'我渴望进入更大的平台或更有影响力的圈层。'},
-            {id:65,engine:'E',sandbox:'IN',engineLabel:'扩张引擎',sandboxLabel:'群体/评价/位置',text:'我能够主动扩大自己在群体中的话语权和可见度。'},
-            {id:66,engine:'E',sandbox:'IN',engineLabel:'扩张引擎',sandboxLabel:'群体/评价/位置',text:'面对更多曝光和关注，我不会因为压力而收缩。'},
-            {id:67,engine:'E',sandbox:'MN',engineLabel:'扩张引擎',sandboxLabel:'意义/信念/目标',text:'我希望自己的理念或信念能够影响更多人。'},
-            {id:68,engine:'E',sandbox:'MN',engineLabel:'扩张引擎',sandboxLabel:'意义/信念/目标',text:'我能够将自己的价值观传播到更大的范围，而不只是自己默默相信。'},
-            {id:69,engine:'E',sandbox:'MN',engineLabel:'扩张引擎',sandboxLabel:'意义/信念/目标',text:'当我的理念被更多人接受时，我感到充实而不是恐慌。'},
-            {id:70,engine:'E',sandbox:'FN',engineLabel:'扩张引擎',sandboxLabel:'机制/流程/系统',text:'我能够将自己建立的系统复制到更大的范围。'},
-            {id:71,engine:'E',sandbox:'FN',engineLabel:'扩张引擎',sandboxLabel:'机制/流程/系统',text:'面对规模扩张，我的机制能保持稳定而不是失控。'},
-            {id:72,engine:'E',sandbox:'FN',engineLabel:'扩张引擎',sandboxLabel:'机制/流程/系统',text:'我善于将一个小范围有效的方法，放大为可规模化的流程。'},
-            {id:73,engine:'T',sandbox:'PN',engineLabel:'超越引擎',sandboxLabel:'身体/空间/资源',text:'我能够跳出身体的不适，从更高维度理解它背后的信号。'},
-            {id:74,engine:'T',sandbox:'PN',engineLabel:'超越引擎',sandboxLabel:'身体/空间/资源',text:'当被困在身体或物质的限制中时，我仍能保持精神的抽离和自由。'},
-            {id:75,engine:'T',sandbox:'PN',engineLabel:'超越引擎',sandboxLabel:'身体/空间/资源',text:'我能从身体和物质现实中提炼出规律或底层逻辑。'},
-            {id:76,engine:'T',sandbox:'AN',engineLabel:'超越引擎',sandboxLabel:'成长/能力/路径',text:'当原有成长路径失效时，我能重新定义什么是“成长”。'},
-            {id:77,engine:'T',sandbox:'AN',engineLabel:'超越引擎',sandboxLabel:'成长/能力/路径',text:'我能够跳出既定的能力评价标准，从更根本的角度看自己的发展。'},
-            {id:78,engine:'T',sandbox:'AN',engineLabel:'超越引擎',sandboxLabel:'成长/能力/路径',text:'我能从零散的经验中提炼出可迁移的规律或模型。'},
-            {id:79,engine:'T',sandbox:'RN',engineLabel:'超越引擎',sandboxLabel:'关系/亲密/协作',text:'我能够跳出情绪，看清楚一段关系的本质模式。'},
-            {id:80,engine:'T',sandbox:'RN',engineLabel:'超越引擎',sandboxLabel:'关系/亲密/协作',text:'当被困在关系纠结中时，我仍能抽离出来重新理解这段关系的底层动力学。'},
-            {id:81,engine:'T',sandbox:'RN',engineLabel:'超越引擎',sandboxLabel:'关系/亲密/协作',text:'我能从过去的关系经验中提炼出规律，而不是每次都从零开始。'},
-            {id:82,engine:'T',sandbox:'IN',engineLabel:'超越引擎',sandboxLabel:'群体/评价/位置',text:'我能够跳出群体评价，观察权力结构和社会运行机制。'},
-            {id:83,engine:'T',sandbox:'IN',engineLabel:'超越引擎',sandboxLabel:'群体/评价/位置',text:'当被舆论裹挟时，我能抽离出来看清背后是谁在设置议题。'},
-            {id:84,engine:'T',sandbox:'IN',engineLabel:'超越引擎',sandboxLabel:'群体/评价/位置',text:'我能从群体的表面互动中看出深层的结构和逻辑。'},
-            {id:85,engine:'T',sandbox:'MN',engineLabel:'超越引擎',sandboxLabel:'意义/信念/目标',text:'当我原有信念体系崩溃时，我能从更高维度重构它。'},
-            {id:86,engine:'T',sandbox:'MN',engineLabel:'超越引擎',sandboxLabel:'意义/信念/目标',text:'我能够跳出自己相信的东西，审视它是否仍然成立。'},
-            {id:87,engine:'T',sandbox:'MN',engineLabel:'超越引擎',sandboxLabel:'意义/信念/目标',text:'我能将个人经验升华为对人类处境的更深理解。'},
-            {id:88,engine:'T',sandbox:'FN',engineLabel:'超越引擎',sandboxLabel:'机制/流程/系统',text:'我能够跳出具体流程，抽象出背后的底层机制和第一性原理。'},
-            {id:89,engine:'T',sandbox:'FN',engineLabel:'超越引擎',sandboxLabel:'机制/流程/系统',text:'当系统出现问题时，我能从模型层面诊断，而不是只修表面。'},
-            {id:90,engine:'T',sandbox:'FN',engineLabel:'超越引擎',sandboxLabel:'机制/流程/系统',text:'我能从不同领域的系统中提取共性规律，形成跨域的洞察。'}
-        ];
-        const freqOpts = ['A. 从未有过这种感觉','B. 偶尔有，但很快就过去了','C. 有时会有这种感觉','D. 经常这样','E. 这就是我的常态'];
-        const forcedQuestions = [
-            {id:91,code:'PN-1',sandboxLabel:'身体/空间/资源',text:'你最依赖什么来稳住自己？',options:['A. 靠在最熟悉的环境里待着，这里有我需要的安全感','B. 靠自己把一切都整理好、按计划来——秩序让我感到踏实','C. 靠手里的资源足够多、余地足够大——有后路就不慌','D. 靠能随时调整状态、说动就能动起来的能力','E. 靠跳出身体感受，从更高处看一切——这具身体只是载体']},
-            {id:92,code:'PN-2',sandboxLabel:'身体/空间/资源',text:'你最难忍受什么？',options:['A. 身体和精力的透支——那之后我对消耗变得格外警惕','B. 资源突然缩减——经历过一次不安全之后，我对储备特别在意','C. 身体被困住动不了——那让我感觉像被活埋','D. 长期处于匮乏但没崩溃的灰色状态——慢性消耗比一次爆发更折磨','E. 身体被过度关注——我不太愿意把注意力放在身体感受上']},
-            {id:93,code:'PN-3',sandboxLabel:'身体/空间/资源',text:'当身体报警时，你更倾向怎么做？',options:['A. 先停一下，回到一个安全的地方缓一缓','B. 硬撑着把事情做完，然后按计划休息','C. 继续推进——还有机会和空间等着我去打开','D. 越累越冲——撞过去就能突破极限','E. 不太关注它——身体不舒服的时候，我就把注意力转移到思考上']},
-            {id:94,code:'AN-1',sandboxLabel:'成长/能力/路径',text:'你在成长中最依赖什么？',options:['A. 一个稳定的方向和身份锚点——让我知道自己一直在积累','B. 清晰的规划和阶段目标——每一步都踏在预定的轨道上','C. 不断有新的机会和可能性打开——让我看到更大的版图','D. 持续突破瓶颈的快感——冲不过去的东西让我兴奋','E. 跳出来重新定义“成长”本身——不被旧路径锁死']},
-            {id:95,code:'AN-2',sandboxLabel:'成长/能力/路径',text:'你经历过什么让你不再信任原有的成长方式？',options:['A. 沿着别人设定的路努力了很久，突然觉得这些没意义了','B. 花了很多时间提升某个能力，但它解决不了我真正在意的问题','C. 遇到意外或重大挫折，在那之后我重新定义了成长','D. 长期卡在一个地方，怎么都突破不了——对“变强”这件事失去了确定感','E. 我似乎从未认真相信过任何一条成长路径']},
-            {id:96,code:'AN-3',sandboxLabel:'成长/能力/路径',text:'你最不想面对什么？',options:['A. 发现自己一直走的路可能是错的，需要重新选择','B. 计划被打乱——没有清晰路径的时候我会感到焦虑','C. 只需要精耕一个方向的时候——我害怕错过了更多的可能性','D. 成长太慢了——我需要感受到明显的进展','E. 所有人都说这条路好，但我内心知道它不适合我']},
-            {id:97,code:'RN-1',sandboxLabel:'关系/亲密/协作',text:'你在关系中最依赖什么？',options:['A. 对方稳定的回应和陪伴——让我感到有安全底座','B. 清晰的边界和分工——让我知道什么是我的、什么是对方的','C. 关系能带来更多的连接和资源——让我的世界变得更大','D. 能推动关系变化的冲动——冲突和张力让我感觉自己还活着','E. 跳出情绪看清关系的底层模式——不被绑定']},
-            {id:98,code:'RN-2',sandboxLabel:'关系/亲密/协作',text:'你经历过什么让你对“信任”变得谨慎？',options:['A. 被过度索取或消耗——之后我对别人的热情和大方显著下降','B. 被辜负过信任——之后我的信任门槛明显变高了','C. 在协作中被过度担责收获低——之后我更倾向一个人做','D. 在关系中被拖慢或干扰——一个人更高效','E. 我本来就不太投入关系，更愿意相信事实，所以谈不上变得更谨慎']},
-            {id:99,code:'RN-3',sandboxLabel:'关系/亲密/协作',text:'曾经你最不敢在关系中做什么？',options:['A. 让对方看到我真实的需要——我怕被拒绝','B. 打破沉默和僵局——我不确定冲突会不会让关系更糟','C. 在关系混乱的时候提出明确的规则——我怕显得太冷','D. 信任他人并在适当的时候依赖他们——我怕暴露弱点','E. 主动结束一段已经不再滋养我的关系——我怕失去']},
-            {id:100,code:'IN-1',sandboxLabel:'圈层/评价/位置',text:'你在群体中最依赖什么？',options:['A. 一个稳定的位置和归属感——让我在群体里有落点','B. 清楚的规则和角色——让我知道怎样不乱位','C. 足够大的活动半径和辐射力——让更多人看到我','D. 能表达、竞争和争取位置的冲动——让我不被动吞没','E. 跳出评价看透群体结构——不被舆论牵着走']},
-            {id:101,code:'IN-2',sandboxLabel:'圈层/评价/位置',text:'你经历过什么让你对群体退避？',options:['A. 被持续误解或贴上不准确的标签——之后我不再让外部评价定义我','B. 因为不合群或坚持立场而付出代价——之后我减少了出头','C. 曾经争取位置但发现规则不公——之后我退出了','D. 我似乎从未真正关心过自己在群体里的位置','E. 我在群体里一直能被人看到真实的样子——没有退避']},
-            {id:102,code:'IN-3',sandboxLabel:'圈层/评价/位置',text:'你在群体中最怕什么？',options:['A. 被孤立——没有一个人站在我这边','B. 被评价体系裹挟——失去了自己的判断标准','C. 位置被取代——我在群体里的位置和话语权动摇','D. 被看到真实的自己——他们可能会发现我并不如表面那样','E. 冲突升级——我本意只是想表达不同意见']},
-            {id:103,code:'MN-1',sandboxLabel:'意义/信念/目标',text:'你在意义系统中最依赖什么？',options:['A. 一个能长期确认自我认同的信念锚点——让我不漂移','B. 一套清晰自洽的信念结构——让我的目标不散乱','C. 让我的观念影响更多人——进入更大的现实空间','D. 不断质疑和打破旧信念的冲动——让意义不僵化','E. 从更高层重构意义的能力——让我获得精神自由']},
-            {id:104,code:'MN-2',sandboxLabel:'意义/信念/目标',text:'你经历过什么让你对“意义”变得警觉？',options:['A. 曾经信过，后来发现它兑现不了——之后我对所有大道理都保持距离','B. 信了之后发现那只是环境氛围营造——不是我真正想要的','C. 被说得很好听但不切实际颅内高潮——之后我变得非常看重能不能落地','D. 我从来就没真正信过什么宏大的东西','E. 我仍然持有一个核心信念，它一直在给我方向']},
-            {id:105,code:'MN-3',sandboxLabel:'意义/信念/目标',text:'你在意义层面最不敢做什么？',options:['A. 放弃一个曾经让我确信的信念——空窗期太可怕了','B. 把我真正相信的东西说给别人听——我怕被嘲笑太理想化','C. 改变方向——已经在这条路上投入太多了','D. 承认自己其实没有真正相信什么东西——只是在表演','E. 拒绝外部给定的期望——我怕辜负期待']},
-            {id:106,code:'FN-1',sandboxLabel:'机制/流程/系统',text:'你在系统中最依赖什么？',options:['A. 固定的习惯和可依赖的模板——让系统不因变化而失灵','B. 清晰的流程和反馈闭环——让系统低损耗运行','C. 可复制放大的结构——让系统规模越来越大','D. 敢于打破旧流程的动力——不让系统被低效拖死','E. 抽离出来理解底层逻辑的能力——获得更高维控制']},
-            {id:107,code:'FN-2',sandboxLabel:'机制/流程/系统',text:'你经历过什么让你不再信任外部系统？',options:['A. 外部系统让我失望过——之后我自己给自己搭系统','B. 我遵守好的系统并从中受益——更信任清晰的外部规则','C. 外部环境太乱了——我不得不建一个自己能控制的空间','D. 我试着建立过自己的系统，但很难坚持下来','E. 我没有特别关注过外部系统的规则或流程']},
-            {id:108,code:'FN-3',sandboxLabel:'机制/流程/系统',text:'你建系统的时候，最怕什么发生？',options:['A. 系统失效——我依赖的秩序崩塌了','B. 规则太密把自己也困住了','C. 规模超出承载——扩张失控','D. 系统变旧后我没有推倒重来的勇气','E. 沉浸在系统设计里，忽略了现实的执行和落地']}
-        ];
-        const allQuestions = [...frequencyQuestions, ...forcedQuestions];
-        const totalQ = allQuestions.length;
-        const answers = {};
-
-        // ═══════════ 词典（裁剪版但保持核心丰富度） ═══════════
-        const engineNames = {O:'O-金-收束（结构）',V:'V-土-承载（锚定）',D:'D-火-突破（动力）',E:'E-水-漫延（扩张）',T:'T-木-穿透（超越）'};
-        const elements = {O:'金',V:'土',D:'火',E:'水',T:'木'};
-        const sandboxes = ['PN','AN','RN','IN','MN','FN'];
-        const sbNames = {PN:'物理底盘',AN:'能力进化',RN:'深度连接',IN:'社会舞台',MN:'意义导航',FN:'系统运转'};
-        const sbFull = {PN:'身体/空间/资源',AN:'成长/能力/路径',RN:'关系/亲密/协作',IN:'群体/评价/位置',MN:'意义/信念/目标',FN:'机制/流程/系统'};
-
-        const s1Desc = {
-            T:['追问本质、抽离重构的驱动力极为充沛，几乎覆盖了你生活的全部现实域','追问本质的冲动在多个核心领域高度活跃，是你最依赖的认知工具','追问本质的冲动在特定领域保持活跃，是你面对复杂问题时的核心武器'],
-            O:['规则意识和结构能力极为突出，你在大多数现实域中都倾向于用清晰的边界和闭环来建立秩序','规则意识在多个关键领域高度活跃，你习惯用清晰的边界和流程来驾驭复杂局面','规则意识在特定领域保持锋利，你善于在需要的时候建立清晰的边界和流程'],
-            D:['行动力和破局冲动极为充沛，几乎在所有领域你都保持着推进和突破的动能','行动力在多个核心领域高度活跃，你习惯用冲锋和突破来打开局面','行动力在特定领域保持热度，你在需要推动的时候仍然能点燃自己的引擎'],
-            V:['安全感和承载能力极为深厚，你在大多数领域都能找到或建立一个踏实的底座','安全感在多个关键领域保持稳定，你善于在动荡中守住自己的底盘','安全感在特定领域仍然稳固，你在需要的时候能找到或创造安心的支点'],
-            E:['扩张冲动和连接欲望极为充沛，几乎在所有领域你都保持着对新机会的敏感和对版图的渴望','扩张冲动在多个核心领域高度活跃，你习惯用突围和连接来打开新的可能','扩张冲动在特定领域保持活力，你在需要拓展的时候仍然能找到新的入口']
-        };
-        const injuredDesc = {
-            D:'行动力、破局冲动和表达勇气是你系统中受伤最深的一股力量',
-            V:'安全感和信任能力是你系统中受伤最深的一股力量',
-            T:'追问本质和穿透框架的冲动是你系统中受伤最深的一股力量',
-            O:'规则意识和边界守护能力是你系统中受伤最深的一股力量',
-            E:'扩张冲动和连接欲望是你系统中受伤最深的一股力量'
-        };
-        const sbFeelHigh = {FN:'我最能掌控和信任的地方',PN:'我的身体是我最坚实的支撑',AN:'我对自己的成长方向非常确定',RN:'我的关系给我滋养和安全感',IN:'我在群体中有位置和话语权',MN:'我有坚定的信念和方向'};
-        const sbFeelLow = {FN:'我在这里最累、最想躲开',PN:'我对自己的身体没有安全感',AN:'我不知道自己该往哪里走',RN:'我在关系中消耗最大',IN:'我在这里最容易被误解',MN:'我找不到活着的意义'};
-
-        const keMap = {T:'V',O:'T',D:'O',E:'D',V:'E'};
-        const shengMap = {E:'T',T:'D',D:'V',V:'O',O:'E'};
-
-        // ═══════ 渲染 ═══════
-        function renderAll() {
-            let h = `<div style="text-align:center;padding:20px 0 10px"><h2 style="color:#4a90d9;">🪴 8️⃣ 生命种子探测 · 90道频率选择题</h2><p style="color:#6b7280;">每题选择最接近你<strong>近一年真实感受</strong>的一项。</p></div>`;
-            frequencyQuestions.forEach(q=>h+=renderCard(q));
-            h += `<div style="text-align:center;padding:28px 0 10px;border-top:3px dashed #c5ddf5;"><h2 style="color:#a855f7;">🪴 9️⃣ 生命种子探测 · 18道迫选结构试题</h2><p style="color:#6b7280;">每题选择一个最接近你真实感受的选项。如果有多个接近的，选那个让你<strong>最不想承认</strong>的——那往往是正确答案。</p></div>`;
-            forcedQuestions.forEach(q=>h+=renderForcedCard(q));
-            document.getElementById('mainContainer').innerHTML = h;
-            document.querySelectorAll('input[type="radio"]').forEach(r=>r.addEventListener('change',onChange));
-            updateProgress();
-        }
-        function renderCard(q){
-            const sel=answers[q.id]; const cls=sel!==undefined?'card answered':'card';
-            let opts=''; freqOpts.forEach((o,i)=>opts+=`<li><label><input type="radio" name="q_${q.id}" value="${i}" ${sel===i?'checked':''}><span>${o}</span></label></li>`);
-            return `<div class="${cls}" id="card_${q.id}"><div class="q-header"><span class="q-number">${q.id}</span><div class="q-meta"><span class="q-engine-sandbox">${q.engineLabel} · ${q.sandboxLabel}</span><span class="q-text">${q.text}</span></div></div><ul class="options-list">${opts}</ul></div>`;
-        }
-        function renderForcedCard(q){
-            const sel=answers[q.id]; const cls=sel!==undefined?'card forced-choice answered':'card forced-choice';
-            let opts=''; q.options.forEach((o,i)=>opts+=`<li><label><input type="radio" name="q_${q.id}" value="${i}" ${sel===i?'checked':''}><span>${o}</span></label></li>`);
-            return `<div class="${cls}" id="card_${q.id}"><div class="q-header"><span class="q-number">${q.id}</span><div class="q-meta"><span class="q-engine-sandbox">迫选 · ${q.code}｜${q.sandboxLabel}</span><span class="q-text">${q.text}</span></div></div><ul class="options-list">${opts}</ul></div>`;
-        }
-        function onChange(e){
-            const qId=parseInt(e.target.name.replace('q_','')); answers[qId]=parseInt(e.target.value);
-            document.getElementById('card_'+qId).classList.add('answered'); updateProgress();
-        }
-        function updateProgress(){
-            const cnt=Object.keys(answers).length;
-            document.getElementById('progressBar').style.width=Math.round(cnt/totalQ*100)+'%';
-            document.getElementById('progressText').textContent=cnt+'/'+totalQ;
-            document.getElementById('sectionLabel').textContent=cnt<90?'频率选择':cnt<totalQ?'迫选·深度探测':'✅ 全部完成';
-            const btn=document.getElementById('btnSubmit'); btn.disabled=cnt<totalQ;
-            btn.textContent=cnt<totalQ?`🪴 还需回答 ${totalQ-cnt} 题才能查看报告`:'🪴 提交全部答案，查看生命种子报告';
-        }
-
-        function submitAll(){
-            if(Object.keys(answers).length<totalQ) return;
-            document.getElementById('btnSubmit').style.display='none';
-            generateReport();
-            document.getElementById('reportContainer').classList.add('visible');
-            document.getElementById('reportContainer').scrollIntoView({behavior:'smooth'});
-        }
-
-        function generateReport(){
-            const matrix={}; for(const e of ['O','V','D','E','T']){ matrix[e]={}; for(const s of sandboxes) matrix[e][s]=0; }
-            frequencyQuestions.forEach(q=>{ if(answers[q.id]!==undefined) matrix[q.engine][q.sandbox]+=(answers[q.id]+1); });
-            const seedState=s=>s>=13?'繁茂':s>=10?'生长':s>=6?'卷缩':'被掩埋';
-            const stateCls={'被掩埋':'state-buried','卷缩':'state-shrinking','生长':'state-growing','繁茂':'state-lush'};
-            const engineTot={}; for(const e of Object.keys(matrix)) engineTot[e]=Object.values(matrix[e]).reduce((a,b)=>a+b,0);
-            const sbTot={}; for(const s of sandboxes) sbTot[s]=Object.keys(matrix).reduce((a,e)=>a+matrix[e][s],0);
-            const engRank=[...Object.keys(engineTot)].sort((a,b)=>engineTot[b]-engineTot[a]);
-            const sbRank=[...sandboxes].sort((a,b)=>sbTot[b]-sbTot[a]);
-            const strong=engRank[0], weak=engRank[4], topSb=sbRank[0];
-            const lushCnt={}, buriedCnt={}; for(const e of Object.keys(matrix)){ lushCnt[e]=0; buriedCnt[e]=0; for(const s of sandboxes){ const v=matrix[e][s]; if(v>=13)lushCnt[e]++; if(v>=3&&v<=5)buriedCnt[e]++; } }
-            const mostInj=[...Object.keys(matrix)].sort((a,b)=>buriedCnt[b]-buriedCnt[a])[0];
-
-            let html='';
-            html+=`<div class="report-section"><h2>🪴 第一层报告：现象与体感</h2><p><strong>最繁茂引擎：${engineNames[strong]}</strong>，在 ${lushCnt[strong]} 个沙盒繁茂。${(s1Desc[strong][lushCnt[strong]>=4?0:lushCnt[strong]>=3?1:2])}</p><p><strong>最卷缩引擎：${engineNames[weak]}</strong>，${buriedCnt[weak]} 处被掩埋。</p><p><strong>受创最深：${engineNames[mostInj]}</strong>——${injuredDesc[mostInj]}</p><p><strong>主沙盒：${sbNames[topSb]}（${sbFull[topSb]}）</strong>，总分 ${sbTot[topSb]}。</p></div>`;
-
-            html+=`<div class="report-section"><h3>🪴 种子状态矩阵</h3><table class="matrix-table"><thead><tr><th>引擎</th><th>PN 物理底盘</th><th>AN 能力进化</th><th>RN 深度连接</th><th>IN 社会舞台</th><th>MN 意义导航</th><th>FN 系统运转</th><th>总分</th></tr></thead><tbody>`;
-            for(const e of Object.keys(matrix)){
-                html+=`<tr><td><strong>${engineNames[e]}</strong></td>`;
-                for(const s of sandboxes){ const v=matrix[e][s],st=seedState(v); html+=`<td class="${stateCls[st]}">${v}（${st}）</td>`; }
-                html+=`<td><strong>${engineTot[e]}</strong></td></tr>`;
-            }
-            html+=`<tr style="background:#f0f4f8;font-weight:700"><td>沙盒总分</td>${sandboxes.map(s=>`<td>${sbTot[s]}</td>`).join('')}<td>-</td></tr></tbody></table></div>`;
-
-            html+=`<div class="report-section"><h3>🪴 排序</h3><p><strong>沙盒：</strong>${sbRank.map((s,i)=>`${i+1}.${sbNames[s]}(${sbTot[s]})`).join(' · ')}</p><p><strong>引擎：</strong>${engRank.map((e,i)=>`${i+1}.${engineNames[e]}(${engineTot[e]})`).join(' · ')}</p></div>`;
-
-            // 能量体感
-            const highSb=sbRank[0], lowSb=sbRank[5];
-            html+=`<div class="report-section"><h3>🪴 能量分布</h3><p>${sbFeelHigh[highSb] || ''} · 而 ${sbFeelLow[lowSb] || ''}。</p></div>`;
-
-            // 荒芜区
-            const barren=sandboxes.filter(s=>Object.keys(matrix).filter(e=>matrix[e][s]>=3&&matrix[e][s]<=5).length>=3);
-            if(barren.length) html+=`<div class="report-section"><h3>🪴 荒芜区</h3>${barren.map(s=>`<p>在<strong>${sbNames[s]}</strong>上多颗种子被掩埋，消耗最大。</p>`).join('')}</div>`;
-
-            // 第二层
-            html+=`<div class="report-section"><h2>🪴 第二层报告：因果溯源</h2><p>最强引擎 <strong>${engineNames[strong]} (${elements[strong]})</strong> 驱动整个系统。</p>`;
-            const beike=keMap[strong], keWo=Object.keys(keMap).find(k=>keMap[k]===strong);
-            if(beike&&engineTot[beike]<engineTot[strong]*0.85) html+=`<p>🪴 <strong>${engineNames[strong]}克${engineNames[beike]}</strong>：核心驱动在消耗${engineNames[beike]}的底盘功能。</p>`;
-            if(keWo&&engineTot[keWo]<engineTot[strong]*0.85) html+=`<p>🪴 <strong>${engineNames[keWo]}克${engineNames[strong]}</strong>：约束力量不足，核心驱动缺乏收束。</p>`;
-            html+=`<p class="highlight">🪴 这不是病理。这是你的系统在极端条件下的最优解。</p></div>`;
-
-            // 第三层
-            html+=`<div class="report-section"><h2>🪴 第三层报告：结构映射</h2>`;
-            const lushN=[], buriedN=[];
-            for(const e of Object.keys(matrix)) for(const s of sandboxes){ if(matrix[e][s]>=13)lushN.push({e,s}); if(matrix[e][s]>=3&&matrix[e][s]<=5)buriedN.push({e,s}); }
-            if(lushN.length&&buriedN.length){
-                const a=lushN[0], b=buriedN[0];
-                html+=`<p><strong>${sbNames[a.s]}上${engineNames[a.e]}的繁茂 × ${sbNames[b.s]}上${engineNames[b.e]}的被掩埋</strong>：功能互补与张力。</p>`;
-            }
-            html+=`<p class="highlight">🪴 追问是自我保护的方式，结构是自我容身的堡垒，抽离是避免误读的策略。</p></div>`;
-
-            document.getElementById('reportContainer').innerHTML = html;
-        }
-
-        renderAll();
-    })();
-
+</body>
+</html>
+```
