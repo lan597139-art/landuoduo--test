@@ -562,22 +562,23 @@ function addTooltips(text) {
     // 1. 按 key 长度从长到短排序，确保长词优先匹配
     var sortedKeys = Object.keys(TOOLTIPS).sort(function(a, b) { return b.length - a.length; });
     
-    // 2. 第一步：将所有关键词替换为占位符（不会被正则再次匹配）
+    // 2. 遍历每个关键词，先替换为占位符，再统一替换为标签
     sortedKeys.forEach(function(key) {
         var escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         var regex = new RegExp(escapedKey, 'g');
-        // 使用不会被误匹配的占位符包裹关键词
-        text = text.replace(regex, '%%KW_START%%' + key + '%%KW_END%%');
-    });
-    
-    // 3. 第二步：将占位符替换为安全的 span 标签（不会再被正则污染）
-    text = text.replace(/%%KW_START%%(.*?)%%KW_END%%/g, function(match, key) {
-        return '<span class="keyword-tip" data-key="' + key.replace(/"/g, '&quot;') + '" title="点击查看提示">' + key + '</span>';
+        var placeholder = '%%KW_' + Math.random().toString(36).substr(2, 9) + '%%';
+        
+        // 先替换为唯一占位符
+        text = text.replace(regex, placeholder);
+        
+        // 立即将占位符替换为安全标签（不再依赖全局正则）
+        while (text.indexOf(placeholder) !== -1) {
+            text = text.replace(placeholder, '<span class="keyword-tip" data-key="' + key.replace(/"/g, '&quot;') + '" title="点击查看提示">' + key + '</span>');
+        }
     });
     
     return text;
 }
-
   // ── 渲染所有题目（带关键词高亮 + 半透明限制条件）──
 function renderQuestions() {
     var html = "";
