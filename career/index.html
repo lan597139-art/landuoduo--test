@@ -560,19 +560,13 @@ var LAYERS = [
 
   // ── 关键词提示功能（解决题目文本膨胀、辅助理解）──
 function addTooltips(text) {
-    // 按 key 长度从长到短排序，确保长词优先匹配
     var sortedKeys = Object.keys(TOOLTIPS).sort(function(a, b) { return b.length - a.length; });
-    
     sortedKeys.forEach(function(key) {
-        // 对 key 中的正则特殊字符进行转义，防止匹配失败
         var escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         var regex = new RegExp(`(${escapedKey})`, 'g');
-        
-        // 使用安全的字符串拼接，防止弹窗内容中的引号破坏 HTML 结构
         text = text.replace(regex, function(match) {
-            return '<span class="keyword-tip" onclick="event.stopPropagation(); alert(\'' + 
-                   TOOLTIPS[key].replace(/'/g, "\\'").replace(/\\/g, '\\\\') + 
-                   '\');" title="点击查看提示">' + match + '</span>';
+            // 不再拼接 onclick，只用 data-key 存储关键词
+            return '<span class="keyword-tip" data-key="' + key.replace(/"/g, '&quot;') + '" title="点击查看提示">' + match + '</span>';
         });
     });
     return text;
@@ -612,6 +606,16 @@ function renderQuestions() {
     });
 }
 
+// 全局关键词点击代理，彻底避免 HTML 属性注入
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('keyword-tip')) {
+        var key = e.target.getAttribute('data-key');
+        if (key && TOOLTIPS[key]) {
+            alert(TOOLTIPS[key]);
+        }
+        e.stopPropagation();
+    }
+});
   // ── 进度条更新（复用心理学测试设计）──
 function updateProgress() {
     var answered = Object.keys(userAnswers).length;
