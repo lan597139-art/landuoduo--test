@@ -343,13 +343,8 @@
 
 <!-- ═══════════ 主容器 ═══════════ -->
 <div class="container">
-    <div class="header-card" id="headerBox">
-        <h1>职业性格测试</h1>
-        <p style="color: var(--text-secondary);">基于五行驱动力与沙盒模型<br>共71题，预计用时20-30分钟。点击题干中的<strong style="color: var(--primary);">蓝色关键词</strong>可查看提示。</p>
-        <button class="btn" id="btnStart" style="margin-top:16px;">开始测试</button>
-    </div>
 
-    <div id="quizArea" style="display:none;">
+        <div id="quizArea">
         <div id="quizList"></div>
         <div class="submit-wrap"><button class="btn" id="btnSubmit">提交并生成报告</button></div>
     </div>
@@ -474,7 +469,7 @@ var ALL_QUESTIONS = [
   {"id":"C02","text":"什么最容易让你系统掉线？","options":[{"label":"A","text":"秩序：规则混乱、流程失控，到处都是不可控变量。"},{"label":"B","text":"锚定：没有回应和依托，信号发出没有回音。"},{"label":"C","text":"动力：一切太慢太钝，推进感磨光，心气熄火。"},{"label":"D","text":"扩张：手脚被绑，资源受限，完全施展不开。"},{"label":"E","text":"超越：事情变成重复表演或流水线，找不到意义。"}]},
   {"id":"C03","text":"状态低、压力大、快撑不住时，你最本能的回稳动作是什么？","options":[{"label":"A","text":"秩序：整理房间、列清单、重排计划，夺回秩序。"},{"label":"B","text":"锚定：找懂你的人聊，回熟悉环境，确认支点还在。"},{"label":"C","text":"动力：运动、出门、换节奏，让身体和思维动起来。"},{"label":"D","text":"扩张：抢回空间、拉开距离，重新拥有可支配范围。"},{"label":"E","text":"超越：抽离现实，看书、沉浸自然或宏大问题。"}]},
   {"id":"C04","text":"做重大选择时，你优先稳住什么？","options":[{"label":"A","text":"秩序：理清信息、风险、步骤和后果，确保可以把控。"},{"label":"B","text":"锚定：确认有人或底线能兜住结果，不至于彻底悬空。"},{"label":"C","text":"动力：看能不能打破现状、激活自己，带来真正突破。"},{"label":"D","text":"扩张：看能不能打开更大空间、更多资源和新可能。"},{"label":"E","text":"超越：看是否契合更深层的意义和人生底层判断。"}]},
-  {"id":"F01","text":"过去一两年，你的心力结构最像哪种模式？","options":[{"label":"A","text":"我的生活重心长期集中在一个领域，处理问题的方式也一直比较固定。。||单引擎单域"},{"label":"B","text":"我的生活重心主要在一个领域里，但会用两种完全不同的方式来处理这个领域的问题。||双引擎单域"},{"label":"C","text":"我习惯用一种固定的做事方式，但会把它反复用在两个不同的生活领域里。||单引擎双域"},{"label":"D","text":"我同时在经营两个重要的生活领域，每个领域里又会用到两种不同的做事方式。||双引擎双域"},{"label":"E","text":"精力比较散，没有固定的重心，哪里出问题就扑向哪里，长期处于被动应对的状态。"}]},
+  {"id":"F01","text":"过去一两年，你的心力结构最像哪种模式？","options":[{"label":"A","text":"我的生活重心长期集中在一个领域，处理问题的方式也一直比较固定。||单引擎单域"},{"label":"B","text":"我的生活重心主要在一个领域里，但会用两种完全不同的方式来处理这个领域的问题。||双引擎单域"},{"label":"C","text":"我习惯用一种固定的做事方式，但会把它反复用在两个不同的生活领域里。||单引擎双域"},{"label":"D","text":"我同时在经营两个重要的生活领域，每个领域里又会用到两种不同的做事方式。||双引擎双域"},{"label":"E","text":"精力比较散，没有固定的重心，哪里出问题就扑向哪里，长期处于被动应对的状态。"}]},
   {"id":"F02","text":"面对一个长期反复遇到的卡点，你的应对策略最像哪种？","options":[{"label":"A","text":"我习惯反复用同一种思路去处理。||单引擎单域"},{"label":"B","text":"我习惯同时用两种不同的思路一起处理。||双引擎单域"},{"label":"C","text":"平时以某一种思路为主，压力大时会切换到另一种。||单引擎双域"},{"label":"D","text":"我经常在两种思路之间反复拉扯。||双引擎双域"},{"label":"E","text":"没有固定习惯，多数时候先把眼前压力降下来再说。"}]},
   {"id":"F03","text":"你最习惯的那种处理方式，会不会习惯自动扩散到不同的事情上？","options":[{"label":"A","text":"这种方式我主要只用在某一类事情上。||单引擎单域"},{"label":"B","text":"它会稳定用在两类完全不同的事情上。||单引擎双域"},{"label":"C","text":"用在很多事情上，但不算稳定，哪里出问题就套过去。"},{"label":"D","text":"平时不会扩散，但压力大或机会多时会自动扩散。"},{"label":"E","text":"我没有一种特别稳定的处理习惯。"}]},
   {"id":"F04","text":"你是不是长期处于复杂并发状态，同时维护多个重要领域？","options":[{"label":"A","text":"精力集中在一类事上，处理方式也比较固定。||单引擎单域"},{"label":"B","text":"处理习惯有两种以上，但都用在同一个重要领域。||双引擎单域"},{"label":"C","text":"主要是同一种习惯，但稳定覆盖两个不同的重要领域。||单引擎双域"},{"label":"D","text":"长期同时维护两个都很重要的领域，各自靠的不止一种力量。||双引擎双域"},{"label":"E","text":"操心的领域多，但没什么固定组合，哪里出状况扑哪里。"}]},
@@ -550,13 +545,7 @@ var LAYERS = [
     { start: 32, end: 55, name: '反馈代谢', total: 24, icon: '🔄' },
     { start: 56, end: 71, name: '能量状态', total: 16, icon: '🔋' }
 ];
-  // ── 启动 ──
-  document.getElementById("btnStart").onclick = function() {
-    document.getElementById("headerBox").style.display = "none";
-    document.getElementById("quizArea").style.display = "block";
-    renderQuestions();
-  };
-
+  
   // ── 关键词提示功能（两步安全替换法，杜绝嵌套污染）──
 function addTooltips(text) {
     var sortedKeys = Object.keys(TOOLTIPS).sort(function(a, b) { return b.length - a.length; });
@@ -1010,6 +999,7 @@ report = '<button id="btnDownloadReport" class="btn" style="margin-bottom:20px;"
         };
     }
   };
+      renderQuestions();
 })();
 </script>
 </body>
