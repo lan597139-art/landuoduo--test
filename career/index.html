@@ -559,15 +559,24 @@ var LAYERS = [
   };
 
   // ── 关键词提示功能（解决题目文本膨胀、辅助理解）──
-  function addTooltips(text) {
-    // 按 key 长度从长到短排序，确保"动力代价"在"动力"之前被匹配
+function addTooltips(text) {
+    // 按 key 长度从长到短排序，确保长词优先匹配
     var sortedKeys = Object.keys(TOOLTIPS).sort(function(a, b) { return b.length - a.length; });
+    
     sortedKeys.forEach(function(key) {
-      const regex = new RegExp(`(${key})`, 'g');
-      text = text.replace(regex, `<span class="keyword-tip" onclick="event.stopPropagation(); alert('${TOOLTIPS[key].replace(/'/g, "\\'")}');" title="点击查看提示">$1</span>`);
+        // 对 key 中的正则特殊字符进行转义，防止匹配失败
+        var escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        var regex = new RegExp(`(${escapedKey})`, 'g');
+        
+        // 使用安全的字符串拼接，防止弹窗内容中的引号破坏 HTML 结构
+        text = text.replace(regex, function(match) {
+            return '<span class="keyword-tip" onclick="event.stopPropagation(); alert(\'' + 
+                   TOOLTIPS[key].replace(/'/g, "\\'").replace(/\\/g, '\\\\') + 
+                   '\');" title="点击查看提示">' + match + '</span>';
+        });
     });
     return text;
-  }
+}
 
   // ── 渲染所有题目（带关键词高亮 + 半透明限制条件）──
 function renderQuestions() {
