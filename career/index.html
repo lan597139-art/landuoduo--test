@@ -282,6 +282,9 @@
     display: block;
     margin-top: 2px;
 }
+        .caution .keyword-tip {
+            opacity: 1;
+        }
         .submit-wrap {
             text-align: center;
             margin-top: 30px;
@@ -581,7 +584,7 @@ function renderQuestions() {
         var opts = q.options.map(function(o) {
             var parts = o.text.split('||');
             var mainText = addTooltips(parts[0]);
-            var cautionHtml = parts.length > 1 ? '<span class="caution">' + parts[1] + '</span>' : '';
+            var cautionHtml = parts.length > 1 ? '<span class="caution">' + addTooltips(parts[1]) + '</span>' : '';
             return '<label class="option" data-qid="' + q.id + '" data-val="' + o.label + '"><input type="radio" name="' + q.id + '" value="' + o.label + '"><strong>' + o.label + '.</strong> ' + mainText + cautionHtml + '</label>';
         }).join("");
         html += '<div class="card" data-qid="' + q.id + '"><div class="card-num">题目 ' + no +' / ' + total + '</div><div class="card-text">' + questionText + '</div>' + opts + '</div>';
