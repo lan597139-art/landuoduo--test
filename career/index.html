@@ -251,7 +251,15 @@
             transform: none;
             color: var(--text-secondary);
         }
-
+        .btn.btn-pending {
+    opacity: 0.65;
+    cursor: pointer;
+    filter: grayscale(0.3);
+}
+.btn.btn-pending:hover {
+    background: var(--primary);
+    filter: grayscale(0.3) brightness(0.9);
+}
         .submit-wrap {
             text-align: center;
             margin-top: 30px;
@@ -512,9 +520,13 @@ var ALL_QUESTIONS = [
     var pct = Math.round((answered / total) * 100);
     document.getElementById("progressBarFill").style.width = pct + "%";
     document.getElementById("progressText").innerText = answered + " / " + total;
-    document.getElementById("btnSubmit").disabled = (answered < total);
-  }
-
+var btn = document.getElementById("btnSubmit");
+    if (answered < total) {
+        btn.classList.add("btn-pending");   // 未答完时加一个灰色样式
+    } else {
+        btn.classList.remove("btn-pending"); // 答完恢复
+    }
+}
   // ── 提交 & 计分引擎（完全保留您原版的逻辑）──
   document.getElementById("btnSubmit").onclick = function() {
     // 漏题检查：若未答完，则定位跳转
