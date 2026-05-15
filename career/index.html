@@ -557,17 +557,24 @@ var LAYERS = [
     renderQuestions();
   };
 
-  // ── 关键词提示功能（解决题目文本膨胀、辅助理解）──
+  // ── 关键词提示功能（两步安全替换法，杜绝嵌套污染）──
 function addTooltips(text) {
+    // 1. 按 key 长度从长到短排序，确保长词优先匹配
     var sortedKeys = Object.keys(TOOLTIPS).sort(function(a, b) { return b.length - a.length; });
+    
+    // 2. 第一步：将所有关键词替换为占位符（不会被正则再次匹配）
     sortedKeys.forEach(function(key) {
         var escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        var regex = new RegExp(`(${escapedKey})`, 'g');
-        text = text.replace(regex, function(match) {
-            // 不再拼接 onclick，只用 data-key 存储关键词
-            return '<span class="keyword-tip" data-key="' + key.replace(/"/g, '&quot;') + '" title="点击查看提示">' + match + '</span>';
-        });
+        var regex = new RegExp(escapedKey, 'g');
+        // 使用不会被误匹配的占位符包裹关键词
+        text = text.replace(regex, '%%KW_START%%' + key + '%%KW_END%%');
     });
+    
+    // 3. 第二步：将占位符替换为安全的 span 标签（不会再被正则污染）
+    text = text.replace(/%%KW_START%%(.*?)%%KW_END%%/g, function(match, key) {
+        return '<span class="keyword-tip" data-key="' + key.replace(/"/g, '&quot;') + '" title="点击查看提示">' + key + '</span>';
+    });
+    
     return text;
 }
 
