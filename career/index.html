@@ -469,6 +469,11 @@ var ALL_QUESTIONS = [
 // ==================== 完全整合的前端渲染 + 计分引擎 ====================
 (function() {
   var userAnswers = {};
+    // 恢复上次未提交的答案
+  var savedAnswers = localStorage.getItem('careerTestAnswers');
+  if (savedAnswers) {
+      try { userAnswers = JSON.parse(savedAnswers); } catch(e) {}
+  }
   var total = ALL_QUESTIONS.length;
 
   // ── 启动 ──
@@ -860,10 +865,18 @@ if (answeredCount < total) {
       report += '<p style="font-weight:bold;font-size:16px;margin-top:16px;">⚠️ 当前主要脆弱点：' + drainLabel[drainType] + '</p>';
       report += '<p style="margin-top:0;line-height:1.8;">' + drainFullText[drainType] + '</p>';
     }
-
+// 在报告最前面加入导出按钮
+report = '<button id="btnDownloadReport" class="btn" style="margin-bottom:20px;">📥 保存报告（打印为PDF）</button>' + report;
     document.getElementById("reportBox").innerHTML = report;
     document.getElementById("reportBox").style.display = "block";
     document.getElementById("reportBox").scrollIntoView({behavior:"smooth"});
+       // 绑定导出按钮
+    var downloadBtn = document.getElementById('btnDownloadReport');
+    if (downloadBtn) {
+        downloadBtn.onclick = function() {
+            window.print();
+        };
+    }
   };
 })();
 </script>
