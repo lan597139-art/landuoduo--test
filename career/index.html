@@ -104,11 +104,27 @@
             transition: width 0.35s ease;
         }
 
-        .progress-text {
+               .progress-text {
             font-size: 0.85rem;
             font-weight: 600;
             color: var(--primary);
             white-space: nowrap;
+        }
+
+        .layer-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            background: var(--bg-page);
+            padding: 4px 12px;
+            border-radius: 99px;
+            white-space: nowrap;
+        }
+        .layer-progress {
+            font-weight: 700;
+            color: var(--primary);
         }
 
         /* 主容器 */
@@ -260,6 +276,12 @@
     background: var(--primary);
     filter: grayscale(0.3) brightness(0.9);
 }
+        .caution {
+    opacity: 0.55;
+    font-size: 0.85em;
+    display: block;
+    margin-top: 2px;
+}
         .submit-wrap {
             text-align: center;
             margin-top: 30px;
@@ -309,6 +331,10 @@
             <div class="progress-bar-inner" id="progressBarFill"></div>
         </div>
         <span class="progress-text" id="progressText">0 / 71</span>
+    </div>
+    <div class="layer-info" id="layerInfo">
+        <span class="layer-tag">🌱 第1层 · 核心身份</span>
+        <span class="layer-progress" id="layerProgress">0/20</span>
     </div>
 </div>
 
@@ -519,7 +545,13 @@ var ALL_QUESTIONS = [
       try { userAnswers = JSON.parse(savedAnswers); } catch(e) {}
   }
   var total = ALL_QUESTIONS.length;
-
+var LAYERS = [
+    { start: 1,  end: 20, name: '核心身份', total: 20, icon: '🌱' },
+    { start: 21, end: 25, name: '代价结算', total: 5,  icon: '⚖️' },
+    { start: 26, end: 31, name: '归因分析', total: 6,  icon: '🔍' },
+    { start: 32, end: 55, name: '反馈代谢', total: 24, icon: '🔄' },
+    { start: 56, end: 71, name: '能量状态', total: 16, icon: '🔋' }
+];
   // ── 启动 ──
   document.getElementById("btnStart").onclick = function() {
     document.getElementById("headerBox").style.display = "none";
@@ -529,52 +561,79 @@ var ALL_QUESTIONS = [
 
   // ── 关键词提示功能（解决题目文本膨胀、辅助理解）──
   function addTooltips(text) {
-    Object.keys(TOOLTIPS).forEach(key => {
+    // 按 key 长度从长到短排序，确保"动力代价"在"动力"之前被匹配
+    var sortedKeys = Object.keys(TOOLTIPS).sort(function(a, b) { return b.length - a.length; });
+    sortedKeys.forEach(function(key) {
       const regex = new RegExp(`(${key})`, 'g');
       text = text.replace(regex, `<span class="keyword-tip" onclick="event.stopPropagation(); alert('${TOOLTIPS[key].replace(/'/g, "\\'")}');" title="点击查看提示">$1</span>`);
     });
     return text;
   }
 
-  // ── 渲染所有题目（带关键词高亮）──
-  function renderQuestions() {
+  // ── 渲染所有题目（带关键词高亮 + 半透明限制条件）──
+function renderQuestions() {
     var html = "";
     ALL_QUESTIONS.forEach(function(q, i) {
-      var no = i + 1;
-      var questionText = addTooltips(q.text.replace(/\n/g, '<br>'));
-      var opts = q.options.map(function(o) {
-        return '<label class="option" data-qid="' + q.id + '" data-val="' + o.label + '"><input type="radio" name="' + q.id + '" value="' + o.label + '"><strong>' + o.label + '.</strong> ' + o.text + '</label>';
-      }).join("");
-      html += '<div class="card" data-qid="' + q.id + '"><div class="card-num">题目 ' + no +' / ' + total + '</div><div class="card-text">' + questionText + '</div>' + opts + '</div>';
+        var no = i + 1;
+        var questionText = addTooltips(q.text.replace(/\n/g, '<br>'));
+        var opts = q.options.map(function(o) {
+            var parts = o.text.split('||');
+            var mainText = addTooltips(parts[0]);
+            var cautionHtml = parts.length > 1 ? '<span class="caution">' + parts[1] + '</span>' : '';
+            return '<label class="option" data-qid="' + q.id + '" data-val="' + o.label + '"><input type="radio" name="' + q.id + '" value="' + o.label + '"><strong>' + o.label + '.</strong> ' + mainText + cautionHtml + '</label>';
+        }).join("");
+        html += '<div class="card" data-qid="' + q.id + '"><div class="card-num">题目 ' + no +' / ' + total + '</div><div class="card-text">' + questionText + '</div>' + opts + '</div>';
     });
     document.getElementById("quizList").innerHTML = html;
 
     // 绑定选项点击事件
     document.querySelectorAll(".option").forEach(function(lbl) {
-      lbl.onclick = function() {
-        var qid = this.dataset.qid;
-        var val = this.dataset.val;
-        document.querySelectorAll('.option[data-qid="' + qid + '"]').forEach(function(o) { o.classList.remove("selected"); });
-        this.classList.add("selected");
-        this.querySelector("input").checked = true;
-        userAnswers[qid] = val;
-        updateProgress();
-      };
+        lbl.onclick = function() {
+            var qid = this.dataset.qid;
+            var val = this.dataset.val;
+            document.querySelectorAll('.option[data-qid="' + qid + '"]').forEach(function(o) { o.classList.remove("selected"); });
+            this.classList.add("selected");
+            this.querySelector("input").checked = true;
+            userAnswers[qid] = val;
+            updateProgress();
+        };
     });
-  }
+}
 
   // ── 进度条更新（复用心理学测试设计）──
-  function updateProgress() {
+function updateProgress() {
     var answered = Object.keys(userAnswers).length;
     var pct = Math.round((answered / total) * 100);
     document.getElementById("progressBarFill").style.width = pct + "%";
     document.getElementById("progressText").innerText = answered + " / " + total;
-var btn = document.getElementById("btnSubmit");
+    var btn = document.getElementById("btnSubmit");
     if (answered < total) {
         btn.classList.add("btn-pending");   // 未答完时加一个灰色样式
     } else {
         btn.classList.remove("btn-pending"); // 答完恢复
     }
+
+    // ── 层级进度更新 ──
+    var currentLayerIndex = LAYERS.length - 1;
+    for (var i = 0; i < ALL_QUESTIONS.length; i++) {
+        if (!userAnswers[ALL_QUESTIONS[i].id]) {
+            var currentQNo = i + 1;
+            for (var j = 0; j < LAYERS.length; j++) {
+                if (currentQNo >= LAYERS[j].start && currentQNo <= LAYERS[j].end) {
+                    currentLayerIndex = j; break;
+                }
+            }
+            break;
+        }
+    }
+    var layer = LAYERS[currentLayerIndex];
+    var layerAnswered = 0;
+    for (var k = layer.start - 1; k < layer.end; k++) {
+        if (userAnswers[ALL_QUESTIONS[k].id]) layerAnswered++;
+    }
+    document.getElementById("layerInfo").innerHTML =
+        '<span class="layer-tag">' + layer.icon + ' 第' + (currentLayerIndex + 1) + '层 · ' + layer.name + '</span>' +
+        '<span class="layer-progress">' + layerAnswered + '/' + layer.total + '</span>';
 }
   // ── 提交 & 计分引擎（完全保留您原版的逻辑）──
   document.getElementById("btnSubmit").onclick = function() {
