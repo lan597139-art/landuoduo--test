@@ -342,7 +342,15 @@
     
     // 答案存储
     let answers = { freq: {}, forced: {} };
-    
+    // 恢复上次未提交的答案
+let savedAnswers = localStorage.getItem('psychologyTestAnswers');
+if (savedAnswers) {
+    try {
+        let parsed = JSON.parse(savedAnswers);
+        if (parsed.freq) answers.freq = parsed.freq;
+        if (parsed.forced) answers.forced = parsed.forced;
+    } catch(e) {}
+}
     // 频率选项完整文字
     const freqOptionTexts = {
         'A': 'A. 从未有过这种感觉',
@@ -409,14 +417,16 @@
         });
     }
     
-    function updateProgress() {
-        let answered = 0;
-        freqQuestions.forEach(q => { if(answers.freq[q.id]) answered++; });
-        forcedQuestions.forEach(fq => { if(answers.forced[fq.id]) answered++; });
-        const total = freqQuestions.length + forcedQuestions.length;
-        document.getElementById('progressDisplay').innerHTML = `📋 进度 ${answered} / ${total}`;
-    }
+   function updateProgress() {
+    let answered = 0;
+    freqQuestions.forEach(q => { if(answers.freq[q.id]) answered++; });
+    forcedQuestions.forEach(fq => { if(answers.forced[fq.id]) answered++; });
+    const total = freqQuestions.length + forcedQuestions.length;
+    document.getElementById('progressDisplay').innerHTML = `📋 进度 ${answered} / ${total}`;
     
+    // 自动保存到本地浏览器（注意：这一行必须在函数内部，大括号里面）
+    localStorage.setItem('psychologyTestAnswers', JSON.stringify(answers));
+}
     function scrollToFirstMissing() {
         const missingCards = document.querySelectorAll('.q-card.missing');
         if(missingCards.length > 0) {
@@ -735,8 +745,7 @@
         
         return matrixHtml + statsHtml + engineBodyHtml + sandboxBodyHtml + forcedRecords + chainHtml + fearHtml;
     }
-    
-    document.getElementById('submitReport').addEventListener('click', () => {
+        document.getElementById('submitReport').addEventListener('click', () => {
         let totalQ = freqQuestions.length + forcedQuestions.length;
         let answeredCount = 0;
         freqQuestions.forEach(q => { if(answers.freq[q.id]) answeredCount++; });
@@ -746,10 +755,20 @@
             scrollToFirstMissing();
             return;
         }
-        const fullReport = generateFullReport();
+        let fullReport = generateFullReport();   // ✅ 改成 let，允许拼接
+        // 在报告最前面加入导出按钮
+        fullReport = '<button id="btnDownloadReport" style="background: #1e4bd2; border: none; color: white; padding: 10px 28px; border-radius: 60px; cursor: pointer; font-size: 1rem; font-weight: 600; margin-bottom: 20px;">📥 保存报告（打印为PDF）</button>' + fullReport;
         document.getElementById('reportHtml').innerHTML = fullReport;
         document.getElementById('reportSection').style.display = 'block';
         window.scrollTo({ top: document.getElementById('reportSection').offsetTop - 30, behavior: 'smooth' });
+
+        // ✅ 绑定导出按钮事件（新增）
+        let downloadBtn = document.getElementById('btnDownloadReport');
+        if (downloadBtn) {
+            downloadBtn.onclick = function() {
+                window.print();
+            };
+        }
     });
     
     document.getElementById('resetAll').addEventListener('click', () => {
@@ -799,4 +818,3 @@
     });
 </script>
 </body>
-</html>
