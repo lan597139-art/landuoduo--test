@@ -150,7 +150,10 @@
             border-color: var(--primary);
             box-shadow: var(--shadow-md);
         }
-
+        .card.missing {
+            border: 2px solid #ef4444;
+            background-color: #fef2f2;
+        }
         .card-num {
             font-size: 0.8rem;
             font-weight: 600;
@@ -485,7 +488,7 @@ var ALL_QUESTIONS = [
       var opts = q.options.map(function(o) {
         return '<label class="option" data-qid="' + q.id + '" data-val="' + o.label + '"><input type="radio" name="' + q.id + '" value="' + o.label + '"><strong>' + o.label + '.</strong> ' + o.text + '</label>';
       }).join("");
-      html += '<div class="card"><div class="card-num">题目 ' + no + ' / ' + total + '</div><div class="card-text">' + questionText + '</div>' + opts + '</div>';
+      html += '<div class="card" data-qid="' + q.id + '"><div class="card-num">题目 ' + no +' / ' + total + '</div><div class="card-text">' + questionText + '</div>' + opts + '</div>';
     });
     document.getElementById("quizList").innerHTML = html;
 
@@ -514,7 +517,38 @@ var ALL_QUESTIONS = [
 
   // ── 提交 & 计分引擎（完全保留您原版的逻辑）──
   document.getElementById("btnSubmit").onclick = function() {
-    // 初始化计分池
+    // 漏题检查：若未答完，则定位跳转
+var answeredCount = Object.keys(userAnswers).length;
+if (answeredCount < total) {
+    alert('您还有 ' + (total - answeredCount) + ' 道题未答，正在为您定位到第一道漏题。');
+
+    // 找到第一个未回答的题目id
+    var firstMissingQid = null;
+    for (var i = 0; i < ALL_QUESTIONS.length; i++) {
+        if (!userAnswers[ALL_QUESTIONS[i].id]) {
+            firstMissingQid = ALL_QUESTIONS[i].id;
+            break;
+        }
+    }
+    if (firstMissingQid) {
+        // 清除之前可能残留的红色标记
+        document.querySelectorAll('.card.missing').forEach(function(card) {
+            card.classList.remove('missing');
+        });
+        // 找到对应的卡片并标红、滚动
+        var missingCard = document.querySelector('.card[data-qid="' + firstMissingQid + '"]');
+        if (missingCard) {
+            missingCard.classList.add('missing');
+            missingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            missingCard.style.boxShadow = '0 0 0 3px #ef4444';
+            setTimeout(function() {
+                missingCard.style.boxShadow = '';
+            }, 2000);
+        }
+    }
+    return; // 阻止继续往下执行计分和生成报告
+}
+      // 初始化计分池
     var S_pool = { O:0, V:0, D:0, E:0, T:0 };
     var N_pool = { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
     var F_pool = { SS:0, DS:0, SN:0, DN:0, Ch:0 };
