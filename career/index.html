@@ -3,253 +3,230 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>职业性格测试</title>
+    <title>职业性格测试 · 沙盒驱动力探测</title>
     <style>
         /* ═══════════════════════════════════════════
-           styles.css — 纯答题界面通用样式
-           包含：顶部导航栏、题目卡片、选项列表、
-                 提交按钮、响应式适配
+           全局样式 — 复用心理学测试的干净、克制风格
+           主色调：高纯度蓝 #2563eb + 纯白 #ffffff
+           支持深色模式
            ═══════════════════════════════════════════ */
         :root {
-            --blue-50: #eff6ff;
-            --blue-100: #e8f2fb;
-            --blue-200: #c5ddf5;
-            --blue-300: #9dc5ed;
-            --blue-400: #6da8e0;
-            --blue-500: #4a90d9;
-            --blue-600: #3578b8;
-            --blue-700: #2a5f94;
-            --blue-800: #1e4570;
-            --white: #ffffff;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --green-500: #22c55e;
-            --amber-500: #f59e0b;
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-            --radius-sm: 6px;
-            --radius: 8px;
-            --radius-lg: 12px;
-            --font-sans: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --primary-border: #bfdbfe;
+            --text-main: #1e293b;
+            --text-secondary: #475569;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.05);
+            --radius: 12px;
             --transition: 0.2s ease;
         }
 
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #3b82f6;
+                --primary-light: #1e3a5f;
+                --primary-border: #1e3a8a;
+                --text-main: #f1f5f9;
+                --text-secondary: #cbd5e1;
+                --bg-page: #0f172a;
+                --bg-card: #1e293b;
+                --border-color: #334155;
+                --shadow: 0 1px 3px rgba(0,0,0,0.3);
+                --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+            }
         }
 
-        html {
-            scroll-behavior: smooth;
-            font-size: 16px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: var(--font-sans);
-            background: #f0f4f8;
-            color: var(--gray-800);
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
             line-height: 1.6;
-            min-height: 100vh;
+            transition: background var(--transition), color var(--transition);
         }
 
-        /* ── 顶部导航栏 ── */
+        /* 顶部导航栏 — 复用心理学测试进度条设计 */
         .top-bar {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: var(--white);
-            border-bottom: 2px solid var(--blue-300);
-            padding: 10px 20px;
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--primary-border);
+            padding: 12px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 10px;
-            box-shadow: var(--shadow-sm);
+            gap: 12px;
+            box-shadow: var(--shadow);
+            transition: background var(--transition);
         }
-        .top-bar .logo {
+
+        .logo {
             font-weight: 700;
             font-size: 1.1rem;
-            color: var(--blue-700);
+            color: var(--primary);
             display: flex;
             align-items: center;
             gap: 6px;
-            white-space: nowrap;
         }
-        .top-bar .logo .icon-plant {
-            font-size: 1.4rem;
-            animation: sway 3s ease-in-out infinite;
-        }
-        @keyframes sway {
-            0%,
-            100% {
-                transform: rotate(0deg);
-            }
-            25% {
-                transform: rotate(5deg);
-            }
-            75% {
-                transform: rotate(-5deg);
-            }
-        }
-        .top-bar .progress-wrap {
+
+        .progress-wrap {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             flex: 1;
-            max-width: 400px;
-            min-width: 150px;
+            max-width: 300px;
         }
-        .top-bar .progress-bar-outer {
+
+        .progress-bar-outer {
             flex: 1;
-            height: 10px;
-            background: var(--gray-200);
+            height: 8px;
+            background: var(--border-color);
             border-radius: 99px;
             overflow: hidden;
         }
-        .top-bar .progress-bar-inner {
+
+        .progress-bar-inner {
             height: 100%;
-            background: linear-gradient(90deg, var(--blue-400), var(--blue-600));
+            background: var(--primary);
             border-radius: 99px;
-            transition: width 0.35s ease;
             width: 0%;
-        }
-        .top-bar .progress-text {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--blue-700);
-            white-space: nowrap;
-        }
-        .top-bar .section-indicator {
-            font-size: 0.8rem;
-            color: var(--gray-500);
-            white-space: nowrap;
-            background: var(--gray-100);
-            padding: 4px 10px;
-            border-radius: 99px;
+            transition: width 0.35s ease;
         }
 
-        /* ── 主容器 ── */
+        .progress-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        /* 主容器 */
         .container {
             max-width: 780px;
             margin: 0 auto;
-            padding: 20px 16px 60px;
+            padding: 24px 16px 60px;
         }
 
-        /* 头部 */
-        .header {
+        .header-card {
             text-align: center;
-            padding: 40px 20px;
-            background: var(--white);
-            border: 2px solid var(--blue-300);
-            border-radius: var(--radius-lg);
-            margin-bottom: 20px;
+            padding: 32px 20px;
+            background: var(--bg-card);
+            border: 2px solid var(--primary-border);
+            border-radius: var(--radius);
+            margin-bottom: 24px;
             box-shadow: var(--shadow);
+            transition: background var(--transition);
         }
-        .header h1 {
-            color: var(--blue-700);
-            font-size: 1.6rem;
+
+        .header-card h1 {
+            color: var(--primary);
+            font-size: 1.5rem;
             margin-bottom: 8px;
         }
-        .header p {
-            color: var(--gray-600);
-            font-size: 0.9rem;
-        }
 
-        /* 卡片 */
+        /* 卡片样式 */
         .card {
-            background: var(--white);
-            border: 2px solid var(--blue-300);
-            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
             padding: 20px 18px;
             margin-bottom: 16px;
             box-shadow: var(--shadow);
-            transition: var(--transition);
+            transition: background var(--transition), border-color var(--transition);
         }
+
         .card:hover {
-            border-color: var(--blue-400);
+            border-color: var(--primary);
             box-shadow: var(--shadow-md);
         }
-        .card.answered {
-            border-left: 4px solid var(--green-500);
-            border-color: var(--green-500);
-        }
+
         .card-num {
             font-size: 0.8rem;
             font-weight: 600;
-            color: var(--blue-600);
-            margin-bottom: 6px;
-            background: var(--blue-50);
+            color: var(--primary);
+            margin-bottom: 8px;
+            background: var(--primary-light);
             display: inline-block;
             padding: 2px 12px;
             border-radius: 99px;
         }
+
         .card-text {
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 12px;
-            line-height: 1.5;
+            font-weight: 500;
+            margin-bottom: 14px;
+            line-height: 1.7;
             white-space: pre-wrap;
+        }
+
+        /* 关键词提示样式 */
+        .keyword-tip {
+            color: var(--primary);
+            border-bottom: 1px dashed var(--primary);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .keyword-tip:hover {
+            background: var(--primary-light);
+            border-bottom-style: solid;
         }
 
         /* 选项 */
         .option {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 10px;
             padding: 10px 14px;
-            border: 1.5px solid var(--gray-200);
+            border: 1.5px solid var(--border-color);
             border-radius: var(--radius);
-            background: var(--gray-50);
+            background: var(--bg-page);
             cursor: pointer;
             transition: var(--transition);
             font-size: 0.9rem;
-            line-height: 1.4;
-            margin-bottom: 6px;
-            user-select: none;
+            line-height: 1.5;
+            margin-bottom: 8px;
         }
+
         .option:hover {
-            border-color: var(--blue-400);
-            background: var(--blue-100);
+            border-color: var(--primary);
+            background: var(--primary-light);
         }
+
         .option input[type="radio"] {
-            accent-color: var(--blue-600);
+            accent-color: var(--primary);
             width: 18px;
             height: 18px;
             flex-shrink: 0;
+            margin-top: 2px;
             cursor: pointer;
         }
+
         .option.selected {
-            border-color: var(--blue-500);
-            background: var(--blue-50);
-            box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.1);
-        }
-        .option.selected strong {
-            color: var(--blue-700);
-        }
-        .option strong {
-            margin-right: 4px;
+            border-color: var(--primary);
+            background: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        /* 提交按钮 */
+        /* 按钮 */
         .btn {
             display: inline-block;
             padding: 12px 28px;
-            background: var(--blue-600);
-            color: #fff;
+            background: var(--primary);
+            color: #ffffff;
             font-size: 1rem;
-            font-weight: 700;
+            font-weight: 600;
             border: none;
             border-radius: 99px;
             cursor: pointer;
@@ -258,48 +235,48 @@
             box-shadow: var(--shadow-md);
             text-align: center;
         }
+
         .btn:hover {
-            background: var(--blue-700);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+            filter: brightness(1.1);
             transform: translateY(-1px);
         }
+
         .btn:disabled {
-            background: var(--gray-300);
+            background: var(--border-color);
             cursor: not-allowed;
-            box-shadow: none;
+            filter: none;
             transform: none;
+            color: var(--text-secondary);
         }
+
         .submit-wrap {
             text-align: center;
             margin-top: 30px;
         }
 
-        /* 报告容器 */
         .report {
-            display: none;
             margin-top: 30px;
-            background: var(--white);
-            border: 2px solid var(--blue-200);
-            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            border: 2px solid var(--primary-border);
+            border-radius: var(--radius);
             padding: 28px 22px;
             box-shadow: var(--shadow);
             line-height: 1.8;
+            display: none;
+            transition: background var(--transition);
         }
+
         .report h2 {
-            color: var(--blue-800);
-            margin: 20px 0 10px;
-            border-bottom: 2px solid var(--blue-200);
+            color: var(--primary);
+            margin: 24px 0 12px;
+            border-bottom: 2px solid var(--primary-border);
             padding-bottom: 6px;
         }
 
         /* 响应式 */
         @media (max-width: 600px) {
             .top-bar {
-                padding: 8px 12px;
-                gap: 6px;
-            }
-            .top-bar .logo {
-                font-size: 0.9rem;
+                padding: 10px 12px;
             }
             .container {
                 padding: 12px 10px 40px;
@@ -307,47 +284,95 @@
             .card {
                 padding: 16px 12px;
             }
-            .card-text {
-                font-size: 0.9rem;
-            }
-            .option {
-                padding: 8px 10px;
-                font-size: 0.82rem;
-            }
         }
     </style>
 </head>
 <body>
+<!-- ═══════════ 顶部导航栏 ═══════════ -->
+<div class="top-bar" id="topBar">
+    <div class="logo">
+        <span>🧭</span> 职业沙盘探测
+    </div>
+    <div class="progress-wrap">
+        <div class="progress-bar-outer">
+            <div class="progress-bar-inner" id="progressBarFill"></div>
+        </div>
+        <span class="progress-text" id="progressText">0 / 71</span>
+    </div>
+</div>
 
-    <!-- ═══════════ 顶部导航栏 ═══════════ -->
-    <div class="top-bar" id="topBar">
-        <div class="logo">
-            <span class="icon-plant">🧭</span> 职业性格测试
-        </div>
-        <div class="progress-wrap">
-            <div class="progress-bar-outer">
-                <div class="progress-bar-inner" id="progressBarFill"></div>
-            </div>
-            <span class="progress-text" id="progressText">0 / 71</span>
-        </div>
-        <span class="section-indicator" id="sectionLabel">开始</span>
+<!-- ═══════════ 主容器 ═══════════ -->
+<div class="container">
+    <div class="header-card" id="headerBox">
+        <h1>职业性格测试</h1>
+        <p style="color: var(--text-secondary);">基于五行驱动力与沙盒模型<br>共71题，预计用时20-30分钟。点击题干中的<strong style="color: var(--primary);">蓝色关键词</strong>可查看提示。</p>
+        <button class="btn" id="btnStart" style="margin-top:16px;">开始测试</button>
     </div>
 
-    <!-- ═══════════ 主容器 ═══════════ -->
-    <div class="container">
-        <div class="header" id="headerBox">
-            <h1>职业性格测试</h1>
-            <p>了解你的心智动力结构、压力弹性与代谢模式<br>共71题，预计用时20-30分钟</p>
-            <button class="btn" id="btnStart" style="margin-top:16px;">开始测试</button>
-        </div>
-        <div id="quizArea" style="display:none;">
-            <div id="quizList"></div>
-            <div class="submit-wrap"><button class="btn" id="btnSubmit" disabled>提交答案</button></div>
-        </div>
-        <div class="report" id="reportBox"></div>
+    <div id="quizArea" style="display:none;">
+        <div id="quizList"></div>
+        <div class="submit-wrap"><button class="btn" id="btnSubmit" disabled>提交并生成报告</button></div>
     </div>
 
-    <script>
+    <div class="report" id="reportBox"></div>
+</div>
+
+<script>
+// ==================== 关键词提示词库 ====================
+// 为解决题干文本膨胀、用户理解困难而设
+    const TOOLTIPS = {
+    // S-C系列
+    "长期稳定运转": "请想象一个至少持续6个月以上的状态，不是临时应对一两周的情况。",
+    "身体底盘": "包括你的作息规律、身体健康、居住空间、现金流、物资储备等最基础的生活保障。",
+    "能力进化": "指你的专业技能、学历履历、项目经验、职业路径等个人能力的持续提升。",
+    "深度连接": "指伴侣、长期合伙人、密友、家人等需要深度信任和持续投入的关系。",
+    "社会舞台": "你在班级、公司、行业圈、社交平台等群体中的位置、话语权和身份认同。",
+    "意义导航": "驱动你长期努力的根本信念、价值观、人生目标，是你“为什么而活”的答案。",
+    "系统运转": "你建立的工作流程、学习方法、协作机制、商业模型等能自动运行的规则体系。",
+    "O-结构 (Order)": "追求秩序与可预测性。你需要清晰的规则、边界和闭环来获得安全感，混乱是你的敌人。",
+    "V-锚定 (Anchor)": "追求被看见与确认。你需要稳定的反馈和依托来确认自己的位置，悬空让你焦虑。",
+    "D-动力 (Drive)": "追求突破与变化。你需要在冲破阻力的过程中感受生命力，停滞和平庸让你窒息。",
+    "E-扩张 (Expand)": "追求更多可能性和控制权。你需要不断开拓新版图、获取新资源，受限让你枯萎。",
+    "T-超越 (Transcend)": "追求底层逻辑与本质。你需要跳出表象、看透规律，被琐碎和表演消耗让你厌倦。",
+
+    // 代价结算系列 (st-)
+    "灰区暴利": "指那些不明确违规、但利用了规则漏洞或信息差获得的短期高收益。",
+    "硬骨头": "宁可承受损失，也绝不突破自己的原则底线。",
+    "变色龙": "在保住核心的同时，灵活调整外在策略，借力打力。",
+    "壁虎断尾": "果断切割不再有价值或高风险的部分，换取核心利益或生存空间。",
+    "系统宕机": "在压力或诱惑下，原有规则系统完全失效，进入一种无序或随波逐流的状态。",
+    "稳定依托": "指那些能给你提供稳定支持、反馈、安全感的人、环境或系统。",
+    "底层意义": "你内心深处认为真正重要、有价值，值得长期投入的东西。",
+    
+    // 归因系列 (SL-)
+    "新变量卡壳": "指当出现一个之前没见过的问题或情况时，原有的方法或流程突然失效。",
+    "高绑定协作": "指双方或多方由于目标、利益或情感高度绑定，形成了一荣俱荣、一损俱损的合作关系。",
+    "表面整理": "指那些看起来规范、漂亮，但并未真正提升核心能力的记录、包装或形式化工作。",
+    "内驱熄火": "指当接近一个长期追求的外部目标时，突然感到空虚、无意义，失去了继续推进的动力。",
+    "过细规训": "指为了追求秩序，制定了过于细致、严苛的规则，反而导致系统僵化和成员抵触。",
+    
+    // 负反馈代谢系列 (Γ-N)
+    "统一任务": "指组织或系统要求所有人按相同标准、相同节奏完成的任务。",
+    "低强度消耗": "指那些不致命但持续存在的、会慢慢侵蚀你精力和耐心的行为。",
+    "形式合规": "指为了满足外部检查或流程要求而做的、对实际成果提升有限的工作。",
+    "替代信用": "指在主流评价系统之外，通过其他渠道建立的、能证明你能力或价值的记录。",
+    "情绪施压": "指他人通过表达失望、委屈、冷战等方式，让你产生愧疚感，从而迫使你妥协。",
+    "低质量输入": "指那些未经证实、情绪化、标签化的闲言碎语或评价。",
+    "最小修复动作": "指能够以最低成本让一个停滞的问题重新开始移动的具体操作。",
+    
+    // 正反馈代谢系列 (Γ-P)
+    "长期结构": "指那些一次建成后，能长期自动运行并持续产生价值的系统或能力。",
+    "自我校准": "在外界认可之外，基于自己的标准来评估真实能力和方向。",
+    "低成本通道": "指那些能帮你快速获得结果的现成模板、工具或捷径。",
+    "深层能力": "指不依赖特定工具的、可迁移的、属于你自己的底层理解和技能。",
+    "意义打开": "指突然找到了某件事的使命感和深远价值，感到强烈的方向感。",
+    
+    // 能量状态系列 (ε-)
+    "物理承载": "你的身体机能、精力储备和健康状态。",
+    "心理承压": "你处理不确定性和变化时的心理抗压能力。",
+    "情绪极性": "你当前情绪倾向于积极/中性还是消极/防御。",
+    "动机烈度": "你采取行动、追求目标的内部驱动力强度。"
+};
 // ==================== 题库 (71题) ====================
 var ALL_QUESTIONS = [
   {"id":"S-C01","text":"PN-身体底盘\n作息、健康、房间、座位、钱、物资、现金流、共同空间、生活资源。当这一块要长期稳定运转时，你最需要的是什么？","options":[{"label":"A","text":"O-结构 (Order)：清晰的秩序、规则和整理结构，让生活底盘不失控。不过如果生活节奏本身变化很快、突发状况多，这种靠规则维持的稳定性会容易松动。"},{"label":"B","text":"V-锚定 (Anchor)：熟悉的环境、足够的储备和明确的安全边界，让自己不悬空。不过一旦进入完全陌生的环境，没了这些依托，自己站稳的难度会变大。"},{"label":"C","text":"D-动力 (Drive)：能主动调整状态、打破僵局的能量，让身体和生活重新活起来。不过如果需要长期低刺激的维护，一直靠动力驱动会容易后劲不足。"},{"label":"D","text":"E-扩张 (Expand)：更多可调用的资源、空间和余地，让自己手里有更大的控制范围。不过资源一旦太多太散，边界变薄，注意力容易被拉散而不是聚焦。"},{"label":"E","text":"T-超越 (Transcend)：能抽离出来、从更远处理解身体和现实限制的视角，不让自己被眼前的条件完全绑死。不过如果问题必须持续落地处理，光靠抽离不够，还是得回到具体的身体参与和执行。"}]},
@@ -430,29 +455,41 @@ var ALL_QUESTIONS = [
   {"id":"ε-15","text":"当我看到一个可以优化、但没人要求我处理的问题时，我更接近：","options":[{"label":"A","text":"不想管，甚至想远离这个系统。"},{"label":"B","text":"看见也先不动，避免给自己增加负担。"},{"label":"C","text":"如果它影响到日常运转，就按常规处理。"},{"label":"D","text":"会主动修补其中一个小漏洞。"},{"label":"E","text":"会想重构整个机制，让它以后更高效。"}]},
   {"id":"ε-16","text":"面向接下来24小时，我的行动欲望更接近：","options":[{"label":"A","text":"想退出、断开、停止被任何事情牵引。"},{"label":"B","text":"只想维持最低运转，避免新增负荷。"},{"label":"C","text":"正常完成已有事项即可。"},{"label":"D","text":"想主动推进一个具体目标或修复一个问题。"},{"label":"E","text":"想明显扩张行动范围，启动更大的计划或结构。"}]}
 ];
-
-// ==================== 前端渲染 + 计分引擎 ====================
+// ==================== 完全整合的前端渲染 + 计分引擎 ====================
 (function() {
   var userAnswers = {};
   var total = ALL_QUESTIONS.length;
 
+  // ── 启动 ──
   document.getElementById("btnStart").onclick = function() {
     document.getElementById("headerBox").style.display = "none";
     document.getElementById("quizArea").style.display = "block";
     renderQuestions();
   };
 
+  // ── 关键词提示功能（解决题目文本膨胀、辅助理解）──
+  function addTooltips(text) {
+    Object.keys(TOOLTIPS).forEach(key => {
+      const regex = new RegExp(`(${key})`, 'g');
+      text = text.replace(regex, `<span class="keyword-tip" onclick="event.stopPropagation(); alert('${TOOLTIPS[key].replace(/'/g, "\\'")}');" title="点击查看提示">$1</span>`);
+    });
+    return text;
+  }
+
+  // ── 渲染所有题目（带关键词高亮）──
   function renderQuestions() {
     var html = "";
     ALL_QUESTIONS.forEach(function(q, i) {
       var no = i + 1;
+      var questionText = addTooltips(q.text.replace(/\n/g, '<br>'));
       var opts = q.options.map(function(o) {
         return '<label class="option" data-qid="' + q.id + '" data-val="' + o.label + '"><input type="radio" name="' + q.id + '" value="' + o.label + '"><strong>' + o.label + '.</strong> ' + o.text + '</label>';
       }).join("");
-      html += '<div class="card"><div class="card-num">题目 ' + no + ' / ' + total + '</div><div class="card-text">' + q.text.replace(/\n/g, '<br>') + '</div>' + opts + '</div>';
+      html += '<div class="card"><div class="card-num">题目 ' + no + ' / ' + total + '</div><div class="card-text">' + questionText + '</div>' + opts + '</div>';
     });
     document.getElementById("quizList").innerHTML = html;
 
+    // 绑定选项点击事件
     document.querySelectorAll(".option").forEach(function(lbl) {
       lbl.onclick = function() {
         var qid = this.dataset.qid;
@@ -466,13 +503,16 @@ var ALL_QUESTIONS = [
     });
   }
 
+  // ── 进度条更新（复用心理学测试设计）──
   function updateProgress() {
     var answered = Object.keys(userAnswers).length;
     var pct = Math.round((answered / total) * 100);
-    document.getElementById("progressBar").style.width = pct + "%";
+    document.getElementById("progressBarFill").style.width = pct + "%";
+    document.getElementById("progressText").innerText = answered + " / " + total;
     document.getElementById("btnSubmit").disabled = (answered < total);
   }
 
+  // ── 提交 & 计分引擎（完全保留您原版的逻辑）──
   document.getElementById("btnSubmit").onclick = function() {
     // 初始化计分池
     var S_pool = { O:0, V:0, D:0, E:0, T:0 };
@@ -485,22 +525,42 @@ var ALL_QUESTIONS = [
     var G_pos = { A:0, B:0, C:0, D:0 };
     var eps = [];
 
+    // 遍历所有题目，根据用户选项计入各计分池
     ALL_QUESTIONS.forEach(function(q) {
       var val = userAnswers[q.id];
       if (!val) return;
       var id = q.id;
-      if (id.startsWith("S-C") || /^C0[1-4]$/.test(id)) { var m={A:"O",B:"V",C:"D",D:"E",E:"T"}; if(m[val]) S_pool[m[val]]+=2; }
-      else if (id.startsWith("N-C")) { var m={A:"PN",B:"AN",C:"RN",D:"IN",E:"MN",F:"FN"}; if(m[val]) N_pool[m[val]]+=2; }
-      else if (/^F0[1-4]$/.test(id)) {
-        var fMap = { F01:{A:{SN:2,SS:2},B:{SN:2,DS:2},C:{DN:2,SS:2},D:{DN:2,DS:2},E:{Ch:2}}, F02:{A:{SS:2},B:{DS:2},C:{DS:1,SS:1},D:{DS:2},E:{Ch:2}}, F03:{A:{SN:2},B:{DN:2},C:{DN:1,Ch:1},D:{DN:1,Ch:1},E:{Ch:2}}, F04:{A:{SS:2,SN:2},B:{DS:2,SN:2},C:{SS:2,DN:2},D:{DS:2,DN:2},E:{Ch:2}} };
-        if (fMap[id] && fMap[id][val]) { var a=fMap[id][val]; F_pool.SS+=a.SS||0; F_pool.DS+=a.DS||0; F_pool.SN+=a.SN||0; F_pool.DN+=a.DN||0; F_pool.Ch+=a.Ch||0; }
+
+      if (id.startsWith("S-C") || /^C0[1-4]$/.test(id)) {
+        var m={A:"O",B:"V",C:"D",D:"E",E:"T"}; if(m[val]) S_pool[m[val]]+=2;
+      } else if (id.startsWith("N-C")) {
+        var m={A:"PN",B:"AN",C:"RN",D:"IN",E:"MN",F:"FN"}; if(m[val]) N_pool[m[val]]+=2;
+      } else if (/^F0[1-4]$/.test(id)) {
+        var fMap = { 
+          F01:{A:{SN:2,SS:2},B:{SN:2,DS:2},C:{DN:2,SS:2},D:{DN:2,DS:2},E:{Ch:2}}, 
+          F02:{A:{SS:2},B:{DS:2},C:{DS:1,SS:1},D:{DS:2},E:{Ch:2}}, 
+          F03:{A:{SN:2},B:{DN:2},C:{DN:1,Ch:1},D:{DN:1,Ch:1},E:{Ch:2}}, 
+          F04:{A:{SS:2,SN:2},B:{DS:2,SN:2},C:{SS:2,DN:2},D:{DS:2,DN:2},E:{Ch:2}} 
+        };
+        if (fMap[id] && fMap[id][val]) { 
+          var a=fMap[id][val]; 
+          F_pool.SS+=a.SS||0; F_pool.DS+=a.DS||0; F_pool.SN+=a.SN||0; F_pool.DN+=a.DN||0; F_pool.Ch+=a.Ch||0; 
+        }
+      } else if (id.startsWith("st-")) {
+        var m={A:"s0",B:"s1",C:"s2s",D:"s2c"}; 
+        if(m[val]) { Sigma[m[val]]++; if(val==="C"||val==="D") Trigger.push(id); }
+      } else if (id.startsWith("SL-")) {
+        var m={A:"V",B:"D",C:"O",D:"E",E:"T"}; if(m[val]) SL_pool[m[val]]+=2;
+      } else if (id.startsWith("Γ-N")) {
+        var m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_neg[m[val]]++;
+      } else if (id.startsWith("Γ-P")) {
+        var m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_pos[m[val]]++;
+      } else if (id.startsWith("ε-")) {
+        var s={A:1,B:2,C:3,D:4,E:5}; if(s[val]) eps.push(s[val]);
       }
-      else if (id.startsWith("st-")) { var m={A:"s0",B:"s1",C:"s2s",D:"s2c"}; if(m[val]) { Sigma[m[val]]++; if(val==="C"||val==="D") Trigger.push(id); } }
-      else if (id.startsWith("SL-")) { var m={A:"V",B:"D",C:"O",D:"E",E:"T"}; if(m[val]) SL_pool[m[val]]+=2; }
-      else if (id.startsWith("Γ-N")) { var m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_neg[m[val]]++; }
-      else if (id.startsWith("Γ-P")) { var m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_pos[m[val]]++; }
-      else if (id.startsWith("ε-")) { var s={A:1,B:2,C:3,D:4,E:5}; if(s[val]) eps.push(s[val]); }
     });
+
+    // ---- 后续所有计分结算、报告生成逻辑 ----
 
     // S_drive 结算
     var sArr = Object.entries(S_pool).sort(function(a,b){return b[1]-a[1];});
