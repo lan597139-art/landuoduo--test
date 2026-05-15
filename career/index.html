@@ -217,7 +217,18 @@
             line-height: 1.5;
             margin-bottom: 8px;
         }
-
+  /* 新增：专门包裹文字的容器 */
+        .option-content {
+            flex: 1; 
+            display: flex;
+            flex-direction: column; 
+            gap: 6px; 
+            margin-top: 1px; 
+        }
+        
+        .option-main {
+            word-break: break-word; 
+        }
         .option:hover {
             border-color: var(--primary);
             background: var(--primary-light);
@@ -276,15 +287,20 @@
     background: var(--primary);
     filter: grayscale(0.3) brightness(0.9);
 }
+              /* 覆盖原有的 caution 样式 */
         .caution {
-    opacity: 0.55;
-    font-size: 0.85em;
-    display: block;
-    margin-top: 2px;
-}
+            opacity: 0.65; 
+            font-size: 0.85em;
+            display: block;
+            margin-top: 0; 
+            padding-top: 6px; 
+            border-top: 1px dashed var(--border-color); 
+        }
+
         .caution .keyword-tip {
             opacity: 1;
         }
+        
         .submit-wrap {
             text-align: center;
             margin-top: 30px;
@@ -585,11 +601,18 @@ function renderQuestions() {
     ALL_QUESTIONS.forEach(function(q, i) {
         var no = i + 1;
         var questionText = addTooltips(q.text.replace(/\n/g, '<br>'));
-        var opts = q.options.map(function(o) {
+               var opts = q.options.map(function(o) {
             var parts = o.text.split('||');
             var mainText = addTooltips(parts[0]);
-            var cautionHtml = parts.length > 1 ? '<span class="caution">' + addTooltips(parts[1]) + '</span>' : '';
-            return '<label class="option" data-qid="' + q.id + '" data-val="' + o.label + '"><input type="radio" name="' + q.id + '" value="' + o.label + '"><strong>' + o.label + '.</strong> ' + mainText + cautionHtml + '</label>';
+            // 把 caution 的 span 换成 div，保证块级独立性
+            var cautionHtml = parts.length > 1 ? '<div class="caution">' + addTooltips(parts[1]) + '</div>' : '';
+            // 用 <div class="option-content"> 把文字部分包裹起来
+            return '<label class="option" data-qid="' + q.id + '" data-val="' + o.label + '">' + 
+                   '<input type="radio" name="' + q.id + '" value="' + o.label + '">' + 
+                   '<div class="option-content">' + 
+                       '<div class="option-main"><strong>' + o.label + '.</strong> ' + mainText + '</div>' + 
+                       cautionHtml + 
+                   '</div></label>';
         }).join("");
         html += '<div class="card" data-qid="' + q.id + '"><div class="card-num">题目 ' + no +' / ' + total + '</div><div class="card-text">' + questionText + '</div>' + opts + '</div>';
     });
