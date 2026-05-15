@@ -559,19 +559,25 @@ var LAYERS = [
 
   // ── 关键词提示功能（两步安全替换法，杜绝嵌套污染）──
 function addTooltips(text) {
-    // 1. 按 key 长度从长到短排序，确保长词优先匹配
     var sortedKeys = Object.keys(TOOLTIPS).sort(function(a, b) { return b.length - a.length; });
     
-    // 2. 遍历每个关键词，先替换为占位符，再统一替换为标签
+    // 建立占位符与关键词的映射
+    var placeholderMap = {};
+    var index = 0;
+    
+    // 第一步：将每个关键词替换为纯数字占位符（不含任何中文或关键词文本）
     sortedKeys.forEach(function(key) {
         var escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         var regex = new RegExp(escapedKey, 'g');
-        var placeholder = '%%KW_' + Math.random().toString(36).substr(2, 9) + '%%';
-        
-        // 先替换为唯一占位符
+        var placeholder = '%%KWPLACEHOLDER_' + index + '%%';
+        placeholderMap[placeholder] = key;
         text = text.replace(regex, placeholder);
-        
-        // 立即将占位符替换为安全标签（不再依赖全局正则）
+        index++;
+    });
+    
+    // 第二步：将所有占位符替换为安全的 span 标签
+    Object.keys(placeholderMap).forEach(function(placeholder) {
+        var key = placeholderMap[placeholder];
         while (text.indexOf(placeholder) !== -1) {
             text = text.replace(placeholder, '<span class="keyword-tip" data-key="' + key.replace(/"/g, '&quot;') + '" title="点击查看提示">' + key + '</span>');
         }
