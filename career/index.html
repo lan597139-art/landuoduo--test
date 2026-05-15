@@ -345,6 +345,11 @@
 <div class="container">
 
         <div id="quizArea">
+                <div id="quizArea">
+        <p style="text-align:center; color:var(--text-secondary); font-size:0.85rem; margin-bottom:12px;">💡 点击题干和选项中的<strong style="color:var(--primary);">下划线关键词</strong>可查看提示</p>
+        <div id="quizList"></div>
+        <div class="submit-wrap"><button class="btn" id="btnSubmit">提交并生成报告</button></div>
+    </div>
         <div id="quizList"></div>
         <div class="submit-wrap"><button class="btn" id="btnSubmit">提交并生成报告</button></div>
     </div>
@@ -589,7 +594,15 @@ function renderQuestions() {
         html += '<div class="card" data-qid="' + q.id + '"><div class="card-num">题目 ' + no +' / ' + total + '</div><div class="card-text">' + questionText + '</div>' + opts + '</div>';
     });
     document.getElementById("quizList").innerHTML = html;
-
+// 恢复已选答案的选中状态
+    for (var qid in userAnswers) {
+        var val = userAnswers[qid];
+        var opt = document.querySelector('.option[data-qid="' + qid + '"][data-val="' + val + '"]');
+        if (opt) {
+            opt.classList.add('selected');
+            opt.querySelector('input').checked = true;
+        }
+    }
     // 绑定选项点击事件
     document.querySelectorAll(".option").forEach(function(lbl) {
         lbl.onclick = function(e) {
@@ -652,6 +665,8 @@ function updateProgress() {
     document.getElementById("layerInfo").innerHTML =
         '<span class="layer-tag">' + layer.icon + ' 第' + (currentLayerIndex + 1) + '层 · ' + layer.name + '</span>' +
         '<span class="layer-progress">' + layerAnswered + '/' + layer.total + '</span>';
+     // 自动保存答案
+    localStorage.setItem('careerTestAnswers', JSON.stringify(userAnswers));
 }
   // ── 提交 & 计分引擎（完全保留您原版的逻辑）──
   document.getElementById("btnSubmit").onclick = function() {
