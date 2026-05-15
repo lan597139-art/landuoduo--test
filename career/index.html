@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -5,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>职业性格测试 · 沙盒驱动力探测</title>
     <style>
+        /* ═══════════════════════════════════════════
+           全局样式 — 复用心理学测试的干净、克制风格
+           主色调：高纯度蓝 #2563eb + 纯白 #ffffff
+           支持深色模式
+           ═══════════════════════════════════════════ */
         :root {
             --primary: #2563eb;
             --primary-light: #eff6ff;
@@ -19,6 +25,7 @@
             --radius: 12px;
             --transition: 0.2s ease;
         }
+
         @media (prefers-color-scheme: dark) {
             :root {
                 --primary: #3b82f6;
@@ -33,83 +40,298 @@
                 --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
             }
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background: var(--bg-page); color: var(--text-main);
-            line-height: 1.6; transition: background var(--transition), color var(--transition);
+            background: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: background var(--transition), color var(--transition);
         }
+
+        /* 顶部导航栏 — 复用心理学测试进度条设计 */
         .top-bar {
-            position: sticky; top: 0; z-index: 100;
-            background: var(--bg-card); border-bottom: 2px solid var(--primary-border);
-            padding: 12px 20px; display: flex; align-items: center;
-            justify-content: space-between; flex-wrap: wrap; gap: 12px;
-            box-shadow: var(--shadow); transition: background var(--transition);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--primary-border);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: var(--shadow);
+            transition: background var(--transition);
         }
-        .logo { font-weight: 700; font-size: 1.1rem; color: var(--primary); display: flex; align-items: center; gap: 6px; }
-        .progress-wrap { display: flex; align-items: center; gap: 10px; flex: 1; max-width: 300px; }
-        .progress-bar-outer { flex: 1; height: 8px; background: var(--border-color); border-radius: 99px; overflow: hidden; }
-        .progress-bar-inner { height: 100%; background: var(--primary); border-radius: 99px; width: 0%; transition: width 0.35s ease; }
-        .progress-text { font-size: 0.85rem; font-weight: 600; color: var(--primary); white-space: nowrap; }
-        .layer-info { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-secondary); background: var(--bg-page); padding: 4px 12px; border-radius: 99px; white-space: nowrap; }
-        .layer-progress { font-weight: 700; color: var(--primary); }
-        .container { max-width: 780px; margin: 0 auto; padding: 24px 16px 60px; }
-        .header-card { text-align: center; padding: 32px 20px; background: var(--bg-card); border: 2px solid var(--primary-border); border-radius: var(--radius); margin-bottom: 24px; box-shadow: var(--shadow); transition: background var(--transition); }
-        .header-card h1 { color: var(--primary); font-size: 1.5rem; margin-bottom: 8px; }
-        .card { background: var(--bg-card); border: 2px solid var(--border-color); border-radius: var(--radius); padding: 20px 18px; margin-bottom: 16px; box-shadow: var(--shadow); transition: background var(--transition), border-color var(--transition); }
-        .card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); }
-        .card.missing { border: 2px solid #ef4444; background-color: #fef2f2; }
-        .card-num { font-size: 0.8rem; font-weight: 600; color: var(--primary); margin-bottom: 8px; background: var(--primary-light); display: inline-block; padding: 2px 12px; border-radius: 99px; }
-        .card-text { font-weight: 500; margin-bottom: 14px; line-height: 1.7; white-space: pre-wrap; }
-        .keyword-tip { color: var(--primary); border-bottom: 1px dashed var(--primary); cursor: pointer; font-weight: 500; transition: var(--transition); }
-        .keyword-tip:hover { background: var(--primary-light); border-bottom-style: solid; }
-        .q-conflict { border-left: 3px solid var(--primary); padding-left: 12px; margin: 8px 0; color: var(--text-secondary); font-weight: 500; }
-        .q-question { font-weight: 700; color: var(--text-main); margin-top: 6px; }
-        .module-divider { display: flex; align-items: center; margin: 36px 0 18px; color: var(--text-secondary); font-size: 0.9rem; font-weight: 600; letter-spacing: 0.5px; }
-        .module-divider::before, .module-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); margin: 0 14px; }
-        .option { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: var(--radius); background: var(--bg-page); cursor: pointer; transition: var(--transition); font-size: 0.9rem; line-height: 1.5; margin-bottom: 8px; }
-        .option:hover { border-color: var(--primary); background: var(--primary-light); }
-        .option input[type="radio"] { accent-color: var(--primary); width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; cursor: pointer; }
-        .option.selected { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        .caution { opacity: 0.55; font-size: 0.85em; display: block; margin-top: 2px; }
-        .pole-hint { opacity: 0.5; font-size: 0.8em; margin-left: 6px; font-weight: 400; }
-        .btn { display: inline-block; padding: 12px 28px; background: var(--primary); color: #ffffff; font-size: 1rem; font-weight: 600; border: none; border-radius: 99px; cursor: pointer; letter-spacing: 0.3px; transition: var(--transition); box-shadow: var(--shadow-md); text-align: center; }
-        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-        .btn.btn-pending { opacity: 0.65; cursor: pointer; filter: grayscale(0.3); }
-        .btn.btn-pending:hover { background: var(--primary); filter: grayscale(0.3) brightness(0.9); }
-        .submit-wrap { text-align: center; margin-top: 30px; }
-        .report { margin-top: 30px; background: var(--bg-card); border: 2px solid var(--primary-border); border-radius: var(--radius); padding: 28px 22px; box-shadow: var(--shadow); line-height: 1.8; display: none; transition: background var(--transition); }
-        .report h2 { color: var(--primary); margin: 24px 0 12px; border-bottom: 2px solid var(--primary-border); padding-bottom: 6px; }
-        @media (max-width: 600px) { .top-bar { padding: 10px 12px; } .container { padding: 12px 10px 40px; } .card { padding: 16px 12px; } }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .progress-bar-outer {
+            flex: 1;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 99px;
+            width: 0%;
+            transition: width 0.35s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 24px 16px 60px;
+        }
+
+        .header-card {
+            text-align: center;
+            padding: 32px 20px;
+            background: var(--bg-card);
+            border: 2px solid var(--primary-border);
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            transition: background var(--transition);
+        }
+
+        .header-card h1 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px 18px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+        .card.missing {
+            border: 2px solid #ef4444;
+            background-color: #fef2f2;
+        }
+        .card-num {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+            background: var(--primary-light);
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 99px;
+        }
+
+        .card-text {
+            font-weight: 500;
+            margin-bottom: 14px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        /* 关键词提示样式 */
+        .keyword-tip {
+            color: var(--primary);
+            border-bottom: 1px dashed var(--primary);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .keyword-tip:hover {
+            background: var(--primary-light);
+            border-bottom-style: solid;
+        }
+
+        /* 选项 */
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-page);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .option:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .option input[type="radio"] {
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* 按钮 */
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 99px;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+            filter: none;
+            transform: none;
+            color: var(--text-secondary);
+        }
+        .btn.btn-pending {
+    opacity: 0.65;
+    cursor: pointer;
+    filter: grayscale(0.3);
+}
+.btn.btn-pending:hover {
+    background: var(--primary);
+    filter: grayscale(0.3) brightness(0.9);
+}
+        .submit-wrap {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .report {
+            margin-top: 30px;
+            background: var(--bg-card);
+            border: 2px solid var(--primary-border);
+            border-radius: var(--radius);
+            padding: 28px 22px;
+            box-shadow: var(--shadow);
+            line-height: 1.8;
+            display: none;
+            transition: background var(--transition);
+        }
+
+        .report h2 {
+            color: var(--primary);
+            margin: 24px 0 12px;
+            border-bottom: 2px solid var(--primary-border);
+            padding-bottom: 6px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .top-bar {
+                padding: 10px 12px;
+            }
+            .container {
+                padding: 12px 10px 40px;
+            }
+            .card {
+                padding: 16px 12px;
+            }
+        }
     </style>
 </head>
 <body>
+<!-- ═══════════ 顶部导航栏 ═══════════ -->
 <div class="top-bar" id="topBar">
-    <div class="logo"><span>🧭</span> 职业沙盘探测</div>
+    <div class="logo">
+        <span>🧭</span> 职业沙盘探测
+    </div>
     <div class="progress-wrap">
-        <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBarFill"></div></div>
+        <div class="progress-bar-outer">
+            <div class="progress-bar-inner" id="progressBarFill"></div>
+        </div>
         <span class="progress-text" id="progressText">0 / 71</span>
     </div>
-    <div class="layer-info" id="layerInfo">
-        <span class="layer-tag">🌱 第1层 · 核心身份</span>
-        <span class="layer-progress" id="layerProgress">0/20</span>
-    </div>
 </div>
+
+<!-- ═══════════ 主容器 ═══════════ -->
 <div class="container">
     <div class="header-card" id="headerBox">
         <h1>职业性格测试</h1>
         <p style="color: var(--text-secondary);">基于五行驱动力与沙盒模型<br>共71题，预计用时20-30分钟。点击题干中的<strong style="color: var(--primary);">蓝色关键词</strong>可查看提示。</p>
         <button class="btn" id="btnStart" style="margin-top:16px;">开始测试</button>
     </div>
+
     <div id="quizArea" style="display:none;">
         <div id="quizList"></div>
         <div class="submit-wrap"><button class="btn" id="btnSubmit">提交并生成报告</button></div>
     </div>
+
     <div class="report" id="reportBox"></div>
 </div>
 
 <script>
-// ==================== TOOLTIPS 词库 ====================
+// ==================== 关键词提示词库 ====================
+// ==================== TOOLTIPS 词库（最终定稿）====================
 const TOOLTIPS = {
     "秩序": "O｜结构性 · 结晶本能：追求秩序与可预测性，本能地对抗混乱。像晶体一样冷峻，致力于把模糊变清晰。【你会定计划、理流程、建规则，让一切进入可控的轨道。混乱是你最想消灭的东西，确定的结果让你感到安全。】",
     "锚定": "V｜锚定性 · 回声本能：追求被看见与被反馈，无论是正反馈还是负反馈，以此确认坐标。像回声一样，需要外界反应证明存在。【外界对你的回应——不管是来自人、动物还是任何你信任的实体——都像一面镜子，让你知道自己的位置在哪，不至于悬浮。】",
@@ -210,7 +432,6 @@ const TOOLTIPS = {
     "意义打开": "想证明自己、想改变未来、找到专业或研究或社团使命感、确认职业价值、产品使命、社会价值、想重建人生。突然对一件事产生了很强的愿景感。",
     "现实落地": "制定一周最小补漏动作、做一次小实验、访谈用户、交付一个指标、检查现金流、处理一个具体边界、订一个分工、建立一个沟通机制。"
 };
-
 // ==================== 题库 (71题) ====================
 var ALL_QUESTIONS = [
   // 第一批：S-C01 ~ F04（20题）
@@ -290,31 +511,24 @@ var ALL_QUESTIONS = [
   {"id":"ε-15","text":"当我看到一个可以优化、但没人要求我处理的问题时，我更接近：","options":[{"label":"A","text":"不想管，甚至想远离这个系统。"},{"label":"B","text":"看见也先不动，避免给自己增加负担。"},{"label":"C","text":"如果它影响到日常运转，就按常规处理。"},{"label":"D","text":"会主动修补其中一个小漏洞。"},{"label":"E","text":"会想重构整个机制，让它以后更高效。"}]},
   {"id":"ε-16","text":"面向接下来24小时，我的行动欲望更接近：","options":[{"label":"A","text":"想退出、断开、停止被任何事情牵引。"},{"label":"B","text":"只想维持最低运转，避免新增负荷。"},{"label":"C","text":"正常完成已有事项即可。"},{"label":"D","text":"想主动推进一个具体目标或修复一个问题。"},{"label":"E","text":"想明显扩张行动范围，启动更大的计划或结构。"}]}
 ];
-
 // ==================== 完全整合的前端渲染 + 计分引擎 ====================
 (function() {
   var userAnswers = {};
+    // 恢复上次未提交的答案
+  var savedAnswers = localStorage.getItem('careerTestAnswers');
+  if (savedAnswers) {
+      try { userAnswers = JSON.parse(savedAnswers); } catch(e) {}
+  }
   var total = ALL_QUESTIONS.length;
-  var LAYERS = [
-    { start: 1,  end: 20, name: '核心身份',    total: 20, icon: '🌱' },
-    { start: 21, end: 25, name: '代价结算',    total: 5,  icon: '⚖️' },
-    { start: 26, end: 31, name: '归因分析',    total: 6,  icon: '🔍' },
-    { start: 32, end: 55, name: '反馈代谢',    total: 24, icon: '🔄' },
-    { start: 56, end: 71, name: '能量状态',    total: 16, icon: '🔋' }
-  ];
-  var epsilonModules = [
-    { start: 'ε-01', end: 'ε-04', title: '🔋 一、物理机能载荷', poleA: '🔴 严重透支', poleE: '🟢 满电超频' },
-    { start: 'ε-05', end: 'ε-08', title: '⚡ 二、心理承压阈值', poleA: '🔴 濒临崩溃', poleE: '🟢 高压掌控' },
-    { start: 'ε-09', end: 'ε-12', title: '💭 三、情绪极性',    poleA: '🔴 攻击/防御', poleE: '🟢 善意共情' },
-    { start: 'ε-13', end: 'ε-16', title: '🔥 四、动机烈度',    poleA: '🔴 完全退缩', poleE: '🟢 极度扩张' }
-  ];
 
+  // ── 启动 ──
   document.getElementById("btnStart").onclick = function() {
     document.getElementById("headerBox").style.display = "none";
     document.getElementById("quizArea").style.display = "block";
     renderQuestions();
   };
 
+  // ── 关键词提示功能（解决题目文本膨胀、辅助理解）──
   function addTooltips(text) {
     Object.keys(TOOLTIPS).forEach(key => {
       const regex = new RegExp(`(${key})`, 'g');
@@ -323,55 +537,20 @@ var ALL_QUESTIONS = [
     return text;
   }
 
+  // ── 渲染所有题目（带关键词高亮）──
   function renderQuestions() {
     var html = "";
     ALL_QUESTIONS.forEach(function(q, i) {
       var no = i + 1;
-
-      for (var m = 0; m < epsilonModules.length; m++) {
-        if (q.id === epsilonModules[m].start) {
-          html += '<div class="module-divider"><span>' + epsilonModules[m].title + '</span></div>';
-          break;
-        }
-      }
-
-      var currentEpsModule = null;
-      if (q.id.startsWith('ε-')) {
-        for (var m = 0; m < epsilonModules.length; m++) {
-          if (q.id >= epsilonModules[m].start && q.id <= epsilonModules[m].end) {
-            currentEpsModule = epsilonModules[m]; break;
-          }
-        }
-      }
-
-      var questionText = '';
-      if (q.text.indexOf('\n\n') !== -1) {
-        var parts = q.text.split('\n\n');
-        questionText += parts[0] ? '<p class="q-scene">' + addTooltips(parts[0]) + '</p>' : '';
-        questionText += parts[1] ? '<p class="q-conflict">' + addTooltips(parts[1]) + '</p>' : '';
-        questionText += parts[2] ? '<p class="q-question">' + addTooltips(parts[2]) + '</p>' : '';
-      } else {
-        questionText = addTooltips(q.text.replace(/\n/g, '<br>'));
-      }
-
+      var questionText = addTooltips(q.text.replace(/\n/g, '<br>'));
       var opts = q.options.map(function(o) {
-        var parts = o.text.split('||');
-        var mainText = parts[0];
-        var cautionText = parts.length > 1 ? '<span class="caution">' + parts[1] + '</span>' : '';
-        var optHtml = '<label class="option" data-qid="' + q.id + '" data-val="' + o.label + '">' +
-                      '<input type="radio" name="' + q.id + '" value="' + o.label + '"><strong>' + o.label + '.</strong> ' + addTooltips(mainText) + cautionText;
-        if (currentEpsModule) {
-          if (o.label === 'A') optHtml += ' <span class="pole-hint">' + currentEpsModule.poleA + '</span>';
-          else if (o.label === 'E') optHtml += ' <span class="pole-hint">' + currentEpsModule.poleE + '</span>';
-        }
-        optHtml += '</label>';
-        return optHtml;
+        return '<label class="option" data-qid="' + q.id + '" data-val="' + o.label + '"><input type="radio" name="' + q.id + '" value="' + o.label + '"><strong>' + o.label + '.</strong> ' + o.text + '</label>';
       }).join("");
-
-      html += '<div class="card" data-qid="' + q.id + '"><div class="card-num">题目 ' + no + ' / ' + total + '</div><div class="card-text">' + questionText + '</div>' + opts + '</div>';
+      html += '<div class="card" data-qid="' + q.id + '"><div class="card-num">题目 ' + no +' / ' + total + '</div><div class="card-text">' + questionText + '</div>' + opts + '</div>';
     });
     document.getElementById("quizList").innerHTML = html;
 
+    // 绑定选项点击事件
     document.querySelectorAll(".option").forEach(function(lbl) {
       lbl.onclick = function() {
         var qid = this.dataset.qid;
@@ -385,60 +564,53 @@ var ALL_QUESTIONS = [
     });
   }
 
+  // ── 进度条更新（复用心理学测试设计）──
   function updateProgress() {
     var answered = Object.keys(userAnswers).length;
     var pct = Math.round((answered / total) * 100);
     document.getElementById("progressBarFill").style.width = pct + "%";
     document.getElementById("progressText").innerText = answered + " / " + total;
-
-    var btn = document.getElementById("btnSubmit");
-    if (answered < total) { btn.classList.add("btn-pending"); }
-    else { btn.classList.remove("btn-pending"); }
-
-    var currentLayerIndex = LAYERS.length - 1;
-    for (var i = 0; i < ALL_QUESTIONS.length; i++) {
-      if (!userAnswers[ALL_QUESTIONS[i].id]) {
-        var currentQNo = i + 1;
-        for (var j = 0; j < LAYERS.length; j++) {
-          if (currentQNo >= LAYERS[j].start && currentQNo <= LAYERS[j].end) {
-            currentLayerIndex = j; break;
-          }
-        }
-        break;
-      }
+var btn = document.getElementById("btnSubmit");
+    if (answered < total) {
+        btn.classList.add("btn-pending");   // 未答完时加一个灰色样式
+    } else {
+        btn.classList.remove("btn-pending"); // 答完恢复
     }
-    var layer = LAYERS[currentLayerIndex];
-    var layerAnswered = 0;
-    for (var k = layer.start - 1; k < layer.end; k++) {
-      if (userAnswers[ALL_QUESTIONS[k].id]) layerAnswered++;
-    }
-    document.getElementById("layerInfo").innerHTML =
-      '<span class="layer-tag">' + layer.icon + ' 第' + (currentLayerIndex + 1) + '层 · ' + layer.name + '</span>' +
-      '<span class="layer-progress">' + layerAnswered + '/' + layer.total + '</span>';
-  }
-
+}
+  // ── 提交 & 计分引擎（完全保留您原版的逻辑）──
   document.getElementById("btnSubmit").onclick = function() {
-    var answeredCount = Object.keys(userAnswers).length;
-    if (answeredCount < total) {
-      alert('您还有 ' + (total - answeredCount) + ' 道题未答，正在为您定位到第一道漏题。');
-      var firstMissingQid = null;
-      for (var i = 0; i < ALL_QUESTIONS.length; i++) {
-        if (!userAnswers[ALL_QUESTIONS[i].id]) { firstMissingQid = ALL_QUESTIONS[i].id; break; }
-      }
-      if (firstMissingQid) {
-        document.querySelectorAll('.card.missing').forEach(function(card) { card.classList.remove('missing'); });
+    // 漏题检查：若未答完，则定位跳转
+var answeredCount = Object.keys(userAnswers).length;
+if (answeredCount < total) {
+    alert('您还有 ' + (total - answeredCount) + ' 道题未答，正在为您定位到第一道漏题。');
+
+    // 找到第一个未回答的题目id
+    var firstMissingQid = null;
+    for (var i = 0; i < ALL_QUESTIONS.length; i++) {
+        if (!userAnswers[ALL_QUESTIONS[i].id]) {
+            firstMissingQid = ALL_QUESTIONS[i].id;
+            break;
+        }
+    }
+    if (firstMissingQid) {
+        // 清除之前可能残留的红色标记
+        document.querySelectorAll('.card.missing').forEach(function(card) {
+            card.classList.remove('missing');
+        });
+        // 找到对应的卡片并标红、滚动
         var missingCard = document.querySelector('.card[data-qid="' + firstMissingQid + '"]');
         if (missingCard) {
-          missingCard.classList.add('missing');
-          missingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          missingCard.style.boxShadow = '0 0 0 3px #ef4444';
-          setTimeout(function() { missingCard.style.boxShadow = ''; }, 2000);
+            missingCard.classList.add('missing');
+            missingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            missingCard.style.boxShadow = '0 0 0 3px #ef4444';
+            setTimeout(function() {
+                missingCard.style.boxShadow = '';
+            }, 2000);
         }
-      }
-      return;
     }
-
-    // 初始化计分池
+    return; // 阻止继续往下执行计分和生成报告
+}
+      // 初始化计分池
     var S_pool = { O:0, V:0, D:0, E:0, T:0 };
     var N_pool = { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
     var F_pool = { SS:0, DS:0, SN:0, DN:0, Ch:0 };
@@ -449,17 +621,42 @@ var ALL_QUESTIONS = [
     var G_pos = { A:0, B:0, C:0, D:0 };
     var eps = [];
 
+    // 遍历所有题目，根据用户选项计入各计分池
     ALL_QUESTIONS.forEach(function(q) {
-      var val = userAnswers[q.id]; if (!val) return; var id = q.id;
-      if (id.startsWith("S-C") || /^C0[1-4]$/.test(id)) { var m={A:"O",B:"V",C:"D",D:"E",E:"T"}; if(m[val]) S_pool[m[val]]+=2; }
-      else if (id.startsWith("N-C")) { var m={A:"PN",B:"AN",C:"RN",D:"IN",E:"MN",F:"FN"}; if(m[val]) N_pool[m[val]]+=2; }
-      else if (/^F0[1-4]$/.test(id)) { var fMap = { F01:{A:{SN:2,SS:2},B:{SN:2,DS:2},C:{DN:2,SS:2},D:{DN:2,DS:2},E:{Ch:2}}, F02:{A:{SS:2},B:{DS:2},C:{DS:1,SS:1},D:{DS:2},E:{Ch:2}}, F03:{A:{SN:2},B:{DN:2},C:{DN:1,Ch:1},D:{DN:1,Ch:1},E:{Ch:2}}, F04:{A:{SS:2,SN:2},B:{DS:2,SN:2},C:{SS:2,DN:2},D:{DS:2,DN:2},E:{Ch:2}} }; if (fMap[id] && fMap[id][val]) { var a=fMap[id][val]; F_pool.SS+=a.SS||0; F_pool.DS+=a.DS||0; F_pool.SN+=a.SN||0; F_pool.DN+=a.DN||0; F_pool.Ch+=a.Ch||0; } }
-      else if (id.startsWith("st-")) { var m={A:"s0",B:"s1",C:"s2s",D:"s2c"}; if(m[val]) { Sigma[m[val]]++; if(val==="C"||val==="D") Trigger.push(id); } }
-      else if (id.startsWith("SL-")) { var m={A:"V",B:"D",C:"O",D:"E",E:"T"}; if(m[val]) SL_pool[m[val]]+=2; }
-      else if (id.startsWith("Γ-N")) { var m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_neg[m[val]]++; }
-      else if (id.startsWith("Γ-P")) { var m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_pos[m[val]]++; }
-      else if (id.startsWith("ε-")) { var s={A:1,B:2,C:3,D:4,E:5}; if(s[val]) eps.push(s[val]); }
+      var val = userAnswers[q.id];
+      if (!val) return;
+      var id = q.id;
+
+      if (id.startsWith("S-C") || /^C0[1-4]$/.test(id)) {
+        var m={A:"O",B:"V",C:"D",D:"E",E:"T"}; if(m[val]) S_pool[m[val]]+=2;
+      } else if (id.startsWith("N-C")) {
+        var m={A:"PN",B:"AN",C:"RN",D:"IN",E:"MN",F:"FN"}; if(m[val]) N_pool[m[val]]+=2;
+      } else if (/^F0[1-4]$/.test(id)) {
+        var fMap = { 
+          F01:{A:{SN:2,SS:2},B:{SN:2,DS:2},C:{DN:2,SS:2},D:{DN:2,DS:2},E:{Ch:2}}, 
+          F02:{A:{SS:2},B:{DS:2},C:{DS:1,SS:1},D:{DS:2},E:{Ch:2}}, 
+          F03:{A:{SN:2},B:{DN:2},C:{DN:1,Ch:1},D:{DN:1,Ch:1},E:{Ch:2}}, 
+          F04:{A:{SS:2,SN:2},B:{DS:2,SN:2},C:{SS:2,DN:2},D:{DS:2,DN:2},E:{Ch:2}} 
+        };
+        if (fMap[id] && fMap[id][val]) { 
+          var a=fMap[id][val]; 
+          F_pool.SS+=a.SS||0; F_pool.DS+=a.DS||0; F_pool.SN+=a.SN||0; F_pool.DN+=a.DN||0; F_pool.Ch+=a.Ch||0; 
+        }
+      } else if (id.startsWith("st-")) {
+        var m={A:"s0",B:"s1",C:"s2s",D:"s2c"}; 
+        if(m[val]) { Sigma[m[val]]++; if(val==="C"||val==="D") Trigger.push(id); }
+      } else if (id.startsWith("SL-")) {
+        var m={A:"V",B:"D",C:"O",D:"E",E:"T"}; if(m[val]) SL_pool[m[val]]+=2;
+      } else if (id.startsWith("Γ-N")) {
+        var m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_neg[m[val]]++;
+      } else if (id.startsWith("Γ-P")) {
+        var m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_pos[m[val]]++;
+      } else if (id.startsWith("ε-")) {
+        var s={A:1,B:2,C:3,D:4,E:5}; if(s[val]) eps.push(s[val]);
+      }
     });
+
+    // ---- 后续所有计分结算、报告生成逻辑 ----
 
     // S_drive 结算
     var sArr = Object.entries(S_pool).sort(function(a,b){return b[1]-a[1];});
@@ -468,6 +665,8 @@ var ALL_QUESTIONS = [
     var N1 = nArr[0][0], N2 = nArr.length>1 && nArr[1][1]>0 ? nArr[1][0] : null;
     var dualS = F_pool.DS >= F_pool.SS && F_pool.DS > F_pool.Ch;
     var dualN = F_pool.DN >= F_pool.SN && F_pool.DN > F_pool.Ch;
+
+    // 心腹角色判定（11型）
     var confidant = "";
     var S_has = function(e){ return (S1===e || S2===e); };
     var N_has = function(s){ return (N1===s || N2===s); };
@@ -497,10 +696,12 @@ var ALL_QUESTIONS = [
       "镜子型心腹": {dir:"价值校准、内容、咨询、复盘、精神陪伴", pos:"教练、咨询顾问、深度内容作者、品牌理念顾问、战略复盘顾问", unsuit:"要求无条件站队、纯情绪安抚、强服从体系", auth:"授权深度复盘、理念咨询与精神陪伴权；需接受其低服从性和高独立需求"}
     };
     var career = careerByConfidant[confidant] || careerByConfidant["镜子型心腹"];
+
     var sigArr = [Sigma.s0, Sigma.s1, Sigma.s2s, Sigma.s2c];
     var sigMax = Math.max.apply(null, sigArr);
     var sigDom = sigArr[0]===sigMax?"σ0":sigArr[1]===sigMax?"σ1":sigArr[2]===sigMax?"σ2_switch":"σ2_collapse";
     var L1 = Object.entries(SL_pool).sort(function(a,b){return b[1]-a[1];})[0][0];
+
     function getMetaLabel(c) {
       var m = Math.max(c.A,c.B,c.C,c.D);
       var dom = c.D===m?"空转主导":c.C===m?"内源主导":c.B===m?"灰度主导":"外源主导";
@@ -512,8 +713,14 @@ var ALL_QUESTIONS = [
       return dom;
     }
     var metaNegRaw = getMetaLabel(G_neg), metaPosRaw = getMetaLabel(G_pos);
+
     var loadPool=0,stressPool=0,emotionPool=0,motivePool=0;
-    for(var i=0;i<eps.length;i++) { if(i<4) loadPool+=eps[i]; else if(i<8) stressPool+=eps[i]; else if(i<12) emotionPool+=eps[i]; else motivePool+=eps[i]; }
+    for(var i=0;i<eps.length;i++) {
+      if(i<4) loadPool+=eps[i];
+      else if(i<8) stressPool+=eps[i];
+      else if(i<12) emotionPool+=eps[i];
+      else motivePool+=eps[i];
+    }
     var epsTotal = loadPool+stressPool+emotionPool+motivePool;
     var epsZone = epsTotal<=28?"🔴 全面断电":epsTotal<=44?"🟠 省电模式":epsTotal<=60?"🟢 收支平衡":epsTotal<=72?"🔵 满电输出":"🟣 狂热超频";
     var drainArr = [loadPool,stressPool,emotionPool,motivePool];
@@ -603,17 +810,24 @@ var ALL_QUESTIONS = [
     };
     var drainLabel = { "Load": "物理承载", "Stress": "心理承压", "Emotion": "情绪极性", "Motive": "动机烈度" };
     var confQuote = {
-      "谋臣型心腹": "我的价值不在于执行，在于能看见别人看不到的东西","执行型心腹": "别跟我谈愿景，告诉我具体怎么做，我来搞定",
-      "开疆型心腹": "存量没有意思，我要去打开那些还没有碰过的地方","维稳型心腹": "你们往前冲，我在后面把一切稳住，不让系统散架",
-      "布道型心腹": "我需要让更多人理解这件事的意义，不然推不动","守门型心腹": "扩张可以，但有些红线不能碰，我就是那条红线",
-      "破局型心腹": "系统快死了？让我来，我有办法在废墟上重新点火","系统型心腹": "混乱是因为没有好结构，我负责搭一个能自己跑起来的框架",
-      "情感型心腹": "你们都在讲效率，但没有人关心这里的人还好不好","镜子型心腹": "我不是来告诉你该做什么，我是来帮你看清你到底想要什么",
+      "谋臣型心腹": "我的价值不在于执行，在于能看见别人看不到的东西",
+      "执行型心腹": "别跟我谈愿景，告诉我具体怎么做，我来搞定",
+      "开疆型心腹": "存量没有意思，我要去打开那些还没有碰过的地方",
+      "维稳型心腹": "你们往前冲，我在后面把一切稳住，不让系统散架",
+      "布道型心腹": "我需要让更多人理解这件事的意义，不然推不动",
+      "守门型心腹": "扩张可以，但有些红线不能碰，我就是那条红线",
+      "破局型心腹": "系统快死了？让我来，我有办法在废墟上重新点火",
+      "系统型心腹": "混乱是因为没有好结构，我负责搭一个能自己跑起来的框架",
+      "情感型心腹": "你们都在讲效率，但没有人关心这里的人还好不好",
+      "镜子型心腹": "我不是来告诉你该做什么，我是来帮你看清你到底想要什么",
       "资源型心腹": "你们缺的不是能力，是缺对的人，缺对的资源，我能找到"
     };
     var complexityLabel = dualS&&dualN ? "多维调度型" : dualS ? "专项攻坚型" : dualN ? "跨界串联型" : "深度穿透型";
     var complexityQuote = {
-      "深度穿透型": "我只做一件事，但我要把这件事做穿。","专项攻坚型": "我能在一个领域里调动多套逻辑，处理那些别人搞不定的复杂项目。",
-      "跨界串联型": "我擅长把不同领域的资源串起来，让它们产生化学反应。","多维调度型": "我能同时处理多件性质不同的事，但要警惕自己因此烧干。",
+      "深度穿透型": "我只做一件事，但我要把这件事做穿。",
+      "专项攻坚型": "我能在一个领域里调动多套逻辑，处理那些别人搞不定的复杂项目。",
+      "跨界串联型": "我擅长把不同领域的资源串起来，让它们产生化学反应。",
+      "多维调度型": "我能同时处理多件性质不同的事，但要警惕自己因此烧干。",
       "潜能未定型": "我还没有找到那个让我扎根的点，但我的能量一直在，只是在等一个方向。"
     };
     var complexityDesc = {
@@ -662,4 +876,54 @@ var ALL_QUESTIONS = [
     report += '<h2>⚡ 你的抗压模式：极限压力下你会怎样</h2>';
     var sigmaLines = (sigmaDesc[sigDom]||"").split('\n');
     var sigmaTitle = sigmaLines[0] || "";
-    var sigmaBody = sigmaLines.slice(1).join('<
+    var sigmaBody = sigmaLines.slice(1).join('<br>') || "";
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">主导相变状态：' + sigDom + '｜' + sigmaTitle + '</p>';
+    report += '<p style="margin-top:0;line-height:1.8;">' + sigmaBody + '</p>';
+    report += '<p style="margin-top:8px;"><strong>授权调整：</strong>' + (authTextMap[sigDom]||"") + '</p>';
+    report += '<h2>🔍 你的诊断视角：你认为问题出在哪</h2>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">第一归因倾向：' + eName[L1] + '</p>';
+    var logicRaw = sLogicTextFull[L1]||"";
+    var logicHtml = logicRaw.replace(/\n\n/g, '</p><p style="margin-top:12px;line-height:1.8;">').replace(/\n/g, '<br>');
+    report += '<p style="margin-top:0;line-height:1.8;">' + logicHtml + '</p>';
+    report += '<h2>🔄 你的反馈处理：如何应对外部正负反馈</h2>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">面对压力：' + metaNegRaw + '</p>';
+    var negFull = metaNegFull[metaNegRaw] || metaNegFull[metaNegRaw.split(" · ")[0]] || metaNegRaw;
+    var negLines = negFull.split('\n');
+    var negBody = negLines.length > 1 ? negLines.slice(1).join('<br>') : negLines[0];
+    report += '<p style="margin-top:0;line-height:1.8;">' + negBody + '</p>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;margin-top:16px;">面对机会：' + metaPosRaw + '</p>';
+    var posFull = metaPosFull[metaPosRaw] || metaPosFull[metaPosRaw.split(" · ")[0]] || metaPosRaw;
+    var posLines = posFull.split('\n');
+    var posBody = posLines.length > 1 ? posLines.slice(1).join('<br>') : posLines[0];
+    report += '<p style="margin-top:0;line-height:1.8;">' + posBody + '</p>';
+    report += '<h2>🔋 你的当下状态：此刻的身心能量水平</h2>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">综合评分：' + epsTotal + '分｜工况：' + epsZone + '</p>';
+    var epsRaw = epsFullText[epsZone]||"";
+    var epsParts = epsRaw.split('【建议】');
+    var epsMain = epsParts[0] || "";
+    var epsAdvice = epsParts.length > 1 ? epsParts[1] : "";
+    report += '<p style="margin-top:0;line-height:1.8;">' + epsMain.replace(/\n/g, '<br>') + '</p>';
+    if (epsAdvice) {
+      report += '<p style="margin-top:8px;line-height:1.8;"><strong>【建议】</strong>' + epsAdvice.replace(/\n/g, '<br>') + '</p>';
+    }
+    if (drainType) {
+      report += '<p style="font-weight:bold;font-size:16px;margin-top:16px;">⚠️ 当前主要脆弱点：' + drainLabel[drainType] + '</p>';
+      report += '<p style="margin-top:0;line-height:1.8;">' + drainFullText[drainType] + '</p>';
+    }
+// 在报告最前面加入导出按钮
+report = '<button id="btnDownloadReport" class="btn" style="margin-bottom:20px;">📥 保存报告（打印为PDF）</button>' + report;
+    document.getElementById("reportBox").innerHTML = report;
+    document.getElementById("reportBox").style.display = "block";
+    document.getElementById("reportBox").scrollIntoView({behavior:"smooth"});
+       // 绑定导出按钮
+    var downloadBtn = document.getElementById('btnDownloadReport');
+    if (downloadBtn) {
+        downloadBtn.onclick = function() {
+            window.print();
+        };
+    }
+  };
+})();
+</script>
+</body>
+</html>
