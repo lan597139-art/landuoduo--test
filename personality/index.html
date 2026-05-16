@@ -83,8 +83,30 @@
 
 <script>
 (async () => {
-  const res = await fetch('quiz.json');
-  const QUIZ = await res.json();
+ // ---------- 修改后的初始化脚本 ----------
+(async () => {
+  let QUIZ;
+  const $phase = document.getElementById('phaseIndicator');
+  const $quiz = document.getElementById('quizArea');
+
+  try {
+    const res = await fetch('quiz.json');
+    if (!res.ok) {
+      throw new Error(`HTTP 错误! 状态码: ${res.status}。请检查 quiz.json 是否在正确路径。`);
+    }
+    QUIZ = await res.json();
+  } catch (error) {
+    console.error("测试引擎初始化失败:", error);
+    $phase.textContent = "❌ 加载失败";
+    $quiz.innerHTML = `<div class="question-card" style="border-color: #ef4444;">
+      <div class="q-text" style="color: #b91c1c;">
+        <strong>数据加载引擎异常：</strong><br>
+        ${error.message}<br><br>
+        <small style="color: #64748b;">排查提示：请按 F12 打开控制台（Console）查看 Network 面板的具体报错。若在本地双击打开 HTML，请使用 Live Server 等本地服务器环境运行。</small>
+      </div>
+    </div>`;
+    return; // 阻断后续错误执行
+  }
 
   // ---------- 全局状态 ----------
   const STATE = {
