@@ -25,25 +25,35 @@
             --transition: 0.2s ease;
         }
 
-              @media (prefers-color-scheme: dark) {
+        @media (prefers-color-scheme: dark) {
             :root {
                 --primary: #3b82f6;          
-                --primary-light: #172554;    
-                --primary-border: #1e3a8a;   
+                --primary-light: rgba(59, 130, 246, 0.15); /* 淡淡的透明灰蓝色 */
+                --primary-border: #3b82f6;   
                 --text-main: #f8fafc;        
                 --text-secondary: #94a3b8;   
-                --bg-page: #000000;          
-                --bg-card: #0a0a0a;          
-                --border-color: #1e293b;     
-                --shadow: 0 4px 20px rgba(0,0,0,0.8);
-                --shadow-md: 0 8px 30px rgba(0,0,0,0.9);
+                --bg-page: #121212;          /* 页面大背景：深灰色 */
+                --bg-card: #1c1c1e;          /* 答题卡背景：稍亮一点的深灰色 */
+                --border-color: #333336;     /* 卡片边框颜色 */
+                --shadow: none;              /* 【关键修复】彻底干掉导致白光的阴影 */
+                --shadow-md: none;           /* 【关键修复】彻底干掉导致白光的阴影 */
             }
 
-            /* 【核心修复】强制覆盖所有文本颜色，解决手机端变量失效 Bug */
+            /* 强制覆盖所有文本颜色 */
             body, .container, .report, .card, .card-text, .option, .option-content, .option-main {
                 color: #f8fafc !important; 
             }
             
+            /* 强制应用背景色并清除阴影 */
+            body {
+                background-color: #121212 !important; 
+            }
+            .card, .report {
+                background-color: #1c1c1e !important; 
+                border-color: #333336 !important;
+                box-shadow: none !important; 
+            }
+
             /* 强制将 JS 报告里写死的深灰色（#555）提亮为浅灰 */
             .report p[style*="color:#555"] {
                 color: #94a3b8 !important;
@@ -51,34 +61,40 @@
 
             /* 暗黑模式专项微调 */
             .top-bar {
-                background: #050505 !important;
+                background: #1c1c1e !important;
+                border-bottom: 1px solid #333336 !important;
                 color: #f8fafc !important;
+                box-shadow: none !important;
             }
             .logo {
                 color: var(--primary) !important;
             }
+            
+            /* --- 选项卡片定制 --- */
             .option {
-                background: #111111 !important;
-                border-color: #27272a !important;
+                background: #2c2c2e !important; /* 选项变成中灰色 */
+                border-color: #3a3a3c !important;
             }
             .option:hover {
-                background: #1e293b !important;
+                background: #3a3a3c !important;
                 border-color: var(--primary) !important;
             }
             .option.selected {
-                background: var(--primary-light) !important;
+                background: rgba(59, 130, 246, 0.15) !important; /* 选中后变成淡淡的透明灰蓝色 */
                 border-color: var(--primary) !important;
             }
+            
+            /* 其他细节 */
             .progress-bar-outer {
-                background: #1e293b !important;
+                background: #333336 !important;
             }
             .caution {
                 color: #94a3b8 !important;
-                border-top-color: #27272a !important;
+                border-top-color: #3a3a3c !important;
             }
             .report h2 {
                 color: var(--primary) !important;
-                border-bottom-color: var(--primary-border) !important;
+                border-bottom-color: #333336 !important;
             }
         }
             margin: 0;
