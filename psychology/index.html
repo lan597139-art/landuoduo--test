@@ -18,17 +18,17 @@
             color: #0f172a;
         }
         
-        /* ═══════════════════════════════════════════
-           强力修复版：绝对纯黑底、深灰卡片、高对比度文字
+               /* ═══════════════════════════════════════════
+           强力修复版：绝对纯黑底、深灰卡片、无死角覆盖
            ═══════════════════════════════════════════ */
         @media (prefers-color-scheme: dark) {
-            /* 1. 强制页面大背景与所有容器为绝对纯黑，彻底消灭死白残留 */
+            /* 1. 强制页面大背景与所有容器为绝对纯黑 */
             html, body, .app-container, .section, #quizArea, #quizList, .report-area, #aiPromptTemplate, textarea {
                 background: #000000 !important;
                 color: #f8fafc !important;
             }
             
-            /* 2. 顶部导航栏高级暗黑适配（深色微光底） */
+            /* 2. 顶部导航栏高级暗黑适配 */
             .top-bar {
                 background: #0d0d0d !important;
                 border-bottom: 2px solid #1e4bd2 !important;
@@ -41,7 +41,16 @@
                 color: #3b82f6 !important;
             }
 
-            /* 3. 题干大卡片适配（微深灰，拉开视觉层级） */
+            /* 💥 3. 修复遗漏的章节大标题（彻底消灭 8号/9号 的巨大白块） 💥 */
+            .section-header {
+                background: #0a0a0a !important;
+                border-bottom: 1px solid #1e293b !important;
+            }
+            .section-header h2 {
+                color: #3b82f6 !important;
+            }
+
+            /* 4. 题干大卡片适配 */
             .q-card {
                 background: #0a0a0a !important;
                 border: 1px solid #1e293b !important;
@@ -54,20 +63,18 @@
                 color: #3b82f6 !important;
             }
 
-            /* 4. 未选中的选项卡片：彻底剥离蓝色调，转为高级深灰 */
+            /* 5. 未选中的选项卡片：深度灰化 */
             .options label, .options input[type="radio"] + span {
                 background: #1e293b !important; 
                 border: 1px solid #334155 !important;
                 color: #cbd5e1 !important;
             }
-            
-            /* 选项悬停状态 */
             .options label:hover {
                 background: #334155 !important;
                 color: #ffffff !important;
             }
 
-            /* 5. 已选中的选项卡片：高亮暗蓝底 + 明显蓝边 */
+            /* 6. 已选中的选项卡片：高亮暗蓝底 + 明显蓝边 */
             .options input[type="radio"]:checked + label,
             .options label:has(input[type="radio"]:checked),
             .options label.selected {
@@ -76,7 +83,7 @@
                 color: #ffffff !important;
             }
             
-            /* 6. 辅助文本、按钮及 AI 提示词板块深度黑化 */
+            /* 💥 7. 修复报告区域（消灭表格中 JS 强加的浅色背景） 💥 */
             .btn-secondary {
                 background: #1c1c1e !important;
                 color: #f8fafc !important;
@@ -85,7 +92,15 @@
             .report-content th, .report-content td {
                 border-color: #1e293b !important;
                 color: #e2e8f0 !important;
+                background: #000000 !important;
             }
+            /* 强制抹平最后一行带内联样式的汇总行 */
+            .report-content tr[style*="background"], 
+            .report-content tr[style*="background"] td {
+                background: #0a0a0a !important; 
+            }
+
+            /* 8. AI 提示词板块深度黑化 */
             div[style*="background: #f0f5ff"] {
                 background: #0a0a0a !important;
                 border-color: #1e293b !important;
