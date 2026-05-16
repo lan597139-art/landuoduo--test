@@ -98,7 +98,7 @@
     }
     .keyword-tip:hover { background: var(--bg-option-selected); border-bottom-style: solid; }
 
-    .nav-buttons { display: flex; justify-content: center; margin: 2rem 0; }
+    .nav-buttons { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin: 2rem 0; }
     button {
       background: var(--bg-option); border: 1px solid var(--border-color); padding: 12px 28px;
       border-radius: 30px; font-weight: 600; color: var(--text-main); cursor: pointer;
@@ -289,7 +289,6 @@ document.addEventListener('click', function(e) {
       if (opt === 'yes') renderTagCompletion(); else renderSdrive();
     });
   }
-
   // ---------- 标签补全 ----------
   function renderTagCompletion() {
     STATE.phase = 'tag';
@@ -307,8 +306,9 @@ document.addEventListener('click', function(e) {
     });
     html += '</div>';
     $quiz.innerHTML = html;
-    $nav.innerHTML = '<button id="btnTagNext" class="primary">提交并进入核心演化</button>';
+    $nav.innerHTML = '<button id="btnBack">← 上一步</button><button id="btnTagNext" class="primary">提交并进入核心演化</button>';
     
+    document.getElementById('btnBack').addEventListener('click', () => { STATE.phase = 'precheck'; saveState(); routePhase(); });
     document.getElementById('btnTagNext').addEventListener('click', () => {
       if (checkMissingAnswers(STATE.tagAnswers, qs.length)) return;
       STATE.sdriveResult = buildSdriveFromTags(STATE.tagAnswers);
@@ -334,8 +334,9 @@ document.addEventListener('click', function(e) {
     });
     html += '</div>';
     $quiz.innerHTML = html;
-    $nav.innerHTML = '<button id="btnSdriveNext" class="primary">提交并进入核心演化</button>';
+    $nav.innerHTML = '<button id="btnBack">← 上一步</button><button id="btnSdriveNext" class="primary">提交并进入核心演化</button>';
     
+    document.getElementById('btnBack').addEventListener('click', () => { STATE.phase = 'precheck'; saveState(); routePhase(); });
     document.getElementById('btnSdriveNext').addEventListener('click', () => {
       if (checkMissingAnswers(STATE.sdriveAnswers, qs.length)) return;
       STATE.sdriveResult = computeSdrive();
@@ -361,8 +362,12 @@ document.addEventListener('click', function(e) {
     });
     html += '</div>';
     $quiz.innerHTML = html;
-    $nav.innerHTML = '<button id="btnDeNext" class="primary">提交并进入引擎探孔</button>';
+    $nav.innerHTML = '<button id="btnBack">← 上一步</button><button id="btnDeNext" class="primary">提交并进入引擎探孔</button>';
     
+    document.getElementById('btnBack').addEventListener('click', () => { 
+      STATE.phase = STATE.precheckAnswer === 'yes' ? 'tag' : 'sdrive'; 
+      saveState(); routePhase(); 
+    });
     document.getElementById('btnDeNext').addEventListener('click', () => {
       if (checkMissingAnswers(STATE.deAnswers, qs.length)) return;
       STATE.deResult = computeDE();
@@ -388,8 +393,9 @@ document.addEventListener('click', function(e) {
     });
     html += '</div>';
     $quiz.innerHTML = html;
-    $nav.innerHTML = '<button id="btnEfFinish" class="primary">生成深度人格报告</button>';
+    $nav.innerHTML = '<button id="btnBack">← 上一步</button><button id="btnEfFinish" class="primary">生成深度人格报告</button>';
     
+    document.getElementById('btnBack').addEventListener('click', () => { STATE.phase = 'de'; saveState(); routePhase(); });
     document.getElementById('btnEfFinish').addEventListener('click', () => {
       if (checkMissingAnswers(STATE.efAnswers, qs.length)) return;
       STATE.efResult = computeEF();
@@ -397,7 +403,6 @@ document.addEventListener('click', function(e) {
     });
     attachOptionClicks('[id^="efGrp_"]', (g, opt) => { STATE.efAnswers[g] = opt; renderEF(); });
   }
-
   // ---------- 构建 S-drive 逻辑（精简调用） ----------
   function buildSdriveFromTags(tags) {
     const eMap = {A:'T',B:'O',C:'D',D:'E',E:'V'};
@@ -465,9 +470,10 @@ document.addEventListener('click', function(e) {
     const ef = STATE.efResult || {};
 
         let html = `
-      <div style="display:flex;justify-content:center;gap:1rem;margin-bottom:1.5rem;">
+      <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
         <button onclick="window.print()" class="primary">📥 保存报告为 PDF</button>
-        <button id="btnReportReset">🔄 重新作答</button>
+        <button id="btnEditAnswers">✏️ 返回修改答案</button>
+        <button id="btnReportReset" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); box-shadow: none;">🔄 清空并重做</button>
       </div>
       <div class="report-section">`;
 
@@ -502,8 +508,24 @@ document.addEventListener('click', function(e) {
     html += `<p class="small-note" style="text-align:center;">🌿 报告由人格动力系统自动生成 · 客观反映当前能量拓扑</p>`;
     html += `</div>`;
     
-        $report.innerHTML = html;
+     $report.innerHTML = html;
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // 报告页：返回上一层修改答案（不丢数据）
+    document.getElementById('btnEditAnswers').addEventListener('click', () => {
+      STATE.phase = 'ef'; // 回到最后一道题的页面
+      saveState(); 
+      routePhase();
+    });
+
+    // 报告页：彻底清空数据重来
+    document.getElementById('btnReportReset').addEventListener('click', () => {
+      if (confirm('确定要清空所有作答记录并重新开始吗？')) {
+        localStorage.removeItem('mbti_test_state');
+        location.reload();
+      }
+    });
+  }
     
     // 报告页：重新作答按钮逻辑
     document.getElementById('btnReportReset').addEventListener('click', () => {
