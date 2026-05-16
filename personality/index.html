@@ -4,179 +4,100 @@
   <meta charset="UTF-8">
   <meta name="color-scheme" content="light dark">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>🌱 人格深度测试 </title>
- <style>
+  <title>🌱 人格深度测试 · 代偿演化与引擎生克</title>
+  <style>
     :root {
-      --bg-page: #f8fafc;
-      --bg-card: #ffffff;
-      --bg-option: #ffffff;
-      --bg-option-hover: #f8fafc;
-      --bg-option-selected: #eff6ff;
-      --border-color: #e2e8f0;
-      --border-selected: #3b82f6;
-      --text-main: #0f172a;
-      --text-sub: #334155;
-      --text-muted: #64748b;
-      --primary: #3b82f6;
+      --bg-page: #f8fafc; --bg-card: #ffffff; --bg-option: #ffffff; --bg-option-hover: #f8fafc;
+      --bg-option-selected: #eff6ff; --border-color: #e2e8f0; --border-selected: #3b82f6;
+      --text-main: #0f172a; --text-sub: #334155; --text-muted: #64748b; --primary: #3b82f6;
       --shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
-
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg-page: #000000;
-        --bg-card: #1c1c1e;
-        --bg-option: #2c2c2e;
-        --bg-option-hover: #3a3a3c;
-        --bg-option-selected: rgba(59, 130, 246, 0.15);
-        --border-color: #333336;
-        --border-selected: #3b82f6;
-        --text-main: #f8fafc;
-        --text-sub: #cbd5e1;
-        --text-muted: #94a3b8;
-        --primary: #60a5fa;
-        --shadow: none;
+        --bg-page: #000000; --bg-card: #1c1c1e; --bg-option: #2c2c2e; --bg-option-hover: #3a3a3c;
+        --bg-option-selected: rgba(59,130,246,0.15); --border-color: #333336; --border-selected: #3b82f6;
+        --text-main: #f8fafc; --text-sub: #cbd5e1; --text-muted: #94a3b8; --primary: #60a5fa; --shadow: none;
       }
     }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: var(--bg-page); font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
-      color: var(--text-main); line-height: 1.6; min-height: 100vh;
-      padding-bottom: 4rem;
-    }
-
-    .top-nav {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--bg-card); border-bottom: 1px solid var(--border-color);
-      padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
-      box-shadow: var(--shadow);
-    }
-    .top-nav .nav-title { font-weight: 600; color: var(--text-main); font-size: 1.05rem; }
-    .top-nav .progress-box {
-      background: var(--bg-option); border: 1px solid var(--border-color);
-      padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: var(--primary);
-    }
-
-    .container { width: 100%; max-width: 760px; margin: 0 auto; padding: 2rem 1rem; }
-    
-    h1 {
-      font-size: 1.8rem; font-weight: 600; color: var(--text-main);
-      border-left: 4px solid var(--primary); padding-left: 1rem; margin-bottom: 1.8rem;
-    }
-    .phase-title { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; font-weight: 500; }
-    
-    .quiz-block { margin-bottom: 2rem; }
-    .question-card {
-      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
-      padding: 1.5rem; margin-bottom: 1.5rem; transition: border 0.15s;
-    }
-    .question-card.missing-alert { border: 2px solid #ef4444; background: rgba(239, 68, 68, 0.05); }
-    
-    .question-header {
-      display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 1rem;
-      color: var(--text-main); font-weight: 500; font-size: 0.95rem; flex-wrap: wrap;
-    }
-    .q-id { color: var(--primary); font-weight: 600; font-size: 0.85rem; white-space: nowrap; background: var(--bg-option); padding: 2px 8px; border-radius: 6px; }
-    .q-text { line-height: 1.6; }
-    
-    .options { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.8rem; }
-    .option-item {
-      display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.8rem 1rem;
-      border-radius: 8px; background: var(--bg-option); border: 1.5px solid var(--border-color);
-      cursor: pointer; transition: all 0.15s;
-    }
-    .option-item:hover { background: var(--bg-option-hover); border-color: var(--primary); }
-    .option-item.selected { background: var(--bg-option-selected); border-color: var(--border-selected); }
-    .option-letter { font-weight: 600; color: var(--primary); min-width: 1.6rem; font-size: 0.95rem; }
-    .option-text { color: var(--text-sub); font-size: 0.95rem; line-height: 1.5; }
-    
-    .keyword-tip {
-      color: var(--primary); font-weight: 600; cursor: pointer;
-      border-bottom: 1px dashed var(--primary); padding-bottom: 1px;
-    }
-    .keyword-tip:hover { background: var(--bg-option-selected); border-bottom-style: solid; }
-
-    .nav-buttons { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin: 2rem 0; }
-    button {
-      background: var(--bg-option); border: 1px solid var(--border-color); padding: 12px 28px;
-      border-radius: 30px; font-weight: 600; color: var(--text-main); cursor: pointer;
-      font-size: 1rem; transition: all 0.2s; box-shadow: var(--shadow);
-    }
-    button.primary { background: var(--primary); border-color: var(--primary); color: #ffffff; }
-    button.primary:hover { filter: brightness(1.1); }
-
-    .report-container { margin-top: 2rem; }
-    
-    .report-card {
-      background: var(--bg-card); border-radius: 12px; padding: 20px; margin-bottom: 16px;
-      border-left: 4px solid var(--primary); border-top: 1px solid var(--border-color);
-      border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
-      box-shadow: var(--shadow); color: var(--text-main);
-    }
-    .report-card-title { font-weight: 600; font-size: 1.1rem; color: var(--primary); margin-bottom: 8px; }
-    .report-card-desc { font-size: 0.95rem; color: var(--text-sub); line-height: 1.7; white-space: pre-wrap; }
-
-    .report-section h2 {
-      font-weight: 600; font-size: 1.25rem; margin: 2.5rem 0 1.2rem; color: var(--text-main);
-      display: flex; align-items: center; gap: 8px;
-    }
-    
-    .table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 8px; border: 1px solid var(--border-color); }
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: var(--bg-card); }
-    th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; color: var(--text-main); }
-    th { background: var(--bg-option); font-weight: 600; }
-    
-    .hidden { display: none !important; }
-</style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg-page); font-family:'PingFang SC','Microsoft YaHei',system-ui,sans-serif; color:var(--text-main); line-height:1.6; min-height:100vh; padding-bottom:4rem; }
+    .top-nav { position:sticky; top:0; z-index:100; background:var(--bg-card); border-bottom:1px solid var(--border-color); padding:12px 20px; display:flex; justify-content:space-between; align-items:center; box-shadow:var(--shadow); }
+    .top-nav .nav-title { font-weight:600; color:var(--text-main); font-size:1.05rem; }
+    .top-nav .progress-box { background:var(--bg-option); border:1px solid var(--border-color); padding:4px 12px; border-radius:20px; font-size:0.85rem; font-weight:600; color:var(--primary); }
+    .container { width:100%; max-width:760px; margin:0 auto; padding:2rem 1rem; }
+    .phase-title { color:var(--text-muted); font-size:0.95rem; margin-bottom:1.5rem; font-weight:500; }
+    .quiz-block { margin-bottom:2rem; }
+    .question-card { background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem; transition:border 0.15s; }
+    .question-card.missing-alert { border:2px solid #ef4444; background:rgba(239,68,68,0.05); }
+    .question-header { display:flex; align-items:baseline; gap:0.5rem; margin-bottom:1rem; color:var(--text-main); font-weight:500; font-size:0.95rem; flex-wrap:wrap; }
+    .q-id { color:var(--primary); font-weight:600; font-size:0.85rem; white-space:nowrap; background:var(--bg-option); padding:2px 8px; border-radius:6px; }
+    .q-text { line-height:1.6; }
+    .options { display:flex; flex-direction:column; gap:0.6rem; margin-top:0.8rem; }
+    .option-item { display:flex; align-items:flex-start; gap:0.6rem; padding:0.8rem 1rem; border-radius:8px; background:var(--bg-option); border:1.5px solid var(--border-color); cursor:pointer; transition:all 0.15s; }
+    .option-item:hover { background:var(--bg-option-hover); border-color:var(--primary); }
+    .option-item.selected { background:var(--bg-option-selected); border-color:var(--border-selected); }
+    .option-letter { font-weight:600; color:var(--primary); min-width:1.6rem; font-size:0.95rem; }
+    .option-text { color:var(--text-sub); font-size:0.95rem; line-height:1.5; }
+    .keyword-tip { color:var(--primary); font-weight:600; cursor:pointer; border-bottom:1px dashed var(--primary); padding-bottom:1px; }
+    .keyword-tip:hover { background:var(--bg-option-selected); border-bottom-style:solid; }
+    .nav-buttons { display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; margin:2rem 0; }
+    button { background:var(--bg-option); border:1px solid var(--border-color); padding:12px 28px; border-radius:30px; font-weight:600; color:var(--text-main); cursor:pointer; font-size:1rem; transition:all 0.2s; box-shadow:var(--shadow); }
+    button.primary { background:var(--primary); border-color:var(--primary); color:#ffffff; }
+    button.primary:hover { filter:brightness(1.1); }
+    .report-container { margin-top:2rem; }
+    .report-card { background:var(--bg-card); border-radius:12px; padding:20px; margin-bottom:16px; border-left:4px solid var(--primary); border-top:1px solid var(--border-color); border-right:1px solid var(--border-color); border-bottom:1px solid var(--border-color); box-shadow:var(--shadow); color:var(--text-main); }
+    .report-card-title { font-weight:600; font-size:1.1rem; color:var(--primary); margin-bottom:8px; }
+    .report-card-desc { font-size:0.95rem; color:var(--text-sub); line-height:1.7; white-space:pre-wrap; }
+    .report-section h2 { font-weight:600; font-size:1.25rem; margin:2.5rem 0 1.2rem; color:var(--text-main); display:flex; align-items:center; gap:8px; }
+    .table-wrap { overflow-x:auto; margin:1rem 0; border-radius:8px; border:1px solid var(--border-color); }
+    table { width:100%; border-collapse:collapse; font-size:0.9rem; background:var(--bg-card); }
+    th, td { border:1px solid var(--border-color); padding:10px 12px; text-align:left; color:var(--text-main); }
+    th { background:var(--bg-option); font-weight:600; }
+    .hidden { display:none !important; }
+  </style>
 </head>
 <body>
 <div class="top-nav">
   <div class="nav-title">🌱 人格深度测试</div>
-  <div style="display: flex; align-items: center; gap: 10px;">
+  <div style="display:flex; align-items:center; gap:10px;">
     <div class="progress-box" id="topProgress">初始化...</div>
-    <button id="btnGlobalReset" style="padding: 4px 10px; font-size: 0.8rem; border-radius: 12px; box-shadow: none; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted);">重置</button>
+    <button id="btnGlobalReset" style="padding:4px 10px; font-size:0.8rem; border-radius:12px; box-shadow:none; background:transparent; border:1px solid var(--border-color); color:var(--text-muted);">重置</button>
   </div>
 </div>
-
 <div class="container" id="app">
   <div class="phase-title" id="phaseIndicator">加载中…</div>
   <div id="quizArea"></div>
   <div id="navArea" class="nav-buttons"></div>
   <div id="reportArea" class="report-container hidden"></div>
 </div>
-
 <script>
-// ---------- 全局关键词与弹窗字典 ----------
+// ==================== 关键词提示 ====================
 const TOOLTIPS = {
   "O秩序": "金💎——O｜结构性 · 结晶本能：追求秩序与可预测性，本能地对抗混乱。像晶体一样冷峻，致力于把模糊变清晰。\n【你会定计划、理流程、建规则，让一切进入可控的轨道。混乱是你最想消灭的东西，确定的结果让你感到安全。】",
-  "V锚定": "土⛰️——V｜锚定性 · 回声本能：追求被看见与被反馈，无论是正反馈还是负反馈，以此确认坐标。像回声一样，需要外界反应证明存在。\n【外界对你的回应——不管是来自人、动物还是任何你信任的实体——都像一面镜子，让你知道自己的位置在哪，不至于悬浮。】",
-  "D动力": "火🔥——D｜动力性 · 燃烧本能：追求变化与新鲜感，寻找点燃热情的燃料。像氧化剂，渴望破局和冲锋。\n【停滞让你窒息，你会主动寻找新的刺激、冲开阻力、点燃状态。热血和突破是你的燃料。】",
-  "E扩张": "水🌊——E｜扩张性 · 狩猎本能：吞噬变量，对无限可能性极度饥渴，通过持续狩猎换取绝对自由与反控制。演化路径：嗅探夺取→建立规则→掌握Root权限。\n【你会搜罗更多资源、建立更大版图、获取更多控制权。你拒绝被困住，追求“我的地盘我说了算”的自由。】",
-  "T超越": "木🌲——T｜超越性 · 聚变本能：追求神性与永恒，渴望与绝对真理融合。像核聚变产生极高能量，冷酷追问本质，拆解焚毁虚伪表象，看清底层逻辑。\n【你不满足于表面的热闹，会一直追问“为什么”，直到触达最根本的逻辑。世俗的表演和琐碎消耗让你厌倦，你渴望看到真相。】",
-  "身体底盘": "PN｜生理叙事 · 物理底盘：这是你作为生物体存在的物质基础。包括你的作息、饮食、睡眠、居所、金钱、现金流和所有看得见摸得着的资源。它回答“我有没有足够的东西活下去，并且活得踏实”。你的身体记忆、避险本能、对地盘和资源的守护意识，都在这里扎根。\n【但当它出问题时，你会感到持续的疲惫、身体报警、资源紧张，或者生活空间失控。你会变得敏感、易怒，对任何额外消耗都会本能地抗拒，因为底盘已经兜不住了。】",
-  "能力进化": "AN｜自我叙事 · 单机系统：这是你个人能力的沉淀层。它书写了你对自己的认识和评价，记录了你学过什么、做成过什么、有哪些项目和履历，以及你对自己“能不能搞定”的底气和边界感。当你脱去所有外部标签，这些经验、方法论和持续成长的惯性，就是你独立生存的确定性。\n【但当它出问题时，你会感到能力焦虑、履历断层，或者怀疑自己“其实什么都不会”。长期没有正反馈时，你会陷入自我否定，甚至开始逃避任何需要证明自己的场合。】",
-  "深度连接": "RN｜关系叙事 · 局域网：这是你与他人之间的深度信任网络。包括伴侣、密友、长期合伙人等那些你愿意托付后背的人。它通过陪伴、共情和双向承诺来维系，回答“在这世界上，谁真正理解我，谁不会轻易离开”。\n【但当它出问题时，你会感到孤独、被误解，或者被困在一段消耗型关系里。你可能会过度付出却得不到回应，或者在冲突中选择沉默，因为害怕关系破裂。】",
-  "社会舞台": "IN｜社会叙事 · 广域网：这是你在群体中的坐标和影响力。包括你的身份标签、话语权、人脉圈层和公众评价。它回答“我在人群里站在哪，别人怎么看我”。你对等级、位置和舆论的敏感度，都在这个场域里运作。\n【但当它出问题时，你会感到被边缘化、被贴错标签，或者被舆论裹挟。你可能会过度在意别人的评价，或者反过来——因为受过伤而完全拒绝融入任何群体。】",
-  "意义导航": "MN｜宏大叙事 · 统摄层：这是你精神世界的顶层设计。包括你最看重的价值观、人生的终极目标、什么值得做、什么不能妥协。它在你最苦的时候提供“为什么还要撑下去”的理由，是你对抗日常消耗的精神止痛药。\n【但当它出问题时，你会感到空虚、迷茫，或者发现自己一直在追逐的东西其实毫无意义。空窗期会非常难熬，你可能会抓住任何能暂时填满空洞的东西，哪怕你知道它不对。】",
-  "系统运转": "FN｜功能叙事 · 共识层：这是你建立起来的规则和流程。包括工作方法、协作机制、商业模式、日常习惯等一旦建好就能自动运行的结构。它回答“怎样做才不会乱，怎样做才能让结果稳定产出”。\n【但当它出问题时，你会感到混乱、低效，或者被自己建立的规则反困住。旧机制失效时，你可能明知该改却迟迟动不了，因为重建的成本和不确定性让你犹豫。】"
+  "V锚定": "土⛰️——V｜锚定性 · 回声本能：追求被看见与被反馈，以此确认坐标。\n【外界对你的回应——不管是来自人、动物还是任何你信任的实体——都像一面镜子，让你知道自己的位置在哪。】",
+  "D动力": "火🔥——D｜动力性 · 燃烧本能：追求变化与新鲜感，寻找点燃热情的燃料。\n【停滞让你窒息，你会主动寻找新的刺激、冲开阻力、点燃状态。热血和突破是你的燃料。】",
+  "E扩张": "水🌊——E｜扩张性 · 狩猎本能：吞噬变量，对无限可能性极度饥渴，通过持续狩猎换取绝对自由与反控制。\n【你会搜罗更多资源、建立更大版图、获取更多控制权。你拒绝被困住，追求“我的地盘我说了算”的自由。】",
+  "T超越": "木🌲——T｜超越性 · 聚变本能：追求神性与永恒，渴望与绝对真理融合。像核聚变产生极高能量，冷酷追问本质，拆解焚毁虚伪表象。\n【你不满足于表面的热闹，会一直追问“为什么”，直到触达最根本的逻辑。】",
+  "身体底盘":"PN｜生理叙事 · 物理底盘\n包括作息、饮食、睡眠、居所、金钱、现金流和所有看得见摸得着的资源。",
+  "能力进化":"AN｜自我叙事 · 单机系统\n你个人能力的沉淀层，记录了你学过什么、做成过什么。",
+  "深度连接":"RN｜关系叙事 · 局域网\n你与他人之间的深度信任网络。",
+  "社会舞台":"IN｜社会叙事 · 广域网\n你在群体中的坐标和影响力。",
+  "意义导航":"MN｜宏大叙事 · 统摄层\n你最看重的价值观、人生的终极目标。",
+  "系统运转":"FN｜功能叙事 · 共识层\n你建立起来的规则和流程。"
 };
 
-// 文本格式化：全局替换冗长称呼并绑定提示弹窗
 function formatText(str) {
   if (!str) return '';
-  let s = str.replace(/T-木-穿透（超越）|T-木-穿透/g, 'T超越')
-             .replace(/O-金-收束（结构）|O-金-收束/g, 'O秩序')
-             .replace(/D-火-突破（动力）|D-火-突破/g, 'D动力')
-             .replace(/E-水-漫延（扩张）|E-水-漫延/g, 'E扩张')
-             .replace(/V-土-承载（锚定）|V-土-承载/g, 'V锚定');
-
+  let s = str.replace(/T-木-穿透（超越）|T-木-穿透/g,'T超越')
+             .replace(/O-金-收束（结构）|O-金-收束/g,'O秩序')
+             .replace(/D-火-突破（动力）|D-火-突破/g,'D动力')
+             .replace(/E-水-漫延（扩张）|E-水-漫延/g,'E扩张')
+             .replace(/V-土-承载（锚定）|V-土-承载/g,'V锚定');
   const sortedKeys = Object.keys(TOOLTIPS).sort((a,b)=>b.length-a.length);
-  sortedKeys.forEach(k => { s = s.replace(new RegExp(k, 'g'), `%%${k}%%`); });
-  sortedKeys.forEach(k => { s = s.replace(new RegExp(`%%${k}%%`, 'g'), `<span class="keyword-tip" data-key="${k}">${k}</span>`); });
+  sortedKeys.forEach(k => s = s.replace(new RegExp(k,'g'), `%%${k}%%`));
+  sortedKeys.forEach(k => s = s.replace(new RegExp(`%%${k}%%`,'g'), `<span class="keyword-tip" data-key="${k}">${k}</span>`));
   return s;
 }
-
-// 绑定全局点击事件以响应弹窗
 document.addEventListener('click', function(e) {
   if (e.target.classList.contains('keyword-tip')) {
     const key = e.target.getAttribute('data-key');
@@ -185,17 +106,17 @@ document.addEventListener('click', function(e) {
   }
 });
 
+// ==================== 主程序 ====================
 (async () => {
   const res = await fetch('quiz.json');
   const QUIZ = await res.json();
 
-  // ---------- 全局状态与持久化 ----------
+  // 全局状态
   const STATE = {
     phase: 'precheck', precheckAnswer: null,
     tagAnswers: {}, sdriveAnswers: {}, deAnswers: {}, efAnswers: {},
     sdriveResult: null, deResult: null, efResult: null
   };
-
   function saveState() { localStorage.setItem('mbti_test_state', JSON.stringify(STATE)); }
   function loadState() {
     const saved = localStorage.getItem('mbti_test_state');
@@ -209,10 +130,9 @@ document.addEventListener('click', function(e) {
   const $phase = document.getElementById('phaseIndicator');
   const $topProgress = document.getElementById('topProgress');
 
-  function updateNavProgress(currentTheme, answered, total) {
-    $topProgress.textContent = `${currentTheme} | 进度 ${answered}/${total}`;
+  function updateNavProgress(theme, answered, total) {
+    $topProgress.textContent = `${theme} | 进度 ${answered}/${total}`;
   }
-
   function checkMissingAnswers(answersObj, totalQs) {
     let firstMissing = null;
     document.querySelectorAll('.question-card').forEach(card => {
@@ -220,32 +140,21 @@ document.addEventListener('click', function(e) {
       if (!answersObj[qid]) {
         card.classList.add('missing-alert');
         if (!firstMissing) firstMissing = card;
-      } else {
-        card.classList.remove('missing-alert');
-      }
+      } else card.classList.remove('missing-alert');
     });
-    if (firstMissing) {
-      firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return true;
-    }
+    if (firstMissing) { firstMissing.scrollIntoView({ behavior:'smooth', block:'center' }); return true; }
     return false;
   }
 
-  // ---------- 工具函数：渲染选项，只显示 || 之前的正面描述 ----------
+  // 渲染选项，截断||后的文本
   function renderOptions(options, groupId, selectedVal) {
     return options.map(opt => {
       const letter = opt.label || opt[0];
       let rawText = opt.text || opt;
-      // 截取 || 之前的部分作为展示文本
-      if (typeof rawText === 'string' && rawText.includes('||')) {
-        rawText = rawText.split('||')[0].trim();
-      }
+      if (typeof rawText === 'string' && rawText.includes('||')) rawText = rawText.split('||')[0].trim();
       const text = formatText(rawText);
       const sel = (selectedVal === letter) ? ' selected' : '';
-      return `<div class="option-item${sel}" data-opt="${letter}" data-group="${groupId}">
-        <span class="option-letter">${letter}</span>
-        <span class="option-text">${text}</span>
-      </div>`;
+      return `<div class="option-item${sel}" data-opt="${letter}" data-group="${groupId}"><span class="option-letter">${letter}</span><span class="option-text">${text}</span></div>`;
     }).join('');
   }
 
@@ -259,7 +168,7 @@ document.addEventListener('click', function(e) {
     });
   }
 
-  // ---------- 路由分发 ----------
+  // 路由
   function routePhase() {
     if (STATE.phase === 'report') renderReport();
     else if (STATE.phase === 'ef') renderEF();
@@ -269,7 +178,7 @@ document.addEventListener('click', function(e) {
     else renderPrecheck();
   }
 
-  // ---------- 前置提问 ----------
+  // 前置提问
   function renderPrecheck() {
     STATE.phase = 'precheck';
     $phase.textContent = '步骤 1/5 · 确认测试路径';
@@ -279,8 +188,7 @@ document.addEventListener('click', function(e) {
       <div class="options" id="precheckOpts">
         <div class="option-item ${STATE.precheckAnswer==='yes'?'selected':''}" data-opt="yes" data-group="Q0"><span class="option-letter">是</span><span class="option-text">已完成职业测试，记得主引擎和主沙盒</span></div>
         <div class="option-item ${STATE.precheckAnswer==='no'?'selected':''}" data-opt="no" data-group="Q0"><span class="option-letter">否</span><span class="option-text">未做过职业测试，需要先完成基础画像</span></div>
-      </div>
-    </div></div>`;
+      </div></div></div>`;
     $nav.innerHTML = '';
     attachOptionClicks('#precheckOpts', (g, opt) => {
       STATE.precheckAnswer = opt;
@@ -289,159 +197,243 @@ document.addEventListener('click', function(e) {
     });
   }
 
-  // ---------- 标签补全（使用 JSON 中的 title 和 description）----------
+  // 标签补全
   function renderTagCompletion() {
     STATE.phase = 'tag';
     const mod = QUIZ.modules.tagCompletion;
     const qs = mod.questions;
     $phase.textContent = mod.title;
     updateNavProgress('基础画像', Object.keys(STATE.tagAnswers).length, qs.length);
-    
-    let html = `<div class="quiz-block"><p style="color:var(--text-muted); margin-bottom:1.5rem;">${mod.description || ''}</p>`;
+    let html = `<div class="quiz-block"><p style="color:var(--text-muted); margin-bottom:1.5rem;">${mod.description||''}</p>`;
     qs.forEach(q => {
       const sel = STATE.tagAnswers[q.id] || '';
-      html += `<div class="question-card">
-        <div class="question-header"><span class="q-id">${q.id}</span><span class="q-text">${formatText(q.question)}</span></div>
-        <div class="options" id="tagGrp_${q.id}">${renderOptions(q.options, q.id, sel)}</div>
-      </div>`;
+      html += `<div class="question-card"><div class="question-header"><span class="q-id">${q.id}</span><span class="q-text">${formatText(q.question)}</span></div><div class="options" id="tagGrp_${q.id}">${renderOptions(q.options, q.id, sel)}</div></div>`;
     });
     html += '</div>';
     $quiz.innerHTML = html;
     $nav.innerHTML = '<button id="btnBack">← 上一步</button><button id="btnTagNext" class="primary">提交并进入核心演化</button>';
-    
-    document.getElementById('btnBack').addEventListener('click', () => { STATE.phase = 'precheck'; saveState(); routePhase(); });
+    document.getElementById('btnBack').addEventListener('click', () => { STATE.phase='precheck'; saveState(); routePhase(); });
     document.getElementById('btnTagNext').addEventListener('click', () => {
       if (checkMissingAnswers(STATE.tagAnswers, qs.length)) return;
       STATE.sdriveResult = buildSdriveFromTags(STATE.tagAnswers);
       saveState(); renderDE();
     });
-    attachOptionClicks('[id^="tagGrp_"]', (g, opt) => { STATE.tagAnswers[g] = opt; renderTagCompletion(); });
+    attachOptionClicks('[id^="tagGrp_"]', (g, opt) => { STATE.tagAnswers[g]=opt; renderTagCompletion(); });
   }
 
-  // ---------- S-drive 试题 ----------
-  function renderSdrive() {
-    STATE.phase = 'sdrive';
-    const qs = QUIZ.modules.sdrive;
-    $phase.textContent = '核心身份校准 · S-drive';
-    updateNavProgress('核心身份', Object.keys(STATE.sdriveAnswers).length, qs.length);
-    
-    let html = '<div class="quiz-block">';
-    qs.forEach(q => {
-      const sel = STATE.sdriveAnswers[q.id] || '';
-      html += `<div class="question-card">
-        <div class="question-header"><span class="q-id">${q.id}</span><span class="q-text">${formatText(q.question)}</span></div>
-        <div class="options" id="sdriveGrp_${q.id}">${renderOptions(q.options, q.id, sel)}</div>
-      </div>`;
-    });
-    html += '</div>';
-    $quiz.innerHTML = html;
-    $nav.innerHTML = '<button id="btnBack">← 上一步</button><button id="btnSdriveNext" class="primary">提交并进入核心演化</button>';
-    
-    document.getElementById('btnBack').addEventListener('click', () => { STATE.phase = 'precheck'; saveState(); routePhase(); });
-    document.getElementById('btnSdriveNext').addEventListener('click', () => {
-      if (checkMissingAnswers(STATE.sdriveAnswers, qs.length)) return;
-      STATE.sdriveResult = computeSdrive();
-      saveState(); renderDE();
-    });
-    attachOptionClicks('[id^="sdriveGrp_"]', (g, opt) => { STATE.sdriveAnswers[g] = opt; renderSdrive(); });
-  }
-
-  // ---------- DE 试题 ----------
-  function renderDE() {
-    STATE.phase = 'de';
-    const qs = QUIZ.modules.de;
-    $phase.textContent = '代偿演化推演 · DE';
-    updateNavProgress('代偿演化', Object.keys(STATE.deAnswers).length, qs.length);
-    
-    let html = '<div class="quiz-block">';
-    qs.forEach(q => {
-      const sel = STATE.deAnswers[q.id] || '';
-      html += `<div class="question-card">
-        <div class="question-header"><span class="q-id">${q.id}</span><span class="q-text">${formatText(q.sandbox + ' · ' + q.question)}</span></div>
-        <div class="options" id="deGrp_${q.id}">${renderOptions(q.options, q.id, sel)}</div>
-      </div>`;
-    });
-    html += '</div>';
-    $quiz.innerHTML = html;
-    $nav.innerHTML = '<button id="btnBack">← 上一步</button><button id="btnDeNext" class="primary">提交并进入引擎探孔</button>';
-    
-    document.getElementById('btnBack').addEventListener('click', () => { 
-      STATE.phase = STATE.precheckAnswer === 'yes' ? 'tag' : 'sdrive'; 
-      saveState(); routePhase(); 
-    });
-    document.getElementById('btnDeNext').addEventListener('click', () => {
-      if (checkMissingAnswers(STATE.deAnswers, qs.length)) return;
-      STATE.deResult = computeDE();
-      saveState(); renderEF();
-    });
-    attachOptionClicks('[id^="deGrp_"]', (g, opt) => { STATE.deAnswers[g] = opt; renderDE(); });
-  }
-
-  // ---------- EF 试题 ----------
-  function renderEF() {
-    STATE.phase = 'ef';
-    const qs = QUIZ.modules.ef;
-    $phase.textContent = '引擎力量检测 · EF';
-    updateNavProgress('引擎力量', Object.keys(STATE.efAnswers).length, qs.length);
-    
-    let html = '<div class="quiz-block">';
-    qs.forEach(q => {
-      const sel = STATE.efAnswers[q.id] || '';
-      html += `<div class="question-card">
-        <div class="question-header"><span class="q-id">${q.id}</span><span class="q-text">${formatText(q.engine + ' · ' + q.question)}</span></div>
-        <div class="options" id="efGrp_${q.id}">${renderOptions(q.options, q.id, sel)}</div>
-      </div>`;
-    });
-    html += '</div>';
-    $quiz.innerHTML = html;
-    $nav.innerHTML = '<button id="btnBack">← 上一步</button><button id="btnEfFinish" class="primary">生成深度人格报告</button>';
-    
-    document.getElementById('btnBack').addEventListener('click', () => { STATE.phase = 'de'; saveState(); routePhase(); });
-    document.getElementById('btnEfFinish').addEventListener('click', () => {
-      if (checkMissingAnswers(STATE.efAnswers, qs.length)) return;
-      STATE.efResult = computeEF();
-      saveState(); renderReport();
-    });
-    attachOptionClicks('[id^="efGrp_"]', (g, opt) => { STATE.efAnswers[g] = opt; renderEF(); });
-  }
-
-  // ---------- 构建 S-drive 逻辑（精简调用） ----------
   function buildSdriveFromTags(tags) {
     const eMap = {A:'T',B:'O',C:'D',D:'E',E:'V'};
     const sMap = {A:'FN',B:'PN',C:'AN',D:'RN',E:'IN',F:'MN'};
-    return { S1: eMap[tags['TAG-S1']]||'T', N1: sMap[tags['TAG-N1']]||'FN' };
+    return { S1:eMap[tags['TAG-S1']]||'T', N1:sMap[tags['TAG-N1']]||'FN' };
   }
 
+  // ---------- S-drive 完整计算 ----------
   function computeSdrive() {
     const qs = QUIZ.modules.sdrive;
-    const S_pool = { O:0, V:0, D:0, E:0, T:0 }, N_pool = { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
+    const S_pool = { O:0, V:0, D:0, E:0, T:0 };
+    const N_pool = { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
+    const F_pool = { Single_S:0, Dual_S:0, Single_N:0, Dual_N:0, Chaotic:0 };
+
     qs.forEach(q => {
       const ans = STATE.sdriveAnswers[q.id];
       if (!ans) return;
-      const chosen = q.options.find(o => (o.label||o[0]) === ans);
-      if (chosen?.engine) S_pool[chosen.engine] += 2;
-      if (chosen?.sandbox) N_pool[chosen.sandbox] += 2;
+      const opt = q.options.find(o => (o.label||o[0]) === ans);
+      if (!opt) return;
+      const id = q.id;
+      // 子题组A: S-C01~S-C06
+      if (id.startsWith('S-C')) {
+        const map = {A:'O', B:'V', C:'D', D:'E', E:'T'};
+        if (map[ans]) S_pool[map[ans]] += 2;
+      }
+      // 子题组B: N-C01~N-C06
+      else if (id.startsWith('N-C')) {
+        const map = {A:'PN', B:'AN', C:'RN', D:'IN', E:'MN', F:'FN'};
+        if (map[ans]) N_pool[map[ans]] += 2;
+      }
+      // 子题组C: C01~C04
+      else if (id.startsWith('C0')) {
+        const map = {A:'O', B:'V', C:'D', D:'E', E:'T'};
+        if (map[ans]) S_pool[map[ans]] += 2;
+      }
+      // F题组
+      else if (id.startsWith('F0')) {
+        const fid = id, fopt = ans;
+        if (fid === 'F01') {
+          if (fopt==='A') { F_pool.Single_N+=2; F_pool.Single_S+=2; }
+          else if (fopt==='B') { F_pool.Single_N+=2; F_pool.Dual_S+=2; }
+          else if (fopt==='C') { F_pool.Dual_N+=2; F_pool.Single_S+=2; }
+          else if (fopt==='D') { F_pool.Dual_N+=2; F_pool.Dual_S+=2; }
+          else if (fopt==='E') { F_pool.Chaotic+=2; }
+        } else if (fid === 'F02') {
+          if (fopt==='A') F_pool.Single_S+=2;
+          else if (fopt==='B') F_pool.Dual_S+=2;
+          else if (fopt==='C') { F_pool.Dual_S+=1; F_pool.Single_S+=1; }
+          else if (fopt==='D') F_pool.Dual_S+=2;
+          else if (fopt==='E') F_pool.Chaotic+=2;
+        } else if (fid === 'F03') {
+          if (fopt==='A') F_pool.Single_N+=2;
+          else if (fopt==='B') F_pool.Dual_N+=2;
+          else if (fopt==='C') { F_pool.Dual_N+=1; F_pool.Chaotic+=1; }
+          else if (fopt==='D') { F_pool.Dual_N+=1; F_pool.Chaotic+=1; }
+          else if (fopt==='E') F_pool.Chaotic+=2;
+        } else if (fid === 'F04') {
+          if (fopt==='A') { F_pool.Single_S+=2; F_pool.Single_N+=2; }
+          else if (fopt==='B') { F_pool.Dual_S+=2; F_pool.Single_N+=2; }
+          else if (fopt==='C') { F_pool.Single_S+=2; F_pool.Dual_N+=2; }
+          else if (fopt==='D') { F_pool.Dual_S+=2; F_pool.Dual_N+=2; }
+          else if (fopt==='E') F_pool.Chaotic+=2;
+        }
+      }
     });
-    const S1 = Object.entries(S_pool).sort((a,b)=>b[1]-a[1])[0][0];
-    const N1 = Object.entries(N_pool).sort((a,b)=>b[1]-a[1])[0][0];
-    return { S1, N1 };
+
+    const sortedS = Object.entries(S_pool).sort((a,b)=>b[1]-a[1]);
+    const S1 = sortedS[0][0], S2 = sortedS.length>1 ? sortedS[1][0] : null;
+    const sortedN = Object.entries(N_pool).sort((a,b)=>b[1]-a[1]);
+    const N1 = sortedN[0][0], N2 = sortedN.length>1 ? sortedN[1][0] : null;
+
+    // 拓扑判定
+    let dualS = false, dualN = false, chaotic = false;
+    const maxF = Math.max(F_pool.Single_S, F_pool.Dual_S, F_pool.Single_N, F_pool.Dual_N, F_pool.Chaotic);
+    if (F_pool.Chaotic === maxF && maxF > 0) chaotic = true;
+    else {
+      dualS = (F_pool.Dual_S >= F_pool.Single_S) && (F_pool.Dual_S > F_pool.Chaotic);
+      dualN = (F_pool.Dual_N >= F_pool.Single_N) && (F_pool.Dual_N > F_pool.Chaotic);
+    }
+
+    let archetype_315, complexityLabel;
+    if (chaotic) {
+      archetype_315 = 'Chaotic';
+      complexityLabel = '潜能未定型';
+    } else {
+      const sPart = dualS ? `[${S1}+${S2}]` : S1;
+      const nPart = dualN ? `[${N1}+${N2}]` : N1;
+      archetype_315 = `${sPart}-${nPart}`;
+      if (!dualS && !dualN) complexityLabel = '深度穿透型';
+      else if (dualS && !dualN) complexityLabel = '专项攻坚型';
+      else if (!dualS && dualN) complexityLabel = '跨界串联型';
+      else complexityLabel = '多维调度型';
+    }
+
+    // 心腹标签
+    const confidantType = getConfidantType(S1, S2, N1, N2, dualS, dualN, chaotic);
+    const career = getCareerDirection(S1, S2, confidantType);
+
+    return {
+      S1, S2: dualS ? S2 : null,
+      N1, N2: dualN ? N2 : null,
+      archetype_315,
+      complexityLabel,
+      confidantType,
+      career,
+      dualS, dualN, chaotic
+    };
   }
 
+  function getConfidantType(S1, S2, N1, N2, dualS, dualN, chaotic) {
+    if (chaotic) return '外围协作型';
+    const engines = new Set([S1, S2].filter(Boolean));
+    const sandboxes = new Set([N1, N2].filter(Boolean));
+    const has = (set, vals) => vals.some(v => set.has(v));
+    // 优先级顺序判定
+    if (has(engines, ['T','O']) && has(sandboxes, ['FN','MN','AN'])) return '谋臣型心腹';
+    if (S1==='O' && !has(engines, ['T','D','E']) && has(sandboxes, ['FN','PN'])) return '守门型心腹';
+    if (has(engines, ['D','E']) && has(sandboxes, ['IN','PN'])) return '开疆型心腹';
+    if ((S1==='V' || (S1==='O'&&S2==='V') || (S2==='V'&&S1==='O')) && has(sandboxes, ['RN','PN'])) return '维稳型心腹';
+    if (has(engines, ['T','E']) && has(sandboxes, ['MN','IN','RN'])) return '布道型心腹';
+    if (has(engines, ['O','D']) && has(sandboxes, ['FN','AN','PN'])) return '执行型心腹';
+    if (has(engines, ['D'])) return '破局型心腹';
+    if (has(sandboxes, ['FN'])) return '系统型心腹';
+    if (has(engines, ['E'])) return '资源型心腹';
+    if (has(engines, ['V']) && has(sandboxes, ['RN'])) return '情感型心腹';
+    if (has(engines, ['T','V','O']) && has(sandboxes, ['MN','RN','AN','IN'])) return '镜子型心腹';
+    return '执行型心腹'; // fallback
+  }
+
+  function getCareerDirection(S1, S2, confidant) {
+    const map = {
+      '谋臣型心腹': { dir:'战略、研究、咨询、架构、顶层设计', unsuit:'纯执行、强应酬、低信息透明、只背锅无决策权' },
+      '守门型心腹': { dir:'风控、合规、财务、审计、规则、边界管理', unsuit:'灰区套利、高速扩张、规则模糊但要求背责' },
+      '开疆型心腹': { dir:'市场突破、资源置换、圈层扩张', unsuit:'长期精细化维稳岗位' },
+      '维稳型心腹': { dir:'底盘维护、关系调停、风险兜底', unsuit:'高风险破坏性创新' },
+      '布道型心腹': { dir:'文化建设、愿景解释、外部影响力构建', unsuit:'低维机械重复流水线' },
+      '执行型心腹': { dir:'流程落地、交付闭环、项目推进', unsuit:'高度无序、无明确目标' },
+      '破局型心腹': { dir:'危机处理、改革推进、竞争突破', unsuit:'长期低刺激维护' },
+      '系统型心腹': { dir:'流程架构、系统搭建、知识体系建设', unsuit:'纯人情场、短期杂活' },
+      '资源型心腹': { dir:'商务拓展、资源整合、市场增长', unsuit:'核心机密无制衡、长期纯后台' },
+      '情感型心腹': { dir:'员工关系、客户陪伴、社群运营', unsuit:'高权力决策、长期单向消耗' },
+      '镜子型心腹': { dir:'深度复盘、理念咨询、精神陪伴', unsuit:'要求无条件站队、强服从体系' },
+      '外围协作型': { dir:'灵活协作、阶段性项目', unsuit:'核心决策、长期深度绑定' }
+    };
+    return map[confidant] || { dir:'通用执行', unsuit:'不确定' };
+  }
+
+  // ---------- DE 计算 ----------
   function computeDE() {
-    const ans = STATE.deAnswers;
+    const qs = QUIZ.modules.de;
     const gardens = {};
-    QUIZ.modules.de.forEach(q => { if (!gardens[q.sandbox]) gardens[q.sandbox] = {}; gardens[q.sandbox][q.id] = ans[q.id]; });
+    qs.forEach(q => {
+      if (!gardens[q.sandbox]) gardens[q.sandbox] = {};
+      gardens[q.sandbox][q.id] = STATE.deAnswers[q.id] || '';
+    });
+
     const result = {};
-    for (let [sb, qs] of Object.entries(gardens)) {
-      const ids = Object.keys(qs);
-      const q1 = qs[ids[0]] || '', q2 = qs[ids[1]] || '';
-      let cutoff = null;
-      if (q1==='A' || q1==='B') cutoff = '节点断电';
-      result[sb] = { cutoff };
+    for (let [sb, qmap] of Object.entries(gardens)) {
+      const ids = Object.keys(qmap);
+      const q1 = qmap[ids[0]] || '', q2 = qmap[ids[1]] || '';
+      let attitude = '', energyState = '', cutoffType = '';
+
+      // 判定逻辑（简化，但覆盖主要组合）
+      if (sb === 'PN') {
+        if (q1==='A' && (q2==='A'||q2==='C')) { attitude='封闭/防御'; energyState='节点断电'; cutoffType='节点断电'; }
+        else if (q1==='B' && q2==='B') { attitude='未受损'; energyState='畅通流转'; }
+        else { attitude='中立/未觉察'; energyState='未激活'; }
+      } else if (sb === 'AN') {
+        if (q1==='A') { attitude='志业重构'; energyState='能量改道（主动型）'; cutoffType='节点断电'; }
+        else if (q1==='B'||q1==='C') { attitude='祛魅/自建'; energyState='能量改道'; cutoffType='节点断电'; }
+        else if (q1==='D') { attitude='自建（无损）'; energyState='能量改道（主动型）'; }
+        else if (q1==='E') { attitude='未受损'; energyState='畅通流转'; }
+      } else if (sb === 'RN') {
+        if (q1==='A') { attitude='胶着/被困'; energyState='短路循环'; }
+        else if (q1==='B'||q1==='C') { attitude='封闭/防御'; energyState='节点断电'; cutoffType='节点断电'; }
+        else if (q1==='D') { attitude='未受损'; energyState='畅通流转'; }
+        else if (q1==='E') { attitude='一直回避'; energyState='节点断电'; cutoffType='预设断电'; }
+      } else if (sb === 'IN') {
+        if (q1==='A'||q1==='B') { attitude='封闭/防御'; energyState='节点断电'; cutoffType='节点断电'; }
+        else if (q1==='C') { attitude='未受损'; energyState='畅通流转'; }
+        else if (q1==='D') { attitude='胶着/被困'; energyState='短路循环'; }
+        else if (q1==='E') { attitude='一直疏离'; energyState='节点断电'; cutoffType='预设断电'; }
+      } else if (sb === 'MN') {
+        if ((q1==='A'||q1==='B') && q2==='A') { attitude='祛魅/自建'; energyState='能量改道'; cutoffType='节点断电'; }
+        else if ((q1==='A'||q1==='B') && q2==='B') { attitude='不采用/未建立'; energyState='悬置'; }
+        else if ((q1==='A'||q1==='B') && q2==='C') { attitude='祛魅/自建'; energyState='能量改道'; cutoffType='节点断电'; }
+        else if (q1==='D' && q2==='D') { attitude='未受损'; energyState='畅通流转'; }
+        else if (q1==='C' && q2==='C') { attitude='一直抽离'; energyState='节点断电'; cutoffType='预设断电'; }
+      } else if (sb === 'FN') {
+        if ((q1==='A'||q1==='B') && (q2==='A'||q2==='B')) { attitude='祛魅/自建'; energyState='能量改道'; cutoffType='节点断电'; }
+        else if ((q1==='A'||q1==='B') && q2==='C') { attitude='不采用/未建立'; energyState='悬置'; }
+        else if (q1==='C' && (q2==='B'||q2==='A')) { attitude='自建（无损）'; energyState='能量改道（主动型）'; }
+        else if (q1==='C' && q2==='D') { attitude='未受损'; energyState='畅通流转'; }
+        else if (q1==='D' || q2==='D'||q2==='E') { attitude='中立/未启用'; energyState='未激活'; }
+      }
+      result[sb] = { attitude, energyState, cutoffType };
     }
     return result;
   }
 
+  // DE 文本词典（精简版，关键状态）
+  function getDEText(sb, state) {
+    const texts = {
+      PN: { '节点断电':'你的PN（物理底盘）在历史体验中触发了断电保护。你在精力透支或资源不安全之后，对身体的消耗变得格外警惕……' },
+      AN: { '节点断电':'你的AN（能力进化）在历史体验中触发了断电保护。你曾沿着外部设定的路径全力冲刺，却在某个节点遭遇意义的真空……' },
+      RN: { '节点断电':'你的RN（深度连接）在历史体验中触发了断电保护。你曾在关系中被过度索取、被辜负信任……' },
+      IN: { '节点断电':'你的IN（社会舞台）在历史体验中触发了断电保护。你曾被持续消耗、被贴标签、边缘化……' },
+      MN: { '节点断电':'你的MN（意义导航）在历史体验中触发了节点断电。你曾深信过某种意义叙事，后来发现它无法兑现……' },
+      FN: { '节点断电':'你的FN（系统运转）在历史体验中触发了节点断电。你曾依赖过外部系统的规则和秩序，后来发现它们混乱不公……' }
+    };
+    return texts[sb]?.[state] || `[${sb} 状态：${state}]`;
+  }
+
+  // ---------- EF 计算 ----------
   function computeEF() {
     const engines = { O:0, V:0, D:0, E:0, T:0 };
     QUIZ.modules.ef.forEach(q => {
@@ -450,70 +442,130 @@ document.addEventListener('click', function(e) {
     });
     const states = {};
     for (let [eng, score] of Object.entries(engines)) {
-      if (score <= 7) states[eng] = { score, state: '被掩埋', wuxing: '枯竭' };
-      else if (score <= 12) states[eng] = { score, state: '卷缩', wuxing: '虚弱' };
-      else if (score <= 16) states[eng] = { score, state: '生长', wuxing: '平衡' };
-      else states[eng] = { score, state: '繁茂', wuxing: '过旺' };
+      let state, wuxing;
+      if (score <= 7) { state='被掩埋'; wuxing='枯竭'; }
+      else if (score <= 12) { state='卷缩'; wuxing='虚弱'; }
+      else if (score <= 16) { state='生长'; wuxing='平衡'; }
+      else { state='繁茂'; wuxing='过旺'; }
+      states[eng] = { score, state, wuxing };
     }
     return { engines: states };
   }
 
-  // ---------- 报告生成 ----------
+  // 生克矛盾分析
+  function getEFContradictions(efEngines, sd) {
+    if (!efEngines || !sd) return '<div class="report-card"><div class="report-card-desc">数据不足，无法分析生克矛盾。</div></div>';
+    const wx = { T:'木', O:'金', D:'火', V:'土', E:'水' };
+    const engNames = { T:'T超越', O:'O秩序', D:'D动力', V:'V锚定', E:'E扩张' };
+    let html = '';
+    const restrictPairs = [['T','V'],['O','T'],['E','D'],['D','O'],['V','E']];
+    restrictPairs.forEach(([ker,ked]) => {
+      const ks = efEngines[ker]?.wuxing, ds = efEngines[ked]?.wuxing;
+      if (!ks || !ds) return;
+      if (ks==='过旺' && (ds==='虚弱'||ds==='枯竭')) html += card('过度压制', `${engNames[ker]}克${engNames[ked]}，${engNames[ker]}过旺压制了${engNames[ked]}`);
+      else if (ks==='过旺' && ds==='过旺') html += card('高能震荡', `${engNames[ker]}与${engNames[ked]}同时过旺，激烈博弈`);
+      else if (ks==='平衡' && (ds==='虚弱'||ds==='枯竭')) html += card('底座虚弱', `${engNames[ked]}本身虚弱，正常克制已使其动摇`);
+      else if ((ks==='虚弱'||ks==='枯竭') && ds==='过旺') html += card('逆向压制', `克者无力，${engNames[ked]}失控`);
+    });
+    return html || '<div class="report-card"><div class="report-card-desc">当前无明显剧烈生克矛盾。</div></div>';
+    function card(title, desc) {
+      return `<div class="report-card"><div class="report-card-title">${title}</div><div class="report-card-desc">${formatText(desc)}</div></div>`;
+    }
+  }
+
+  // 最小破局动作
+  function getMinimalAction(efEngines, sd) {
+    if (!efEngines || !sd) return '保持对当前状态的客观觉察。';
+    const S1 = sd.S1, wuxing = efEngines[S1]?.wuxing;
+    if (wuxing === '过旺' || wuxing === '平衡') {
+      const actions = {
+        T:'设立物理硬阻断：设定一个物理信号，信号触发时强制切断逻辑推导，执行15分钟纯体力运作。',
+        O:'引入灰度容错测试：在非核心事务中刻意留下一个流程缺口，训练对轻度失控的耐受力。',
+        D:'强制延迟点火：面对冲动执行10分钟冷冻隔离，禁止第一时间突破。',
+        E:'物理收束视野：关闭所有非必要信息源，强制在单线任务内运作。',
+        V:'剥离静态锚点：主动切断一次习惯性的反馈索取，在悬空感中完成独立决策。'
+      };
+      return actions[S1] || '逐步恢复引擎的自然节律。';
+    }
+    return '逐步恢复引擎的自然节律，减少强行驱动。';
+  }
+
+  // 逻辑缝合
+  function buildStitching(sd, de, ef) {
+    const shutdown = Object.keys(de).filter(sb => de[sb].cutoffType === '节点断电');
+    if (shutdown.length===0 || !sd.S1) return '';
+    const engNames = { T:'T超越', O:'O秩序', D:'D动力', V:'V锚定', E:'E扩张' };
+    const S1 = sd.S1;
+    const S1_label = engNames[S1];
+    const S1_function = { T:'追问本质、穿透旧框架', O:'梳理秩序、收束闭环', D:'点燃行动、冲破阻力', V:'守护底线、提供依托', E:'拓展边界、连接资源' }[S1]||'';
+    const S1_response = { T:'用追问穿透痛点，用结构收束混乱', O:'用规则划清边界，用闭环锁死失控', D:'用冲撞打破阻力，用动能碾压停滞', V:'用守护维系底线，用物理存在托住崩塌', E:'用突围绕开限制，用外部链接打破死局' }[S1]||'';
+    const N1_label = { PN:'身体底盘', AN:'能力进化', RN:'深度连接', IN:'社会舞台', MN:'意义导航', FN:'系统运转' }[sd.N1]||sd.N1;
+    const shutdown_str = shutdown.map(s => ({PN:'身体底盘', AN:'能力进化', RN:'深度连接', IN:'社会舞台', MN:'意义导航', FN:'系统运转'}[s]||s)).join('、');
+    let text = `<div class="report-card"><div class="report-card-title">第一阶段：协议响应与资源改道</div><div class="report-card-desc">`;
+    text += `这一切的演化起点，源于 ${formatText(S1_label)} 的主导地位。系统默认调用“${S1_function}”作为应对外部冲击的首选协议。\n\n`;
+    text += `当 ${formatText(shutdown_str)} 遭遇历史损耗时，系统未执行常规的原地修复，而是启动了最高效的代偿机制：${S1_response}。资源被大规模改道并集中引灌至 ${formatText(N1_label)} 领域。</div></div>`;
+    text += `<div class="report-card"><div class="report-card-title">第二阶段：动力格局定型</div><div class="report-card-desc">`;
+    text += `代偿机制的持续运转，直接造成了动力的极化。作为首选协议的 ${formatText(S1_label)} 因高频调用而趋于过载；而被战略性放弃的原生态沙盒区，其对应的自然生发引擎由于长期断流，正处于物理萎缩与休眠状态。</div></div>`;
+    return text;
+  }
+
+  // 报告渲染
   function renderReport() {
     STATE.phase = 'report';
     $phase.textContent = '深度人格演化报告';
     updateNavProgress('探测报告', '完成', '完成');
     $quiz.innerHTML = ''; $nav.innerHTML = '';
     $report.classList.remove('hidden');
-    
+
     const sd = STATE.sdriveResult || {};
     const de = STATE.deResult || {};
     const ef = STATE.efResult || {};
 
-    let html = `
-      <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
-        <button onclick="window.print()" class="primary">📥 保存报告为 PDF</button>
-        <button id="btnEditAnswers">✏️ 返回修改答案</button>
-        <button id="btnReportReset" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); box-shadow: none;">🔄 清空并重做</button>
-      </div>
-      <div class="report-section">`;
+    let html = `<div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+      <button onclick="window.print()" class="primary">📥 保存报告为 PDF</button>
+      <button id="btnEditAnswers">✏️ 返回修改答案</button>
+      <button id="btnReportReset" style="background:transparent;border:1px solid var(--border-color);color:var(--text-muted);box-shadow:none;">🔄 清空并重做</button>
+    </div><div class="report-section">`;
 
+    // 一、引擎状态
     html += `<h2>🎍 一、引擎状态雷达</h2>`;
     if (ef.engines) {
       html += `<div class="table-wrap"><table><tr><th>引擎</th><th>能量分数</th><th>当前状态</th></tr>`;
-      const engineOrder = ['T','O','D','E','V'];
-      const engineLabel = { T:'T超越', O:'O秩序', D:'D动力', E:'E扩张', V:'V锚定' };
-      engineOrder.forEach(e => {
+      ['T','O','D','E','V'].forEach(e => {
         const eng = ef.engines[e] || { score:'-', state:'未知' };
-        html += `<tr><td>${formatText(engineLabel[e])}</td><td>${eng.score}</td><td>${eng.state}</td></tr>`;
+        html += `<tr><td>${formatText({T:'T超越',O:'O秩序',D:'D动力',E:'E扩张',V:'V锚定'}[e])}</td><td>${eng.score}</td><td>${eng.state}</td></tr>`;
       });
       html += `</table></div>`;
     }
 
+    // 二、生克矛盾
     html += `<h2>⚡️ 二、系统生克失衡判定</h2>`;
     html += getEFContradictions(ef.engines, sd);
 
-    html += `<h2>🌊 三、物理制衡方案</h2>`;
-    html += `<div class="report-card"><div class="report-card-title">反本能干预动作</div><div class="report-card-desc">${getMinimalAction(ef.engines, sd)}</div></div>`;
+    // 三、最小破局动作
+    html += `<h2>🌊 三、物理制衡方案</h2><div class="report-card"><div class="report-card-title">反本能干预动作</div><div class="report-card-desc">${getMinimalAction(ef.engines, sd)}</div></div>`;
 
-    const shutdown = Object.keys(de).filter(sb => de[sb].cutoff === '节点断电');
-    if (shutdown.length > 0 && sd.S1) {
-      html += `<h2>🔗 四、代偿演化机制溯源</h2>`;
-      html += buildStitching(sd, de, shutdown, ef);
-    }
-    
-    html += `<p class="small-note" style="text-align:center;">🌿 报告由人格动力系统自动生成 · 客观反映当前能量拓扑</p>`;
-    html += `</div>`;
-    
-    $report.innerHTML = html;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    document.getElementById('btnEditAnswers').addEventListener('click', () => {
-      STATE.phase = 'ef';
-      saveState(); 
-      routePhase();
+    // 四、沙盒花园
+    html += `<h2>🌱 二、你的六片沙盒花园</h2>`;
+    ['PN','AN','RN','IN','MN','FN'].forEach(sb => {
+      const garden = de[sb] || {};
+      html += `<div class="report-card"><div class="report-card-title">${sb} · ${garden.attitude||'未知'}</div><div class="report-card-desc">${getDEText(sb, garden.cutoffType||garden.energyState)}</div></div>`;
     });
 
+    // 五、因果缝合
+    const shutdown = Object.keys(de).filter(sb => de[sb].cutoffType === '节点断电');
+    if (shutdown.length>0 && sd.S1) {
+      html += `<h2>🔗 四、代偿演化机制溯源</h2>`;
+      html += buildStitching(sd, de, ef);
+    }
+
+    html += `<p style="text-align:center;">🌿 报告由人格动力系统自动生成 · 客观反映当前能量拓扑</p></div>`;
+    $report.innerHTML = html;
+    window.scrollTo({ top:0, behavior:'smooth' });
+
+    document.getElementById('btnEditAnswers').addEventListener('click', () => {
+      STATE.phase = 'ef'; saveState(); routePhase();
+    });
     document.getElementById('btnReportReset').addEventListener('click', () => {
       if (confirm('确定要清空所有作答记录并重新开始吗？')) {
         localStorage.removeItem('mbti_test_state');
@@ -522,7 +574,6 @@ document.addEventListener('click', function(e) {
     });
   }
 
-  // 全局重置按钮
   document.getElementById('btnGlobalReset').addEventListener('click', () => {
     if (confirm('确定要清空当前所有作答记录并重新开始吗？')) {
       localStorage.removeItem('mbti_test_state');
@@ -530,88 +581,73 @@ document.addEventListener('click', function(e) {
     }
   });
 
-  // ---------- 高信噪比报告逻辑 ----------
-  function getEFContradictions(engines, sd) {
-    if (!engines || !sd) return '<div class="report-card"><div class="report-card-desc">数据不足，无法分析生克矛盾。</div></div>';
-    const wx = { T:'木', O:'金', D:'火', V:'土', E:'水' };
-    const engNames = { T:'T超越', O:'O秩序', D:'D动力', V:'V锚定', E:'E扩张' };
-    let cardsHtml = '';
-
-    function pushCard(ker, ked, typeDesc, detailDesc) {
-      cardsHtml += `<div class="report-card">
-        <div class="report-card-title">${ker}克${ked}（${wx[ker]}克${wx[ked]}）：${typeDesc}</div>
-        <div class="report-card-desc">${formatText(detailDesc)}</div>
-      </div>`;
-    }
-
-    const restrictPairs = [['T','V'], ['O','T'], ['E','D'], ['D','O'], ['V','E']];
-    restrictPairs.forEach(([ker, ked]) => {
-      const ks = engines[ker]?.wuxing, ds = engines[ked]?.wuxing;
-      if (!ks || !ds) return;
-      if (ks === '过旺' && (ds === '虚弱' || ds === '枯竭')) {
-        pushCard(ker, ked, '强势碾压', `引擎 ${engNames[ker]} 处于过载输出阈值，导致 ${engNames[ked]} 的底盘被严重穿透与消耗。系统失衡的根因在于前者的动能长期越界，完全压制了后者的基础承载力。`);
-      } else if (ks === '过旺' && ds === '过旺') {
-        pushCard(ker, ked, '高能震荡', `引擎 ${engNames[ker]} 与 ${engNames[ked]} 同时处于极高频输出状态。系统内部发生剧烈的方向博弈与资源争夺，虽然短期内能爆发巨大能量，但将导致庞大的底层内耗。`);
-      } else if (ks === '平衡' && (ds === '虚弱' || ds === '枯竭')) {
-        pushCard(ker, ked, '底座虚弱', `引擎 ${engNames[ker]} 处于正常输出阈值，但 ${engNames[ked]} 因自身能量匮乏而产生动摇。系统失衡的根因不在于前者的动作过猛，而在于后者原本的基础未被建立或已被损耗。`);
-      } else if ((ks === '虚弱' || ks === '枯竭') && ds === '过旺') {
-        pushCard(ker, ked, '逆向压制', `引擎 ${engNames[ker]} 输出衰竭，无法对处于过载状态的 ${engNames[ked]} 形成有效制约。系统失衡的根因在于常规的制衡链路断裂，导致被克制方彻底失控。`);
-      }
+  // 渲染Sdrive/DE/EF页面（复用之前结构，但调用新计算）
+  function renderSdrive() {
+    STATE.phase = 'sdrive';
+    const qs = QUIZ.modules.sdrive;
+    $phase.textContent = '核心身份校准 · S-drive';
+    updateNavProgress('核心身份', Object.keys(STATE.sdriveAnswers).length, qs.length);
+    let html = '<div class="quiz-block">';
+    qs.forEach(q => {
+      const sel = STATE.sdriveAnswers[q.id] || '';
+      html += `<div class="question-card"><div class="question-header"><span class="q-id">${q.id}</span><span class="q-text">${formatText(q.question)}</span></div><div class="options" id="sdriveGrp_${q.id}">${renderOptions(q.options, q.id, sel)}</div></div>`;
     });
-
-    if (sd.S1) {
-      const S1 = sd.S1, sWu = wx[S1];
-      const childMap = {'木':'火','火':'土','土':'金','金':'水','水':'木'};
-      const childKey = Object.keys(wx).find(k => wx[k] === childMap[sWu]);
-      if (childKey && engines[childKey]) {
-        const cs = engines[childKey].wuxing;
-        if (engines[S1].wuxing === '过旺') {
-           pushCard(S1, childKey, '过度滋养', `核心引擎 ${engNames[S1]} 处于过载状态，持续向 ${engNames[childKey]} 输送过剩势能，导致后者承载饱和，传导链路面临阻塞风险。`);
-        } else if (engines[S1].wuxing === '平衡' && cs === '过旺') {
-           pushCard(S1, childKey, '滋养偏流', `引擎 ${engNames[S1]} 输出正常，但 ${engNames[childKey]} 异常过载，导致能量传导发生强制截流，破坏了生态循环。`);
-        }
-      }
-    }
-    
-    return cardsHtml || '<div class="report-card"><div class="report-card-desc">当前引擎间无明显剧烈生克矛盾，系统运作保持中立平衡。</div></div>';
+    html += '</div>';
+    $quiz.innerHTML = html;
+    $nav.innerHTML = '<button id="btnBack">← 上一步</button><button id="btnSdriveNext" class="primary">提交并进入核心演化</button>';
+    document.getElementById('btnBack').addEventListener('click', () => { STATE.phase='precheck'; saveState(); routePhase(); });
+    document.getElementById('btnSdriveNext').addEventListener('click', () => {
+      if (checkMissingAnswers(STATE.sdriveAnswers, qs.length)) return;
+      STATE.sdriveResult = computeSdrive();
+      saveState(); renderDE();
+    });
+    attachOptionClicks('[id^="sdriveGrp_"]', (g, opt) => { STATE.sdriveAnswers[g]=opt; renderSdrive(); });
   }
 
-  function getMinimalAction(engines, sd) {
-    if (!engines || !sd) return '保持对当前状态的客观觉察。';
-    const S1 = sd.S1;
-    const wuxing = engines[S1]?.wuxing;
-    if (wuxing === '过旺' || wuxing === '平衡') {
-      const actions = {
-        T: '设立物理硬阻断：设定一个物理信号（如定时器响起、写完指定行数），信号触发时强制切断一切逻辑推导，执行15分钟纯体力运作。',
-        O: '引入灰度容错测试：在今天的非核心事务中，刻意留下一个流程缺口或放弃一次复盘，训练对轻度失控的耐受力。',
-        D: '强制延迟点火：面对任何激发现有冲动的局面，执行严格的10分钟冷冻隔离，禁止在第一时间发起突破动作。',
-        E: '物理收束视野：关闭所有非必要的额外信息源接口，今天强制要求自己只能在已有的单线任务内运作，切断增量抓取。',
-        V: '剥离静态锚点：今天主动切断一次习惯性的反馈索取（例如不发请示、不求认同），在短暂的悬空感中完成一次独立决策。'
-      };
-      return actions[S1] || '逐步恢复引擎的自然节律，减少强行驱动。';
-    }
-    return '逐步恢复引擎的自然节律，减少强行驱动。';
+  function renderDE() {
+    STATE.phase = 'de';
+    const qs = QUIZ.modules.de;
+    $phase.textContent = '代偿演化推演 · DE';
+    updateNavProgress('代偿演化', Object.keys(STATE.deAnswers).length, qs.length);
+    let html = '<div class="quiz-block">';
+    qs.forEach(q => {
+      const sel = STATE.deAnswers[q.id] || '';
+      html += `<div class="question-card"><div class="question-header"><span class="q-id">${q.id}</span><span class="q-text">${formatText(q.sandbox + ' · ' + q.question)}</span></div><div class="options" id="deGrp_${q.id}">${renderOptions(q.options, q.id, sel)}</div></div>`;
+    });
+    html += '</div>';
+    $quiz.innerHTML = html;
+    $nav.innerHTML = '<button id="btnBack">← 上一步</button><button id="btnDeNext" class="primary">提交并进入引擎探孔</button>';
+    document.getElementById('btnBack').addEventListener('click', () => { STATE.phase = STATE.precheckAnswer==='yes'?'tag':'sdrive'; saveState(); routePhase(); });
+    document.getElementById('btnDeNext').addEventListener('click', () => {
+      if (checkMissingAnswers(STATE.deAnswers, qs.length)) return;
+      STATE.deResult = computeDE();
+      saveState(); renderEF();
+    });
+    attachOptionClicks('[id^="deGrp_"]', (g, opt) => { STATE.deAnswers[g]=opt; renderDE(); });
   }
 
-  function buildStitching(sd, de, shutdown, ef) {
-    const engNames = { T:'T超越', O:'O秩序', D:'D动力', V:'V锚定', E:'E扩张' };
-    const S1 = sd.S1;
-    const S1_label = engNames[S1];
-    const S1_function = { T:'追问本质、穿透旧框架', O:'梳理秩序、收束闭环', D:'点燃行动、冲破阻力', V:'守护底线、提供依托', E:'拓展边界、连接资源' }[S1]||'';
-    const S1_response = { T:'用追问穿透痛点，用结构收束混乱', O:'用规则划清边界，用闭环锁死失控', D:'用冲撞打破阻力，用动能碾压停滞', V:'用守护维系底线，用物理存在托住崩塌', E:'用突围绕开限制，用外部链接打破死局' }[S1]||'';
-    const N1_label = { PN:'身体底盘', AN:'能力进化', RN:'深度连接', IN:'社会舞台', MN:'意义导航', FN:'系统运转' }[sd.N1]||sd.N1;
-    const shutdown_str = shutdown.map(s => { return {PN:'身体底盘', AN:'能力进化', RN:'深度连接', IN:'社会舞台', MN:'意义导航', FN:'系统运转'}[s]||s; }).join('、');
-
-    let text = `<div class="report-card"><div class="report-card-title">第一阶段：协议响应与资源改道</div><div class="report-card-desc">`;
-    text += `这一切的演化起点，源于 ${formatText(S1_label)} 的主导地位。系统默认调用“${S1_function}”作为应对外部冲击的首选协议。\n\n`;
-    text += `当 ${formatText(shutdown_str)} 遭遇历史损耗时，系统未执行常规的原地修复，而是启动了最高效的代偿机制：${S1_response}。资源被大规模改道并集中引灌至 ${formatText(N1_label)} 领域。这是该引擎配置在历史高压环境下的必然演化结果，而非偶然的性格缺陷。</div></div>`;
-
-    text += `<div class="report-card"><div class="report-card-title">第二阶段：动力格局定型</div><div class="report-card-desc">`;
-    text += `代偿机制的持续运转，直接造成了动力的极化。作为首选协议的 ${formatText(S1_label)} 因高频调用而趋于过载；而被战略性放弃的原生态沙盒区，其对应的自然生发引擎由于长期断流，正处于物理萎缩与休眠状态。</div></div>`;
-    return text;
+  function renderEF() {
+    STATE.phase = 'ef';
+    const qs = QUIZ.modules.ef;
+    $phase.textContent = '引擎力量检测 · EF';
+    updateNavProgress('引擎力量', Object.keys(STATE.efAnswers).length, qs.length);
+    let html = '<div class="quiz-block">';
+    qs.forEach(q => {
+      const sel = STATE.efAnswers[q.id] || '';
+      html += `<div class="question-card"><div class="question-header"><span class="q-id">${q.id}</span><span class="q-text">${formatText(q.engine + ' · ' + q.question)}</span></div><div class="options" id="efGrp_${q.id}">${renderOptions(q.options, q.id, sel)}</div></div>`;
+    });
+    html += '</div>';
+    $quiz.innerHTML = html;
+    $nav.innerHTML = '<button id="btnBack">← 上一步</button><button id="btnEfFinish" class="primary">生成深度人格报告</button>';
+    document.getElementById('btnBack').addEventListener('click', () => { STATE.phase='de'; saveState(); routePhase(); });
+    document.getElementById('btnEfFinish').addEventListener('click', () => {
+      if (checkMissingAnswers(STATE.efAnswers, qs.length)) return;
+      STATE.efResult = computeEF();
+      saveState(); renderReport();
+    });
+    attachOptionClicks('[id^="efGrp_"]', (g, opt) => { STATE.efAnswers[g]=opt; renderEF(); });
   }
 
-  // 启动路由
   routePhase();
 })();
 </script>
