@@ -16,80 +16,81 @@
             padding: 24px 20px;
             color: #0f172a;
         }
-                /* 💡 新增：全自动深色模式适配样式 */
+        
+                    /* 💡 替换：纯黑全自动深色模式适配 */
         @media (prefers-color-scheme: dark) {
             body {
-                background: #0f172a; /* 页面大背景变为深靛蓝 */
-                color: #f1f5f9;      /* 全局文字变为浅灰色 */
+                background: #000000; /* 💡 彻底纯黑 */
+                color: #f8fafc;      /* 纯白偏亮文字 */
             }
-            /* 顶部吸顶导航栏适配 */
+            /* 顶部吸顶导航栏 */
             .top-bar {
-                background: #1e293b; /* 导航栏变为深色 */
-                border-bottom: 2px solid #3b82f6;
+                background: #0a0a0a; /* 极深灰，接近纯黑 */
+                border-bottom: 2px solid #2563eb;
             }
             .logo {
-                color: #f1f5f9;
+                color: #f8fafc;
             }
             .progress-box {
-                background: #1e3a8a; /* 进度盒子变为深蓝 */
-                color: #3b82f6;
+                background: #1e3a8a;
+                color: #60a5fa;
             }
-            /* 整体大容器与内部卡片适配 */
+            /* 大容器与内部卡片 */
             .app-container {
-                background: #1e293b; /* 主容器变为深色卡片 */
-                border-color: #3b82f6;
+                background: #000000; /* 💡 彻底纯黑 */
+                border-color: #2563eb;
             }
             .section {
-                background: #1e293b;
-                border-color: #334155;
+                background: #000000;
+                border-color: #1e293b;
             }
             .section-header {
-                background: #1e3a5f; /* 区域头部变为暗蓝色 */
-                border-bottom: 1px solid #334155;
+                background: #0a0a0a;
+                border-bottom: 1px solid #1e293b;
             }
             .section-header h2 {
-                color: #f1f5f9;
+                color: #f8fafc;
             }
-            /* 题干卡片与选项适配 */
+            /* 题干卡片与选项 */
             .q-card {
-                background: #1e293b;
-                border-color: #334155;
+                background: #050505; /* 极暗灰底，防止全黑导致边缘无法分辨 */
+                border-color: #1e293b;
             }
             .q-title {
                 background: #1e3a8a;
-                color: #3b82f6;
+                color: #60a5fa;
             }
             .options label {
-                background: #1e293b;  /* 选项未选中时为暗色底 */
-                border-color: #334155; /* 选项未选中时为暗色边框 */
-                color: #cbd5e1;
+                /* 💡 修改：深色模式下使用透明度暗底，文字颜色调亮 */
+                background: rgba(255, 255, 255, 0.05); 
+                border-color: #334155;
+                color: #e2e8f0; /* 确保暗色下未选中的字清晰可见 */
             }
-            /* 选项悬停与选中状态的深色适配 */
             .options label:hover {
-                background: #1e3a5f;
+                background: rgba(255, 255, 255, 0.1);
             }
+            /* 显式兼容 input 选中后的标签样式 */
             input[type="radio"]:checked + label,
             .options label:has(input[type="radio"]:checked) {
-                background: #1e3a5f !important; /* 选中时变为暗蓝色底 */
-                border-color: #3b82f6 !important; /* 选中时变为高亮蓝色边框 */
-                color: #ffffff;
+                background: #1e3a8a !important; /* 选中时深蓝底 */
+                border-color: #3b82f6 !important; /* 选中时高亮蓝边 */
+                color: #ffffff !important;
             }
-            /* 底部与报告区域适配 */
             .btn-secondary {
-                background: #334155;
-                color: #f1f5f9;
-                border-color: #3b82f6;
+                background: #1c1c1e;
+                color: #f8fafc;
+                border-color: #2563eb;
             }
             .report-area {
-                background: #1e293b;
-                border-top-color: #3b82f6;
+                background: #000000;
+                border-top-color: #2563eb;
             }
             .report-content th, .report-content td {
-                border-color: #334155;
-                color: #cbd5e1;
+                border-color: #1e293b;
+                color: #e2e8f0;
             }
             footer {
-                color: #64748b;
+                color: #475569;
             }
         }
         .app-container {
@@ -214,18 +215,19 @@
             row-gap: 12px;
             align-items: center;
         }
-                .options label {
-            display: flex;       /* 💡 改为 flex 撑满整行 */
+        .options label {
+            display: flex;       
             align-items: center;
             gap: 10px;
-            background: #f8fafc;
+            background: rgba(255, 255, 255, 0.7); /* 💡 已修改为透明白底 */
+            color: #334155;                       /* 💡 已新增高对比度文字 */
             border: 1.5px solid #cbdff2;
-            padding: 10px 8px;   /* 💡 左右内边距缩减到 8px，消除字框空隙 */
-            border-radius: 8px;  /* 💡 改用 8px 硬朗圆角 */
+            padding: 10px 8px;   
+            border-radius: 8px;  
             cursor: pointer;
             font-size: 0.9rem;
             transition: 0.1s;
-            width: 100%;         /* 💡 宽度 100% 极限贴近大框 */
+            width: 100%;         
             box-sizing: border-box;
         }
         .options label:hover {
