@@ -27,39 +27,58 @@
 
               @media (prefers-color-scheme: dark) {
             :root {
-                --primary: #3b82f6;          /* 主题亮蓝，保持高辨识度 */
-                --primary-light: #172554;    /* 极深的幽蓝，用于选中项的底色 */
-                --primary-border: #1e3a8a;   /* 重点高亮边框 */
-                --text-main: #f8fafc;        /* 高对比度纯白字体 */
-                --text-secondary: #94a3b8;   /* 柔和的次要说明文字 */
-                --bg-page: #000000;          /* 【核心】绝对纯黑大背景 */
-                --bg-card: #0a0a0a;          /* 【核心】极暗的卡片背景（接近黑） */
-                --border-color: #1e293b;     /* 暗调边框，不抢视线 */
+                --primary: #3b82f6;          
+                --primary-light: #172554;    
+                --primary-border: #1e3a8a;   
+                --text-main: #f8fafc;        
+                --text-secondary: #94a3b8;   
+                --bg-page: #000000;          
+                --bg-card: #0a0a0a;          
+                --border-color: #1e293b;     
                 --shadow: 0 4px 20px rgba(0,0,0,0.8);
                 --shadow-md: 0 8px 30px rgba(0,0,0,0.9);
             }
 
-            /* 暗黑模式专项微调：拉开层级对比 */
+            /* 【核心修复】强制覆盖所有文本颜色，解决手机端变量失效 Bug */
+            body, .container, .report, .card, .card-text, .option, .option-content, .option-main {
+                color: #f8fafc !important; 
+            }
+            
+            /* 强制将 JS 报告里写死的深灰色（#555）提亮为浅灰 */
+            .report p[style*="color:#555"] {
+                color: #94a3b8 !important;
+            }
+
+            /* 暗黑模式专项微调 */
             .top-bar {
-                background: #050505;         /* 顶部导航稍微脱离纯黑，增加呼吸感 */
+                background: #050505 !important;
+                color: #f8fafc !important;
+            }
+            .logo {
+                color: var(--primary) !important;
             }
             .option {
-                background: #111111;         /* 选项未选中时，底色微微提亮，与大背景拉开层次 */
-                border-color: #27272a;       /* 选项边框更分明 */
+                background: #111111 !important;
+                border-color: #27272a !important;
             }
             .option:hover {
-                background: #1e293b;
-                border-color: var(--primary);
+                background: #1e293b !important;
+                border-color: var(--primary) !important;
             }
             .option.selected {
-                background: var(--primary-light);
+                background: var(--primary-light) !important;
+                border-color: var(--primary) !important;
             }
             .progress-bar-outer {
-                background: #1e293b;         /* 进度条空槽加深，避免在纯黑背景下太突兀 */
+                background: #1e293b !important;
             }
             .caution {
-                color: #94a3b8;              /* 限制条件文字在暗黑下更柔和 */
-                border-top-color: #27272a;
+                color: #94a3b8 !important;
+                border-top-color: #27272a !important;
+            }
+            .report h2 {
+                color: var(--primary) !important;
+                border-bottom-color: var(--primary-border) !important;
             }
         }
             margin: 0;
@@ -386,12 +405,8 @@
 <!-- ═══════════ 主容器 ═══════════ -->
 <div class="container">
 
-        <div id="quizArea">
-                <div id="quizArea">
+          <div id="quizArea">
         <p style="text-align:center; color:var(--text-secondary); font-size:0.85rem; margin-bottom:12px;">💡 点击题干和选项中的<strong style="color:var(--primary);">下划线关键词</strong>可查看提示</p>
-        <div id="quizList"></div>
-        <div class="submit-wrap"><button class="btn" id="btnSubmit">提交并生成报告</button></div>
-    </div>
         <div id="quizList"></div>
         <div class="submit-wrap"><button class="btn" id="btnSubmit">提交并生成报告</button></div>
     </div>
