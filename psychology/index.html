@@ -341,7 +341,22 @@
             margin-top: 6px;
         }
         
-        /* 💡 修复：完美合龙的移动端响应式布局 */
+               /* --- 因果链简单分层样式 --- */
+        .causal-base-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0 24px; }
+        .causal-base-title { font-weight: 600; color: #1e3a8a; margin-bottom: 4px; display: block; }
+        .causal-base-text { color: #475569; font-size: 0.9rem; line-height: 1.6; }
+        .causal-item { border-left: 3px solid #1e4bd2; padding-left: 14px; margin-bottom: 20px; }
+        .causal-item-title { font-weight: 600; color: #0f172a; margin-bottom: 6px; font-size: 1.05rem; }
+        .causal-item-desc { color: #334155; font-size: 0.95rem; line-height: 1.6; }
+
+        @media (prefers-color-scheme: dark) {
+            .causal-base-box { background: #0a0a0a !important; border-color: #1e293b !important; }
+            .causal-base-title { color: #3b82f6 !important; }
+            .causal-base-text { color: #94a3b8 !important; }
+            .causal-item-title { color: #f8fafc !important; }
+            .causal-item-desc { color: #cbd5e1 !important; }
+        }
+            /* 💡 修复：完美合龙的移动端响应式布局 */
         @media (max-width: 780px) {
             body {
                 padding: 0;      
@@ -783,8 +798,7 @@ if (savedAnswers) {
             'O生E_reverse': '你对吞噬变量、扩大主权极度饥渴（水），不断嗅探新机会。但这股扩张狂潮需要“秩序与边界（金）”来引导。你制定计划、修剪变量的能力，远远跟不上版图漫延的速度。水流太猛，规则管道又慢又脆。每次向外拓展，都在冲垮刚搭好的控制域。地盘越铺越大，能真正握住的确定性却被冲碎。',
             'E生T_reverse': '你执着于追问本质、拆解虚伪表象（木），穿透力极强。但这种高能聚变需要不断“吞噬新变量（水）”提供素材。你对外开拓、收编未知事物的欲望太低，导致信息输入极窄。大树疯长，活水却供不上。你的追问只能在枯竭的存量里反复深挖，榨不出新东西。你把自己困死在了没有活水的回音壁里。'
         };
-        
-        let chainAdded = new Set();
+               let chainAdded = new Set();
         let chainText = [];
         
         // 遍历所有引擎对 (A, B)，根据五行生克关系触发
@@ -796,25 +810,18 @@ if (savedAnswers) {
                 
                 // 克关系
                 if (keMap[a] === b) {
-                    let aWang = isWang(a);
-                    let bWang = isWang(b);
-                    let aShuai = isShuai(a);
-                    let bShuai = isShuai(b);
-                    let aHealthy = isHealthy(a);
-                    let bHealthy = isHealthy(b);
+                    let aWang = isWang(a), bWang = isWang(b), aShuai = isShuai(a), bShuai = isShuai(b), aHealthy = isHealthy(a), bHealthy = isHealthy(b);
                     
                     if (aWang && bShuai) {
                         let key = `${a}克${b}_weak`;
                         if (!chainAdded.has(key)) {
-                            let desc = detailedDesc[key] || '旺者克衰者，强势驱动力不断消耗弱势底盘。';
-                            chainText.push(`➤ 旺克衰 · ${engineFull[a]}克${engineFull[b]}（穿透与流失）<br>${desc}`);
+                            chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 旺克衰 · ${engineFull[a]}克${engineFull[b]}（穿透与流失）</div><div class="causal-item-desc">${detailedDesc[key] || '旺者克衰者，强势驱动力不断消耗弱势底盘。'}</div></div>`);
                             chainAdded.add(key);
                         }
                     } else if (aShuai && bWang) {
                         let key = `${a}克${b}_reverse`;
                         if (!chainAdded.has(key)) {
-                            let desc = detailedDesc[key] || '衰者克旺者，弱势试图约束强势反而耗尽自身。';
-                            chainText.push(`➤ 衰克旺 · ${engineFull[a]}克${engineFull[b]}（崩卷与反弹）<br>${desc}`);
+                            chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 衰克旺 · ${engineFull[a]}克${engineFull[b]}（崩卷与反弹）</div><div class="causal-item-desc">${detailedDesc[key] || '衰者克旺者，弱势试图约束强势反而耗尽自身。'}</div></div>`);
                             chainAdded.add(key);
                         }
                     } else if (aWang && bWang) {
@@ -822,9 +829,8 @@ if (savedAnswers) {
                         let stateKey = hasBuried ? 'over' : 'healthy';
                         let key = `${a}克${b}_${stateKey}`;
                         if (!chainAdded.has(key)) {
-                            let desc = detailedDesc[key] || (hasBuried ? '强强相克但存在创伤断点，陷入互耗磨损。' : '克者精准修剪，被克者因修剪更茁壮。');
-                            let type = hasBuried ? '过载态（互耗和磨损）' : '健康态（修剪和蜕变）';
-                            chainText.push(`➤ 旺克旺 · ${type} · ${engineFull[a]}克${engineFull[b]}<br>${desc}`);
+                            let type = hasBuried ? '过载态（互耗磨损）' : '健康态（修剪蜕变）';
+                            chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 旺克旺 · ${type} · ${engineFull[a]}克${engineFull[b]}</div><div class="causal-item-desc">${detailedDesc[key] || (hasBuried ? '强强相克但存在创伤断点，陷入互耗磨损。' : '克者精准修剪，被克者因修剪更茁壮。')}</div></div>`);
                             chainAdded.add(key);
                         }
                     }
@@ -832,25 +838,18 @@ if (savedAnswers) {
                 
                 // 生关系
                 if (shengMap[a] === b) {
-                    let aWang = isWang(a);
-                    let bWang = isWang(b);
-                    let aShuai = isShuai(a);
-                    let bShuai = isShuai(b);
-                    let aHealthy = isHealthy(a);
-                    let bHealthy = isHealthy(b);
+                    let aWang = isWang(a), bWang = isWang(b), aShuai = isShuai(a), bShuai = isShuai(b), aHealthy = isHealthy(a), bHealthy = isHealthy(b);
                     
                     if (aWang && bShuai) {
                         let key = `${a}生${b}_weak`;
                         if (!chainAdded.has(key)) {
-                            let desc = detailedDesc[key] || '旺者生衰者，燃料太旺压垮火种。';
-                            chainText.push(`➤ 旺生衰 · ${engineFull[a]}生${engineFull[b]}（压熄与窒息）<br>${desc}`);
+                            chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 旺生衰 · ${engineFull[a]}生${engineFull[b]}（压熄与窒息）</div><div class="causal-item-desc">${detailedDesc[key] || '旺者生衰者，燃料太旺压垮火种。'}</div></div>`);
                             chainAdded.add(key);
                         }
                     } else if (aShuai && bWang) {
                         let key = `${a}生${b}_reverse`;
                         if (!chainAdded.has(key)) {
-                            let desc = detailedDesc[key] || '衰者生旺者，生者太弱被反噬。';
-                            chainText.push(`➤ 衰生旺 · ${engineFull[a]}生${engineFull[b]}（反噬与枯竭）<br>${desc}`);
+                            chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 衰生旺 · ${engineFull[a]}生${engineFull[b]}（反噬与枯竭）</div><div class="causal-item-desc">${detailedDesc[key] || '衰者生旺者，生者太弱被反噬。'}</div></div>`);
                             chainAdded.add(key);
                         }
                     } else if (aWang && bWang) {
@@ -858,9 +857,8 @@ if (savedAnswers) {
                         let stateKey = hasBuried ? 'over' : 'healthy';
                         let key = `${a}生${b}_${stateKey}`;
                         if (!chainAdded.has(key)) {
-                            let desc = detailedDesc[key] || (hasBuried ? '能量过载，结构超压，催熟而难消化。' : '能量顺畅传导，螺旋攀升。');
-                            let type = hasBuried ? '过载态（催熟和超压）' : '健康态（转化和攀升）';
-                            chainText.push(`➤ 旺生旺 · ${type} · ${engineFull[a]}生${engineFull[b]}<br>${desc}`);
+                            let type = hasBuried ? '过载态（催熟超压）' : '健康态（转化攀升）';
+                            chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 旺生旺 · ${type} · ${engineFull[a]}生${engineFull[b]}</div><div class="causal-item-desc">${detailedDesc[key] || (hasBuried ? '能量过载，结构超压，催熟而难消化。' : '能量顺畅传导，螺旋攀升。')}</div></div>`);
                             chainAdded.add(key);
                         }
                     }
@@ -868,13 +866,26 @@ if (savedAnswers) {
             }
         }
         
-        if (chainText.length === 0) chainText.push('未触发典型旺衰生克链，引擎间关系相对平衡。');
+        if (chainText.length === 0) chainText.push('<div class="causal-item-desc">未触发典型旺衰生克链，引擎间关系相对平衡。</div>');
         
         let chainHtml = `<h3>五、⛓️ 因果链与层级流动分析</h3>
-        <p><strong>基础设定</strong><br>生循环：T🌲→ D🔥→ V⛰️→ O💎→ E🌊→ T🌲<br>克循环：T🌲→ V⛰️→ E🌊→ D🔥→ O💎→ T🌲</p>
-        <p><strong>引擎旺衰判定</strong><br>旺（总分≥65 或 繁茂≥3）：${wangList.join(', ') || '无'}<br>衰（总分&lt;35 或 至少1个被掩埋）：${shuaiList.join(', ') || '无'}<br>健康校验（无被掩埋）：${healthyList.join(', ') || '无'}</p>
-        <p><strong>触发的因果链</strong></p>${chainText.map(c => `<div style="margin-bottom:1.2rem;"><p>${c}</p></div>`).join('')}`;
-        // 恐惧禁区
+        <div class="causal-base-box">
+            <div style="margin-bottom: 12px;">
+                <span class="causal-base-title">基础设定</span>
+                <span class="causal-base-text">生循环：T🌲 → D🔥 → V⛰️ → O💎 → E🌊 → T🌲<br>克循环：T🌲 → V⛰️ → E🌊 → D🔥 → O💎 → T🌲</span>
+            </div>
+            <div>
+                <span class="causal-base-title">引擎旺衰判定</span>
+                <span class="causal-base-text">
+                旺（极化）：${wangList.join(', ') || '无'}<br>
+                衰（坍缩）：${shuaiList.join(', ') || '无'}<br>
+                健康校验：${healthyList.join(', ') || '无'}
+                </span>
+            </div>
+        </div>
+        <div style="margin-bottom: 14px; font-weight: 600; font-size: 1.1rem; color: #1e3a8a;">触发的因果链</div>
+        ${chainText.join('')}`; 
+       // 恐惧禁区
         let fearMap = { 'A':'失去依托/被拒绝/崩塌','B':'混乱/失控/被裹挟','C':'错过/被取代/不够大','D':'无力/被困/被压制','E':'不真实/表演/偏离本质' };
         let fearHtml = `<h3>六、😨 恐惧禁区映射（Q3汇总）</h3><table><thead><tr><th>沙盒</th><th>Q3选项</th><th>恐惧含义</th></tr></thead><tbody>`;
         for(let s of sandboxes) {
