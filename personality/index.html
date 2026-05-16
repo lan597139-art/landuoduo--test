@@ -135,7 +135,10 @@
 <body>
 <div class="top-nav">
   <div class="nav-title">🌱 人格深度测试</div>
-  <div class="progress-box" id="topProgress">初始化...</div>
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <div class="progress-box" id="topProgress">初始化...</div>
+    <button id="btnGlobalReset" style="padding: 4px 10px; font-size: 0.8rem; border-radius: 12px; box-shadow: none; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted);">重置</button>
+  </div>
 </div>
 
 <div class="container" id="app">
@@ -461,9 +464,10 @@ document.addEventListener('click', function(e) {
     const de = STATE.deResult || {};
     const ef = STATE.efResult || {};
 
-    let html = `
-      <div style="display:flex;justify-content:center;margin-bottom:1.5rem;">
+        let html = `
+      <div style="display:flex;justify-content:center;gap:1rem;margin-bottom:1.5rem;">
         <button onclick="window.print()" class="primary">📥 保存报告为 PDF</button>
+        <button id="btnReportReset">🔄 重新作答</button>
       </div>
       <div class="report-section">`;
 
@@ -498,9 +502,25 @@ document.addEventListener('click', function(e) {
     html += `<p class="small-note" style="text-align:center;">🌿 报告由人格动力系统自动生成 · 客观反映当前能量拓扑</p>`;
     html += `</div>`;
     
-    $report.innerHTML = html;
+        $report.innerHTML = html;
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // 报告页：重新作答按钮逻辑
+    document.getElementById('btnReportReset').addEventListener('click', () => {
+      if (confirm('确定要清空所有作答记录并重新开始吗？')) {
+        localStorage.removeItem('mbti_test_state');
+        location.reload();
+      }
+    });
   }
+
+  // 全局：顶部导航栏重置按钮逻辑（放在 renderReport 函数外部，路由启动的正上方）
+  document.getElementById('btnGlobalReset').addEventListener('click', () => {
+    if (confirm('确定要清空当前所有作答记录并重新开始吗？')) {
+      localStorage.removeItem('mbti_test_state');
+      location.reload();
+    }
+  });
 
   // ---------- 高信噪比报告逻辑 ----------
   function getEFContradictions(engines, sd) {
