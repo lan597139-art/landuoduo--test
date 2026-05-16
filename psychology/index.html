@@ -26,6 +26,36 @@
             overflow: hidden;
             padding: 24px 28px;
         }
+                /* 💡 新增：顶部吸顶容器 */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #ffffff;
+            border-bottom: 2px solid #1e4bd2;
+            padding: 12px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .top-bar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1e3a8a;
+        }
+        .sub-intro {
+            color: #5b6e8c;
+            font-size: 0.9rem;
+            margin: 8px 0 20px 0;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #bfd9ff;
+        }
         h1 {
             font-size: 1.9rem;
             font-weight: 700;
@@ -77,8 +107,8 @@
         .q-card {
             background: #ffffff;
             border: 1px solid #d9e6ff;
-            border-radius: 20px;
-            padding: 16px 20px;
+            border-radius: 12px; /* 💡 调小大框圆角 */
+            padding: 16px 6px;   /* 💡 左右内边距压缩至 6px，让选项框向外逼近 */
             transition: 0.1s;
         }
         .q-card.missing {
@@ -108,17 +138,19 @@
             row-gap: 12px;
             align-items: center;
         }
-        .options label {
-            display: inline-flex;
+                .options label {
+            display: flex;       /* 💡 改为 flex 撑满整行 */
             align-items: center;
-            gap: 6px;
+            gap: 10px;
             background: #f8fafc;
-            border: 1px solid #cbdff2;
-            padding: 6px 16px;
-            border-radius: 40px;
+            border: 1.5px solid #cbdff2;
+            padding: 10px 8px;   /* 💡 左右内边距缩减到 8px，消除字框空隙 */
+            border-radius: 8px;  /* 💡 改用 8px 硬朗圆角 */
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             transition: 0.1s;
+            width: 100%;         /* 💡 宽度 100% 极限贴近大框 */
+            box-sizing: border-box;
         }
         .options label:hover {
             background: #e0edff;
@@ -201,20 +233,46 @@
             font-size: 0.8rem;
             margin-top: 6px;
         }
-        @media (max-width: 780px) {
-            .app-container { padding: 16px; }
-            .options label { padding: 4px 12px; font-size: 0.7rem; }
+               @media (max-width: 780px) {
+            body {
+                padding: 0;      /* 💡 取消网页外留白 */
+            }
+            .app-container { 
+                padding: 12px 0px; /* 💡 左右外层留白直接清零 */
+                border-radius: 0;
+                border: none;
+            }
+            .section {
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+            .q-card {
+                padding: 14px 4px; /* 💡 手机端选项线框进一步外延 */
+            }
+            .options label { 
+                padding: 10px 6px; /* 💡 手机端字框空隙再度精简 */
+                font-size: 0.85rem; 
+            }
+            .top-bar {
+                padding: 10px 12px;
+            }
+            .logo {
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
 <body>
-<div class="app-container" id="app">
-    <h1>🧭 心灵地图 · 五行驱动力与沙盒生态探测</h1>
-    <div class="sub">
-        <span>90道频率题 + 18道迫选结构题 | 绘制内在能量地图</span>
+<div class="top-bar">
+    <div class="top-bar-content">
+        <span class="logo">🧭 心灵地图 · 五行驱动力与沙盒生态探测</span>
         <div class="progress-box" id="progressDisplay">📋 进度 0 / 108</div>
     </div>
+</div>
 
+<div class="app-container" id="app">
+    <div class="sub-intro">90道频率题 + 18道迫选结构题 | 绘制内在能量地图</div>
     <div id="questionsContainer"></div>
     
     <div class="action-buttons">
