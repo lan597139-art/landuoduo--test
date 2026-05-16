@@ -21,9 +21,9 @@
         .subtitle { font-size: 0.95rem; color: #7a7a6e; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
         h1 { font-size: 2rem; margin-bottom: 0.5rem; font-weight: 600; }
         .welcome { font-size: 1rem; color: #555; margin-bottom: 2.5rem; line-height: 1.8; }
-        .test-grid { display: flex; flex-direction: column; gap: 1rem; align-items: center; }
+        .test-grid { display: flex; flex-direction: column; gap: 1.5rem; align-items: center; }
         .test-card {
-            width: 100%; max-width: 440px;
+            width: 100%; max-width: 460px;
             padding: 1.8rem 2rem;
             border-radius: 14px;
             text-decoration: none;
@@ -35,41 +35,64 @@
             text-align: left;
             display: block;
         }
-        .test-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
-        .test-card h2 { font-size: 1.2rem; margin-bottom: 0.3rem; }
-        .test-card .tags { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+        .test-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.08); transform: translateY(-2px); border-color: #d1d1ca; }
+        .test-card h2 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #1e293b; }
+        .test-card .tags { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
         .test-card .tag {
             font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 20px;
-            background: #f3f3ee; color: #7a7a6e;
+            background: #f3f3ee; color: #7a7a6e; font-weight: 500;
         }
-        .test-card p { font-size: 0.9rem; color: #777; line-height: 1.7; }
-        .footer-note { margin-top: 3rem; font-size: 0.8rem; color: #b0b0a8; }
-        .badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 10px; background: #f0ebe0; color: #b09060; margin-left: 0.4rem; }
+        .test-card .desc { font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 0.8rem; }
+        .test-card .target-audience { 
+            font-size: 0.85rem; 
+            color: #64748b; 
+            background: #f8fafc; 
+            padding: 0.6rem 0.8rem; 
+            border-radius: 8px; 
+            border-left: 3px solid #cbd5e1;
+            line-height: 1.5;
+        }
+        .footer-note { margin-top: 3rem; font-size: 0.8rem; color: #94a3b8; }
+        .footer-note a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
+        .footer-note a:hover { color: #64748b; text-decoration: underline; }
+        .badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 10px; background: #fef08a; color: #854d0e; margin-left: 0.4rem; vertical-align: middle; }
     </style>
 </head>
 <body>
     <div class="container">
         <p class="subtitle">PERSONALITY DYNAMICS TEST</p>
         <h1>人格动力测试平台</h1>
-        <p class="welcome">三套独立测试，从不同深度探索你的人格结构。<br>请选择你要进行的测试。</p>
+        <p class="welcome">两套独立测试，从职场角色到深层动力，探索你的人格结构。<br>请根据你当下的困惑选择进入。</p>
+        
         <div class="test-grid">
             <a href="/landuoduo--test/career/" class="test-card">
                 <h2>🧭 职业性格测试 <span class="badge">免费</span></h2>
-                <div class="tags"><span class="tag">引擎配置</span><span class="tag">职业方向</span><span class="tag">能量状态</span></div>
-                <p>71题 · 约18分钟 · 回答“你是谁”——核心驱动力、力量主战场、协作角色与最适合的职业方向。</p>
+                <div class="tags">
+                    <span class="tag">引擎配置</span>
+                    <span class="tag">职业方向</span>
+                    <span class="tag">协作角色</span>
+                </div>
+                <p class="desc">71题 · 约18分钟 · 回答“你是谁”——获取你的核心驱动力、力量主战场，以及最适合的职业发展方向与团队定位。</p>
+                <div class="target-audience">
+                    <strong>💡 适用场景：</strong>寻找就业方向的学生、职场迷茫期的人群、需要了解团队成员配置的HR与管理者。
+                </div>
             </a>
-            <a href="/landuoduo--test/personality/" class="test-card">
-                <h2>🌱 人格深度测试</h2>
-                <div class="tags"><span class="tag">代偿演化</span><span class="tag">引擎矛盾</span><span class="tag">五行生克</span></div>
-                <p>32–52题 · 约10–15分钟 · 回答“你怎么变成这样”——沙盒花园的历史截面、引擎此刻的动态拉扯。</p>
-            </a>
+
             <a href="/landuoduo--test/psychology/" class="test-card">
-                <h2>🔮 心理探索测试</h2>
-                <div class="tags"><span class="tag">种子探测</span><span class="tag">生命力定位</span><span class="tag">创伤感知</span></div>
-                <p>30题 · 约10分钟 · 回答“你的生命力在哪里断流了”——精准定位30颗引擎×沙盒种子的状态，识别被掩埋的生命力。</p>
+                <h2>🔮 心灵地图探测</h2>
+                <div class="tags">
+                    <span class="tag">断电节点探测</span>
+                    <span class="tag">代偿演化</span>
+                    <span class="tag">五行生克</span>
+                </div>
+                <p class="desc">108题 · 约20–25分钟 · 回答“你怎么变成这样”——通过高密度的频率与迫选矩阵，精准定位你生命力断流的历史节点与当下的引擎消耗状态。</p>
+                <div class="target-audience">
+                    <strong>💡 适用场景：</strong>渴望深度解释自我行为模式、需要观测自身能量损耗状态、以及探索潜意识创伤与代偿机制的人群。
+                </div>
             </a>
         </div>
-        <p class="footer-note">📖 <a href="/about/" style="color:#b0b0a8;">关于本测试 · 理论依据</a> &nbsp;|&nbsp; 首次使用建议先完成【职业性格测试】以获得完整画像</p>
+
+        <p class="footer-note">📖 <a href="/about/">关于本测试 · 理论依据</a> &nbsp;|&nbsp; 建议优先完成【职业性格测试】建立基础坐标系</p>
     </div>
 </body>
 </html>
