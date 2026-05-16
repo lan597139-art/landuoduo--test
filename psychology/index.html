@@ -17,107 +17,109 @@
             padding: 24px 20px;
             color: #0f172a;
         }
-        
-               /* ═══════════════════════════════════════════
-           强力修复版：绝对纯黑底、深灰卡片、无死角覆盖
+                /* ═══════════════════════════════════════════
+           深色模式极致优化版：深灰质感、消除白光、收敛刺眼蓝
            ═══════════════════════════════════════════ */
         @media (prefers-color-scheme: dark) {
-            /* 1. 强制页面大背景与所有容器为绝对纯黑 */
-            html, body, .app-container, .section, #quizArea, #quizList, .report-area, #aiPromptTemplate, textarea {
-                background: #000000 !important;
+            /* 1. 强制页面大背景与外层容器为极深灰，彻底干掉白光发光层 */
+            html, body, .app-container {
+                background: #121212 !important;
                 color: #f8fafc !important;
+                box-shadow: none !important; 
+                border: none !important;
             }
             
-            /* 2. 顶部导航栏高级暗黑适配 */
+            /* 2. 顶部导航栏高级深灰适配 */
             .top-bar {
-                background: #0d0d0d !important;
-                border-bottom: 2px solid #1e4bd2 !important;
+                background: #1c1c1e !important;
+                border-bottom: 1px solid #333336 !important;
+                box-shadow: none !important;
             }
             .logo {
-                color: #f8fafc !important;
+                color: #e2e8f0 !important; /* 降低原本刺眼的深蓝色 */
             }
             .progress-box {
-                background: #1e293b !important;
-                color: #3b82f6 !important;
+                background: #2c2c2e !important;
+                color: #60a5fa !important;
             }
 
-            /* 💥 3. 修复遗漏的章节大标题（彻底消灭 8号/9号 的巨大白块） 💥 */
+            /* 3. 各大区块卡片底色（题干、报告区、提示词区）为稍亮一阶的深灰 */
+            .section, .q-card, .report-area, div[style*="background: #f0f5ff"], #aiPromptTemplate, textarea {
+                background: #1c1c1e !important;
+                border-color: #333336 !important;
+                box-shadow: none !important;
+            }
             .section-header {
-                background: #0a0a0a !important;
-                border-bottom: 1px solid #1e293b !important;
+                background: #1c1c1e !important;
+                border-bottom: 1px solid #333336 !important;
             }
-            .section-header h2 {
-                color: #3b82f6 !important;
+            
+            /* 【解决蓝得发慌】大标题收敛为白色，仅保留左侧蓝色修饰边框 */
+            h1, h2, h3, .section-header h2, div[style*="background: #f0f5ff"] h3 {
+                color: #f8fafc !important; 
+                border-color: #3b82f6 !important;
             }
-
-            /* 4. 题干大卡片适配 */
-            .q-card {
-                background: #0a0a0a !important;
-                border: 1px solid #1e293b !important;
-            }
+            
+            /* 题目标签与正文 */
             .q-text {
                 color: #f1f5f9 !important;
             }
             .q-title {
-                background: #1e293b !important;
-                color: #3b82f6 !important;
+                background: #2c2c2e !important;
+                color: #60a5fa !important;
             }
 
-            /* 5. 未选中的选项卡片：深度灰化 */
+            /* 4. 未选中的选项卡片：中灰色 */
             .options label, .options input[type="radio"] + span {
-                background: #1e293b !important; 
-                border: 1px solid #334155 !important;
+                background: #2c2c2e !important; 
+                border: 1px solid #3a3a3c !important;
                 color: #cbd5e1 !important;
             }
             .options label:hover {
-                background: #334155 !important;
+                background: #3a3a3c !important;
+                border-color: #60a5fa !important;
                 color: #ffffff !important;
             }
 
-            /* 6. 已选中的选项卡片：高亮暗蓝底 + 明显蓝边 */
+            /* 5. 已选中的选项卡片：淡淡的透明灰蓝色 */
             .options input[type="radio"]:checked + label,
             .options label:has(input[type="radio"]:checked),
             .options label.selected {
-                background: #1e3a8a !important;
+                background: rgba(59, 130, 246, 0.15) !important;
                 border: 1.5px solid #3b82f6 !important;
                 color: #ffffff !important;
             }
             
-            /* 💥 7. 修复报告区域（消灭表格中 JS 强加的浅色背景） 💥 */
+            /* 6. 修复报告区域表格与按钮 */
+            .btn-primary {
+                box-shadow: none !important; /* 干掉主按钮的阴影 */
+            }
             .btn-secondary {
-                background: #1c1c1e !important;
+                background: #2c2c2e !important;
                 color: #f8fafc !important;
-                border-color: #1e4bd2 !important;
+                border-color: #3a3a3c !important;
             }
             .report-content th, .report-content td {
-                border-color: #1e293b !important;
+                border-color: #333336 !important;
                 color: #e2e8f0 !important;
-                background: #000000 !important;
+                background: #1c1c1e !important;
             }
-            /* 强制抹平最后一行带内联样式的汇总行 */
+            /* 汇总行深一点，区分层次 */
             .report-content tr[style*="background"], 
             .report-content tr[style*="background"] td {
-                background: #0a0a0a !important; 
+                background: #2c2c2e !important; 
             }
 
-            /* 8. AI 提示词板块深度黑化 */
-            div[style*="background: #f0f5ff"] {
-                background: #0a0a0a !important;
-                border-color: #1e293b !important;
-            }
-            div[style*="background: #f0f5ff"] h3 {
-                color: #3b82f6 !important;
-            }
+            /* 7. 解决底部 AI 提示词代码框的白底问题 */
             #aiPromptTemplate {
-                background: #000000 !important;
-                border-color: #334155 !important;
+                background: #121212 !important;
                 color: #cbd5e1 !important;
             }
             footer {
-                color: #475569 !important;
+                color: #64748b !important;
             }
         }
-
+            
         /* ═══════════════════════════════════════════
            常规模式（浅色）及基础架构样式
            ═══════════════════════════════════════════ */
