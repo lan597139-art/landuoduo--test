@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="color-scheme" content="light dark">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>🌱 人格深度测试 · 代偿演化与引擎生克</title>
+  <title>🌱 人格深度测试 </title>
  <style>
     :root {
       --bg-page: #f8fafc;
@@ -23,11 +23,11 @@
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg-page: #000000;         /* 深色模式纯黑大背景 */
-        --bg-card: #1c1c1e;         /* 深色模式深灰卡片 */
-        --bg-option: #2c2c2e;       /* 深色模式中灰选项 */
+        --bg-page: #000000;
+        --bg-card: #1c1c1e;
+        --bg-option: #2c2c2e;
         --bg-option-hover: #3a3a3c;
-        --bg-option-selected: rgba(59, 130, 246, 0.15); /* 选中后透明灰蓝 */
+        --bg-option-selected: rgba(59, 130, 246, 0.15);
         --border-color: #333336;
         --border-selected: #3b82f6;
         --text-main: #f8fafc;
@@ -45,7 +45,6 @@
       padding-bottom: 4rem;
     }
 
-    /* 顶部吸顶导航条 */
     .top-nav {
       position: sticky; top: 0; z-index: 100;
       background: var(--bg-card); border-bottom: 1px solid var(--border-color);
@@ -91,7 +90,6 @@
     .option-letter { font-weight: 600; color: var(--primary); min-width: 1.6rem; font-size: 0.95rem; }
     .option-text { color: var(--text-sub); font-size: 0.95rem; line-height: 1.5; }
     
-    /* 关键词高亮 */
     .keyword-tip {
       color: var(--primary); font-weight: 600; cursor: pointer;
       border-bottom: 1px dashed var(--primary); padding-bottom: 1px;
@@ -109,7 +107,6 @@
 
     .report-container { margin-top: 2rem; }
     
-    /* 报告卡片化设计 */
     .report-card {
       background: var(--bg-card); border-radius: 12px; padding: 20px; margin-bottom: 16px;
       border-left: 4px solid var(--primary); border-top: 1px solid var(--border-color);
@@ -167,14 +164,12 @@ const TOOLTIPS = {
 // 文本格式化：全局替换冗长称呼并绑定提示弹窗
 function formatText(str) {
   if (!str) return '';
-  // 1. 收敛引擎全称
   let s = str.replace(/T-木-穿透（超越）|T-木-穿透/g, 'T超越')
              .replace(/O-金-收束（结构）|O-金-收束/g, 'O秩序')
              .replace(/D-火-突破（动力）|D-火-突破/g, 'D动力')
              .replace(/E-水-漫延（扩张）|E-水-漫延/g, 'E扩张')
              .replace(/V-土-承载（锚定）|V-土-承载/g, 'V锚定');
 
-  // 2. 注入关键词标签
   const sortedKeys = Object.keys(TOOLTIPS).sort((a,b)=>b.length-a.length);
   sortedKeys.forEach(k => { s = s.replace(new RegExp(k, 'g'), `%%${k}%%`); });
   sortedKeys.forEach(k => { s = s.replace(new RegExp(`%%${k}%%`, 'g'), `<span class="keyword-tip" data-key="${k}">${k}</span>`); });
@@ -218,7 +213,6 @@ document.addEventListener('click', function(e) {
     $topProgress.textContent = `${currentTheme} | 进度 ${answered}/${total}`;
   }
 
-  // 漏题校验与定位
   function checkMissingAnswers(answersObj, totalQs) {
     let firstMissing = null;
     document.querySelectorAll('.question-card').forEach(card => {
@@ -237,11 +231,16 @@ document.addEventListener('click', function(e) {
     return false;
   }
 
-  // ---------- 工具函数 ----------
+  // ---------- 工具函数：渲染选项，只显示 || 之前的正面描述 ----------
   function renderOptions(options, groupId, selectedVal) {
     return options.map(opt => {
       const letter = opt.label || opt[0];
-      const text = formatText(opt.text || opt);
+      let rawText = opt.text || opt;
+      // 截取 || 之前的部分作为展示文本
+      if (typeof rawText === 'string' && rawText.includes('||')) {
+        rawText = rawText.split('||')[0].trim();
+      }
+      const text = formatText(rawText);
       const sel = (selectedVal === letter) ? ' selected' : '';
       return `<div class="option-item${sel}" data-opt="${letter}" data-group="${groupId}">
         <span class="option-letter">${letter}</span>
@@ -253,7 +252,7 @@ document.addEventListener('click', function(e) {
   function attachOptionClicks(selector, handler) {
     document.querySelectorAll(selector + ' .option-item').forEach(el => {
       el.addEventListener('click', function(e) {
-        if (e.target.classList.contains('keyword-tip')) return; // 防止点文字弹窗触发选项
+        if (e.target.classList.contains('keyword-tip')) return;
         handler(this.dataset.group, this.dataset.opt);
         saveState();
       });
@@ -289,14 +288,16 @@ document.addEventListener('click', function(e) {
       if (opt === 'yes') renderTagCompletion(); else renderSdrive();
     });
   }
-  // ---------- 标签补全 ----------
+
+  // ---------- 标签补全（使用 JSON 中的 title 和 description）----------
   function renderTagCompletion() {
     STATE.phase = 'tag';
-    const qs = QUIZ.modules.tagCompletion.questions;
-    $phase.textContent = '步骤 2/5 · 确认基础画像 (标签补全)';
+    const mod = QUIZ.modules.tagCompletion;
+    const qs = mod.questions;
+    $phase.textContent = mod.title;
     updateNavProgress('基础画像', Object.keys(STATE.tagAnswers).length, qs.length);
     
-    let html = '<div class="quiz-block">';
+    let html = `<div class="quiz-block"><p style="color:var(--text-muted); margin-bottom:1.5rem;">${mod.description || ''}</p>`;
     qs.forEach(q => {
       const sel = STATE.tagAnswers[q.id] || '';
       html += `<div class="question-card">
@@ -321,7 +322,7 @@ document.addEventListener('click', function(e) {
   function renderSdrive() {
     STATE.phase = 'sdrive';
     const qs = QUIZ.modules.sdrive;
-    $phase.textContent = '步骤 2/5 · 核心身份校准 (S-drive)';
+    $phase.textContent = '核心身份校准 · S-drive';
     updateNavProgress('核心身份', Object.keys(STATE.sdriveAnswers).length, qs.length);
     
     let html = '<div class="quiz-block">';
@@ -349,7 +350,7 @@ document.addEventListener('click', function(e) {
   function renderDE() {
     STATE.phase = 'de';
     const qs = QUIZ.modules.de;
-    $phase.textContent = '步骤 3/5 · 代偿演化推演';
+    $phase.textContent = '代偿演化推演 · DE';
     updateNavProgress('代偿演化', Object.keys(STATE.deAnswers).length, qs.length);
     
     let html = '<div class="quiz-block">';
@@ -380,7 +381,7 @@ document.addEventListener('click', function(e) {
   function renderEF() {
     STATE.phase = 'ef';
     const qs = QUIZ.modules.ef;
-    $phase.textContent = '步骤 4/5 · 引擎力量检测';
+    $phase.textContent = '引擎力量检测 · EF';
     updateNavProgress('引擎力量', Object.keys(STATE.efAnswers).length, qs.length);
     
     let html = '<div class="quiz-block">';
@@ -403,11 +404,12 @@ document.addEventListener('click', function(e) {
     });
     attachOptionClicks('[id^="efGrp_"]', (g, opt) => { STATE.efAnswers[g] = opt; renderEF(); });
   }
+
   // ---------- 构建 S-drive 逻辑（精简调用） ----------
   function buildSdriveFromTags(tags) {
     const eMap = {A:'T',B:'O',C:'D',D:'E',E:'V'};
     const sMap = {A:'FN',B:'PN',C:'AN',D:'RN',E:'IN',F:'MN'};
-    return { S1: eMap[tags['TAG-S1']]||'T', N1: sMap[tags['TAG-N1']]||'FN' }; // 仅保留生克必需的基础
+    return { S1: eMap[tags['TAG-S1']]||'T', N1: sMap[tags['TAG-N1']]||'FN' };
   }
 
   function computeSdrive() {
@@ -434,7 +436,6 @@ document.addEventListener('click', function(e) {
       const ids = Object.keys(qs);
       const q1 = qs[ids[0]] || '', q2 = qs[ids[1]] || '';
       let cutoff = null;
-      // 简单判断断电态（A/B多为放弃或自建）
       if (q1==='A' || q1==='B') cutoff = '节点断电';
       result[sb] = { cutoff };
     }
@@ -460,7 +461,7 @@ document.addEventListener('click', function(e) {
   // ---------- 报告生成 ----------
   function renderReport() {
     STATE.phase = 'report';
-    $phase.textContent = '第五步 · 解析深度人格演化';
+    $phase.textContent = '深度人格演化报告';
     updateNavProgress('探测报告', '完成', '完成');
     $quiz.innerHTML = ''; $nav.innerHTML = '';
     $report.classList.remove('hidden');
@@ -469,7 +470,7 @@ document.addEventListener('click', function(e) {
     const de = STATE.deResult || {};
     const ef = STATE.efResult || {};
 
-        let html = `
+    let html = `
       <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
         <button onclick="window.print()" class="primary">📥 保存报告为 PDF</button>
         <button id="btnEditAnswers">✏️ 返回修改答案</button>
@@ -477,7 +478,6 @@ document.addEventListener('click', function(e) {
       </div>
       <div class="report-section">`;
 
-    // 三、引擎种子
     html += `<h2>🎍 一、引擎状态雷达</h2>`;
     if (ef.engines) {
       html += `<div class="table-wrap"><table><tr><th>引擎</th><th>能量分数</th><th>当前状态</th></tr>`;
@@ -490,15 +490,12 @@ document.addEventListener('click', function(e) {
       html += `</table></div>`;
     }
 
-    // 四、生克矛盾 (精简、降噪、卡片化)
     html += `<h2>⚡️ 二、系统生克失衡判定</h2>`;
     html += getEFContradictions(ef.engines, sd);
 
-    // 最小破局动作
     html += `<h2>🌊 三、物理制衡方案</h2>`;
     html += `<div class="report-card"><div class="report-card-title">反本能干预动作</div><div class="report-card-desc">${getMinimalAction(ef.engines, sd)}</div></div>`;
 
-    // 五、因果缝合 (降噪、客观陈述)
     const shutdown = Object.keys(de).filter(sb => de[sb].cutoff === '节点断电');
     if (shutdown.length > 0 && sd.S1) {
       html += `<h2>🔗 四、代偿演化机制溯源</h2>`;
@@ -508,26 +505,15 @@ document.addEventListener('click', function(e) {
     html += `<p class="small-note" style="text-align:center;">🌿 报告由人格动力系统自动生成 · 客观反映当前能量拓扑</p>`;
     html += `</div>`;
     
-     $report.innerHTML = html;
+    $report.innerHTML = html;
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // 报告页：返回上一层修改答案（不丢数据）
     document.getElementById('btnEditAnswers').addEventListener('click', () => {
-      STATE.phase = 'ef'; // 回到最后一道题的页面
+      STATE.phase = 'ef';
       saveState(); 
       routePhase();
     });
 
-    // 报告页：彻底清空数据重来
-    document.getElementById('btnReportReset').addEventListener('click', () => {
-      if (confirm('确定要清空所有作答记录并重新开始吗？')) {
-        localStorage.removeItem('mbti_test_state');
-        location.reload();
-      }
-    });
-  }
-    
-    // 报告页：重新作答按钮逻辑
     document.getElementById('btnReportReset').addEventListener('click', () => {
       if (confirm('确定要清空所有作答记录并重新开始吗？')) {
         localStorage.removeItem('mbti_test_state');
@@ -536,7 +522,7 @@ document.addEventListener('click', function(e) {
     });
   }
 
-  // 全局：顶部导航栏重置按钮逻辑（放在 renderReport 函数外部，路由启动的正上方）
+  // 全局重置按钮
   document.getElementById('btnGlobalReset').addEventListener('click', () => {
     if (confirm('确定要清空当前所有作答记录并重新开始吗？')) {
       localStorage.removeItem('mbti_test_state');
@@ -562,7 +548,6 @@ document.addEventListener('click', function(e) {
     restrictPairs.forEach(([ker, ked]) => {
       const ks = engines[ker]?.wuxing, ds = engines[ked]?.wuxing;
       if (!ks || !ds) return;
-
       if (ks === '过旺' && (ds === '虚弱' || ds === '枯竭')) {
         pushCard(ker, ked, '强势碾压', `引擎 ${engNames[ker]} 处于过载输出阈值，导致 ${engNames[ked]} 的底盘被严重穿透与消耗。系统失衡的根因在于前者的动能长期越界，完全压制了后者的基础承载力。`);
       } else if (ks === '过旺' && ds === '过旺') {
@@ -623,7 +608,6 @@ document.addEventListener('click', function(e) {
 
     text += `<div class="report-card"><div class="report-card-title">第二阶段：动力格局定型</div><div class="report-card-desc">`;
     text += `代偿机制的持续运转，直接造成了动力的极化。作为首选协议的 ${formatText(S1_label)} 因高频调用而趋于过载；而被战略性放弃的原生态沙盒区，其对应的自然生发引擎由于长期断流，正处于物理萎缩与休眠状态。</div></div>`;
-
     return text;
   }
 
