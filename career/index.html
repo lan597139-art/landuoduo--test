@@ -25,22 +25,43 @@
             --transition: 0.2s ease;
         }
 
-        @media (prefers-color-scheme: dark) {
+              @media (prefers-color-scheme: dark) {
             :root {
-                --primary: #3b82f6;
-                --primary-light: #1e3a5f;
-                --primary-border: #1e3a8a;
-                --text-main: #f1f5f9;
-                --text-secondary: #cbd5e1;
-                --bg-page: #0f172a;
-                --bg-card: #1e293b;
-                --border-color: #334155;
-                --shadow: 0 1px 3px rgba(0,0,0,0.3);
-                --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+                --primary: #3b82f6;          /* 主题亮蓝，保持高辨识度 */
+                --primary-light: #172554;    /* 极深的幽蓝，用于选中项的底色 */
+                --primary-border: #1e3a8a;   /* 重点高亮边框 */
+                --text-main: #f8fafc;        /* 高对比度纯白字体 */
+                --text-secondary: #94a3b8;   /* 柔和的次要说明文字 */
+                --bg-page: #000000;          /* 【核心】绝对纯黑大背景 */
+                --bg-card: #0a0a0a;          /* 【核心】极暗的卡片背景（接近黑） */
+                --border-color: #1e293b;     /* 暗调边框，不抢视线 */
+                --shadow: 0 4px 20px rgba(0,0,0,0.8);
+                --shadow-md: 0 8px 30px rgba(0,0,0,0.9);
+            }
+
+            /* 暗黑模式专项微调：拉开层级对比 */
+            .top-bar {
+                background: #050505;         /* 顶部导航稍微脱离纯黑，增加呼吸感 */
+            }
+            .option {
+                background: #111111;         /* 选项未选中时，底色微微提亮，与大背景拉开层次 */
+                border-color: #27272a;       /* 选项边框更分明 */
+            }
+            .option:hover {
+                background: #1e293b;
+                border-color: var(--primary);
+            }
+            .option.selected {
+                background: var(--primary-light);
+            }
+            .progress-bar-outer {
+                background: #1e293b;         /* 进度条空槽加深，避免在纯黑背景下太突兀 */
+            }
+            .caution {
+                color: #94a3b8;              /* 限制条件文字在暗黑下更柔和 */
+                border-top-color: #27272a;
             }
         }
-
-        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
