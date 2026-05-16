@@ -324,19 +324,29 @@
             border-bottom: 2px solid var(--primary-border);
             padding-bottom: 6px;
         }
-
-            /* 响应式 */
+        /* 响应式 */
         @media (max-width: 600px) {
             .top-bar {
                 padding: 10px 12px;
             }
-            /* 1. 彻底取消容器左右留白，让卡片边框直接延伸到手机屏幕最外沿 */
+            /* 1. 取消大容器左右留白 */
             .container {
-                padding: 12px 0px 40px; /* 💡 左右改为 0px */
+                padding: 12px 0px 40px; 
             }
-            /* 2. 保持卡片原有内部间距不变，确保文字不内收 */
+            /* 2. 保持题干大卡片原有内部间距，文字不内收 */
             .card {
-                padding: 16px 12px; /* 💡 维持原样 */
+                padding: 16px 12px; 
+                overflow: hidden; /* 💡 防止内部选项边框溢出大卡片 */
+            }
+            /* 3. 核心修改：让选项卡片的边框向外延伸，填满大卡片的左右空间 */
+            .option {
+                margin-left: -12px;   /* 💡 负外边距：向左延伸 12px（正好抵消大卡片的 padding） */
+                margin-right: -12px;  /* 💡 负外边距：向右延伸 12px（正好抵消大卡片的 padding） */
+                padding-left: 24px;   /* 💡 补回左内边距：确保内部文字绝对不动 */
+                padding-right: 24px;  /* 💡 补回右内边距：确保内部文字绝对不动 */
+                border-left: none;    /* 💡 可选：若想让边框完全贴死合并，可去除左右边框线条 */
+                border-right: none;   /* 💡 可选：若想让边框完全贴死合并，可去除左右边框线条 */
+                border-radius: 0px;   /* 💡 可选：边框顶到头后，左右圆角建议设为 0 以防视觉穿帮 */
             }
         }
     </style>
