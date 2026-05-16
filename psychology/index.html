@@ -16,6 +16,82 @@
             padding: 24px 20px;
             color: #0f172a;
         }
+                /* 💡 新增：全自动深色模式适配样式 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #0f172a; /* 页面大背景变为深靛蓝 */
+                color: #f1f5f9;      /* 全局文字变为浅灰色 */
+            }
+            /* 顶部吸顶导航栏适配 */
+            .top-bar {
+                background: #1e293b; /* 导航栏变为深色 */
+                border-bottom: 2px solid #3b82f6;
+            }
+            .logo {
+                color: #f1f5f9;
+            }
+            .progress-box {
+                background: #1e3a8a; /* 进度盒子变为深蓝 */
+                color: #3b82f6;
+            }
+            /* 整体大容器与内部卡片适配 */
+            .app-container {
+                background: #1e293b; /* 主容器变为深色卡片 */
+                border-color: #3b82f6;
+            }
+            .section {
+                background: #1e293b;
+                border-color: #334155;
+            }
+            .section-header {
+                background: #1e3a5f; /* 区域头部变为暗蓝色 */
+                border-bottom: 1px solid #334155;
+            }
+            .section-header h2 {
+                color: #f1f5f9;
+            }
+            /* 题干卡片与选项适配 */
+            .q-card {
+                background: #1e293b;
+                border-color: #334155;
+            }
+            .q-title {
+                background: #1e3a8a;
+                color: #3b82f6;
+            }
+            .options label {
+                background: #1e293b;  /* 选项未选中时为暗色底 */
+                border-color: #334155; /* 选项未选中时为暗色边框 */
+                color: #cbd5e1;
+            }
+            /* 选项悬停与选中状态的深色适配 */
+            .options label:hover {
+                background: #1e3a5f;
+            }
+            input[type="radio"]:checked + label,
+            .options label:has(input[type="radio"]:checked) {
+                background: #1e3a5f !important; /* 选中时变为暗蓝色底 */
+                border-color: #3b82f6 !important; /* 选中时变为高亮蓝色边框 */
+                color: #ffffff;
+            }
+            /* 底部与报告区域适配 */
+            .btn-secondary {
+                background: #334155;
+                color: #f1f5f9;
+                border-color: #3b82f6;
+            }
+            .report-area {
+                background: #1e293b;
+                border-top-color: #3b82f6;
+            }
+            .report-content th, .report-content td {
+                border-color: #334155;
+                color: #cbd5e1;
+            }
+            footer {
+                color: #64748b;
+            }
+        }
         .app-container {
             max-width: 1400px;
             margin: 0 auto;
