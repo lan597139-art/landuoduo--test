@@ -16,10 +16,15 @@
       align-items: flex-start; min-height: 100vh; padding: 2rem 1rem;
     }
     .container { width: 100%; max-width: 760px; }
-    h1 {
-      font-size: 2rem; font-weight: 450; color: #0f172a;
-      border-left: 4px solid #3b82f6; padding-left: 1rem; margin-bottom: 1.8rem;
-    }
+  h1 {
+  font-size: clamp(1.4rem, 5vw, 2rem); 
+  font-weight: 500; 
+  color: #0f172a;
+  border-left: 4px solid #3b82f6; 
+  padding-left: 1rem; 
+  margin-bottom: 1.8rem;
+  white-space: nowrap;
+}
     .phase-title { color: #64748b; font-size: 0.9rem; margin-bottom: 2rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.8rem; }
     .quiz-block { margin-bottom: 2rem; }
     .question-card {
@@ -35,13 +40,26 @@
     .q-text { line-height: 1.5; }
     .options { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.8rem; }
     .option-item {
-      display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.5rem 0.8rem;
-      border-radius: 0.8rem; background: #ffffff; border: 1px solid #e2e8f0;
-      cursor: pointer; transition: all 0.15s;
-    }
+  display: flex; 
+  align-items: flex-start; 
+  gap: 0.8rem; 
+  padding: 1rem; 
+  border-radius: 0.8rem; 
+  background: #ffffff; 
+  border: 1px solid #e2e8f0;
+  cursor: pointer; 
+  transition: all 0.15s;
+}
     .option-item:hover { background: #f8fafc; border-color: #3b82f6; }
     .option-item.selected { background: #eff6ff; border-color: #2563eb; }
-    .option-letter { font-weight: 600; color: #3b82f6; min-width: 1.6rem; font-size: 0.9rem; }
+.option-letter { 
+  font-weight: 600; 
+  color: #3b82f6; 
+  min-width: 1.6rem; 
+  font-size: 1rem; 
+  flex-shrink: 0; 
+  margin-top: 0.1rem; 
+}
     .option-text { color: #334155; font-size: 0.9rem; line-height: 1.5; }
     .nav-buttons { display: flex; justify-content: space-between; gap: 1rem; margin: 1.5rem 0 2rem; }
     button {
