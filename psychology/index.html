@@ -608,12 +608,18 @@
 
         const combinedAnswers = { freq: answers.freq, forced: answers.forced };
 
-        fetch('/api/submit_psych', {
+      fetch('/api/submit_psych', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: null, userAnswers: combinedAnswers })
         })
-        .then(res => res.json())
+        .then(async res => {
+            if (!res.ok) {
+                let errText = await res.text();
+                throw new Error(`云端崩溃 (状态码: ${res.status}) - ${errText.substring(0, 50)}...`);
+            }
+            return res.json();
+        })
         .then(resData => {
             if (!resData.success) {
                 alert('云端计算失败：' + resData.error);
