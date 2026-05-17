@@ -6,6 +6,11 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default async function handler(req, res) {
     try {
+        // 强行解除跨域限制，允许静态 GitHub Pages 跨境提交数据
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') return res.status(200).end();
         const body = req.body || {};
         const userAnswers = body.userAnswers;
 
