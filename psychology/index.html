@@ -5,8 +5,12 @@
     <meta name="color-scheme" content="light dark">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>心灵地图 · 五行驱动力与沙盒生态探测 | 完整版</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             background: #eef2ff;
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
@@ -25,8 +29,13 @@
                 border-bottom: 1px solid #333336 !important;
                 box-shadow: none !important;
             }
-            .logo { color: #e2e8f0 !important; }
-            .progress-box { background: #2c2c2e !important; color: #60a5fa !important; }
+            .logo {
+                color: #e2e8f0 !important;
+            }
+            .progress-box {
+                background: #2c2c2e !important;
+                color: #60a5fa !important;
+            }
             .section, .q-card, .report-area, div[style*="background: #f0f5ff"], #aiPromptTemplate, textarea {
                 background: #1c1c1e !important;
                 border-color: #333336 !important;
@@ -40,8 +49,13 @@
                 color: #f8fafc !important; 
                 border-color: #3b82f6 !important;
             }
-            .q-text { color: #f1f5f9 !important; }
-            .q-title { background: #2c2c2e !important; color: #60a5fa !important; }
+            .q-text {
+                color: #f1f5f9 !important;
+            }
+            .q-title {
+                background: #2c2c2e !important;
+                color: #60a5fa !important;
+            }
             .options label, .options input[type="radio"] + span {
                 background: #2c2c2e !important; 
                 border: 1px solid #3a3a3c !important;
@@ -59,7 +73,9 @@
                 border: 1.5px solid #3b82f6 !important;
                 color: #ffffff !important;
             }
-            .btn-primary { box-shadow: none !important; }
+            .btn-primary {
+                box-shadow: none !important;
+            }
             .btn-secondary {
                 background: #2c2c2e !important;
                 color: #f8fafc !important;
@@ -74,8 +90,13 @@
             .report-content tr[style*="background"] td {
                 background: #2c2c2e !important; 
             }
-            #aiPromptTemplate { background: #121212 !important; color: #cbd5e1 !important; }
-            footer { color: #64748b !important; }
+            #aiPromptTemplate {
+                background: #121212 !important;
+                color: #cbd5e1 !important;
+            }
+            footer {
+                color: #64748b !important;
+            }
         }
         .app-container {
             max-width: 1400px;
@@ -83,7 +104,7 @@
             background: #ffffff;
             border: 2px solid #1e4bd2;
             border-radius: 28px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             padding: 24px 28px;
         }
@@ -116,6 +137,24 @@
             padding-bottom: 12px;
             border-bottom: 1px dashed #bfd9ff;
         }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            border-left: 5px solid #1e4bd2;
+            padding-left: 20px;
+            margin-bottom: 8px;
+        }
+        .sub {
+            color: #2c3e66;
+            border-bottom: 2px solid #bfd9ff;
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
         .progress-box {
             background: #eef2ff;
             padding: 6px 16px;
@@ -136,7 +175,10 @@
             padding: 14px 22px;
             border-bottom: 1px solid #bfd9ff;
         }
-        .section-header h2 { font-size: 1.5rem; color: #1e3a8a; }
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+        }
         .questions-grid {
             padding: 16px 20px;
             display: flex;
@@ -181,7 +223,7 @@
             display: flex;       
             align-items: center;
             gap: 10px;
-            background: rgba(255,255,255,0.7); 
+            background: rgba(255, 255, 255, 0.7); 
             color: #334155;                       
             border: 1.5px solid #cbdff2;
             padding: 10px 8px;   
@@ -192,8 +234,13 @@
             width: 100%;         
             box-sizing: border-box;
         }
-        .options label:hover { background: #e0edff; }
-        input[type="radio"] { margin: 0; accent-color: #1e4bd2; }
+        .options label:hover {
+            background: #e0edff;
+        }
+        input[type="radio"] {
+            margin: 0;
+            accent-color: #1e4bd2;
+        }
         .action-buttons {
             display: flex;
             justify-content: center;
@@ -212,7 +259,10 @@
             transition: 0.15s;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
-        .btn-primary:hover { background: #0f3bb3; transform: scale(0.98); }
+        .btn-primary:hover {
+            background: #0f3bb3;
+            transform: scale(0.98);
+        }
         .btn-secondary {
             background: #f1f5f9;
             border: 1px solid #1e4bd2;
@@ -256,17 +306,22 @@
             margin: 18px 0;
             font-weight: 500;
         }
-        .status-bloom { background-color: rgba(144,238,144,0.55); }
-        .status-grow { background-color: rgba(173,216,230,0.6); }
-        .status-shrink { background-color: rgba(255,255,0,0.45); }
-        .status-buried { background-color: rgba(255,99,71,0.45); }
-        .missing-warning { color: #b91c1c; font-size: 0.8rem; margin-top: 6px; }
+        .status-bloom { background-color: rgba(144, 238, 144, 0.55); }
+        .status-grow { background-color: rgba(173, 216, 230, 0.6); }
+        .status-shrink { background-color: rgba(255, 255, 0, 0.45); }
+        .status-buried { background-color: rgba(255, 99, 71, 0.45); }
+        .missing-warning {
+            color: #b91c1c;
+            font-size: 0.8rem;
+            margin-top: 6px;
+        }
         .causal-base-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0 24px; }
         .causal-base-title { font-weight: 600; color: #1e3a8a; margin-bottom: 4px; display: block; }
         .causal-base-text { color: #475569; font-size: 0.9rem; line-height: 1.6; }
         .causal-item { border-left: 3px solid #1e4bd2; padding-left: 14px; margin-bottom: 20px; }
         .causal-item-title { font-weight: 600; color: #0f172a; margin-bottom: 6px; font-size: 1.05rem; }
         .causal-item-desc { color: #334155; font-size: 0.95rem; line-height: 1.6; }
+
         @media (prefers-color-scheme: dark) {
             .causal-base-box { background: #0a0a0a !important; border-color: #1e293b !important; }
             .causal-base-title { color: #3b82f6 !important; }
@@ -275,17 +330,32 @@
             .causal-item-desc { color: #cbd5e1 !important; }
         }
         @media (max-width: 780px) {
-            body { padding: 0; }
+            body {
+                padding: 0;      
+            }
             .app-container { 
                 padding: 12px 0px; 
                 border-radius: 0;
                 border: none;
             }
-            .section { border-radius: 0; border-left: none; border-right: none; }
-            .q-card { padding: 14px 4px; }
-            .options label { padding: 10px 6px; font-size: 0.85rem; }
-            .top-bar { padding: 10px 12px; }
-            .logo { font-size: 0.95rem; }
+            .section {
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+            .q-card {
+                padding: 14px 4px; 
+            }
+            .options label { 
+                padding: 10px 6px; 
+                font-size: 0.85rem; 
+            }
+            .top-bar {
+                padding: 10px 12px;
+            }
+            .logo {
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
@@ -314,41 +384,74 @@
 </div>
 
 <script>
-    // ========== 全局解释文本（点击弹窗） ==========
-    const explanations = { /* ... 保持原来的 explanations 对象不变 ... */ };
-    explanations.energy = {
-        '繁茂': '🌳 繁茂 → 【天赋冲动 / 过载代偿】\n能量高度活跃，可能处于天赋本能释放或过度补偿状态。',
-        '生长': '🌱 生长 → 【自然舒展 / 基准稳态】\n能量自然流动，处于健康基准状态。',
-        '卷缩': '🐚 卷缩 → 【休眠警惕 / 假死态】\n能量收缩防御，可能处于休眠或警惕状态。',
-        '被掩埋': '🪦 被掩埋 → 【物理断电 / 创伤禁区】\n能量被阻断，存在创伤或完全失联区域。'
-    };
-    explanations.engines = {
-        'O-金-收束': 'O｜结构性 · 结晶本能（Ordei）—— 追求秩序与可预测性...',
-        'V-土-承载': 'V｜锚定性 · 回声本能 (Validation) —— 追求被看见与被反馈...',
-        'D-火-突破': 'D｜动力性 · 燃烧本能(Dynamics) —— 追求变化与新鲜感...',
-        'E-水-漫延': 'E｜扩张性 · 狩猎本能(Sovereignty-Need) —— 吞噬变量...',
-        'T-木-穿透': 'T｜超越性 · 聚变本能(Transcendence) —— 追求神性与永恒...'
-    };
-    explanations.sandboxes = {
-        'PN': 'PN 生理叙事 · 物理底盘-单机硬件...',
-        'AN': 'AN 自我叙事 · 能力进化-单机系统...',
-        'RN': 'RN 关系叙事 · 深度连接-局域网...',
-        'IN': 'IN 社会叙事 · 社会舞台-广域网...',
-        'FN': 'FN 功能叙事 · 系统运转-共识层...',
-        'MN': 'MN 宏大叙事 · 意义导航-统摄层...'
+    // ========== 全局解释文本（供点击弹窗） ==========
+    const explanations = {
+        energy: {
+            '繁茂': '🌳 繁茂 → 【天赋冲动 / 过载代偿】\n能量高度活跃，可能处于天赋本能释放或过度补偿状态。',
+            '生长': '🌱 生长 → 【自然舒展 / 基准稳态】\n能量自然流动，处于健康基准状态。',
+            '卷缩': '🐚 卷缩 → 【休眠警惕 / 假死态】\n能量收缩防御，可能处于休眠或警惕状态。',
+            '被掩埋': '🪦 被掩埋 → 【物理断电 / 创伤禁区】\n能量被阻断，存在创伤或完全失联区域。'
+        },
+        engines: {
+            'O-金-收束': 'O｜结构性 · 结晶本能（Ordei）—— 追求秩序与可预测性，本能地对抗混乱。\n像晶体一样冷峻，致力于把模糊变清晰。\n你会定计划、理流程、建规则，让一切进入可控的轨道。\n混乱是你最想消灭的东西，确定的结果让你感到安全。”',
+            'V-土-承载': 'V｜锚定性 · 回声本能 (Validation) —— 追求被看见与被反馈，无论是正反馈还是负反馈，以此确认坐标。\像回声一样，需要外界反应证明存在。\n外界对你的回应——不管是来自人、动物还是任何你信任的实体——都像一面镜子，让你知道自己的位置在哪，不至于悬浮。”',
+            'D-火-突破': 'D｜动力性 · 燃烧本能(Dynamics) —— 追求变化与新鲜感，寻找点燃热情的燃料。\n像氧化剂，渴望破局和冲锋。\n停滞让你窒息，你会主动寻找新的刺激、冲开阻力、点燃状态。热血和突破是你的燃料。”',
+            'E-水-漫延': 'E｜扩张性 · 狩猎本能(Sovereignty-Need) —— 吞噬变量，对无限可能性极度饥渴，通过持续狩猎换取绝对自由与反控制。\n演化路径：嗅探夺取→建立规则→掌握Root权限。\n你会搜罗更多资源、建立更大版图、获取更多控制权。\n你拒绝被困住，追求“我的地盘我说了算”的自由。”',
+            'T-木-穿透': 'T｜超越性 · 聚变本能(Transcendence) —— 追求神性与永恒，渴望与绝对真理融合。\n像核聚变产生极高能量，冷酷追问本质，拆解焚毁虚伪表象，看清底层逻辑。\n你不满足于表面的热闹，会一直追问“为什么”，直到触达最根本的逻辑。\n世俗的表演和琐碎消耗让你厌倦，你渴望看到真相。”'
+        },
+        sandboxes: {
+            'PN': 'PN 生理叙事 · 物理底盘-单机硬件\n这是你作为生物体存在的物质基础，不依赖任何虚假承诺的物理实感。\n包括你的作息、饮食、睡眠、居所、金钱、现金流和所有看得见摸得着的资源。\n它回答“我有没有足够的东西活下去，并且活得踏实”。\n你的身体记忆、避险本能、对地盘和资源的守护意识，都在这里扎根。\n但当它出问题时，你会感到持续的疲惫、身体报警、资源紧张，或者生活空间失控。你会变得敏感、易怒，对任何额外消耗都会本能地抗拒，因为底盘已经兜不住了。',
+            'AN': 'AN 自我叙事 · 能力进化-单机系统\n你个人能力的沉淀层，即便世界断网，我也能独立生存的确定性。\n它书写了你对自己的认识和评价，记录了你学过什么、做成过什么、有哪些项目和履历，以及你对自己“能不能搞定”的底气和边界感。\n当你脱去所有外部标签，这些经验、方法论和持续成长的惯性，就是你独立生存的确定性。\n但当它出问题时，你会感到能力焦虑、履历断层，或者怀疑自己“其实什么都不会”。长期没有正反馈时，你会陷入自我否定，甚至开始逃避任何需要证明自己的场合。”',
+            'RN': 'RN 关系叙事 · 深度连接-局域网\n你与他人之间的深度信任网络，被看见、被接纳、不孤立的归属感。\n包括伴侣、密友、长期合伙人等那些你愿意托付后背的人。\n它通过陪伴、共情和双向承诺来维系，回答“在这世界上，谁真正理解我，谁不会轻易离开”。\n但当它出问题时，你会感到孤独、被误解，或者被困在一段消耗型关系里。你可能会过度付出却得不到回应，或者在冲突中选择沉默，因为害怕关系破裂,或者彻底寒心而撕裂关系。',
+            'IN': 'IN 社会叙事 · 社会舞台-广域网\n你在群体中的坐标和影响力，即通过占领核心生态位而获得的统治力。\n包括你的身份标签、话语权、人脉圈层和公众评价。\n它回答“我在人群里站在哪，别人怎么看我”。\n你对等级、位置和舆论的敏感度，都在这个场域里运作。\n但当它出问题时，你会感到被边缘化、被贴错标签，或者被舆论裹挟。你可能会过度在意别人的评价，或者反过来——因为受过伤而完全拒绝融入任何群体。',
+            'FN': 'FN 功能叙事 · 系统运转-共识层\n脱离具体人的意志也能跑起来的结构，即免于人治的干扰的确定性。\n包括工作方法、协作机制、商业模式、日常习惯等一旦建好就能自动运行的结构。\n它回答“怎样做才不会乱，怎样做才能让结果稳定产出”。\n但当它出问题时，你会感到混乱、低效，或者被自己建立的规则反困住。旧机制失效时，你可能明知该改却迟迟动不了，因为重建的成本和不确定性让你犹豫。',
+            'MN': 'MN 宏大叙事 · 意义导航-统摄层\n你精神世界的顶层设计，是承受现实摩擦的终极精神止痛药。\n包括你最看重的价值观、人生的终极目标、什么值得做、什么不能妥协。\n它在你最苦的时候提供“为什么还要撑下去”的理由，是你对抗日常消耗的精神止痛药。\n但当它出问题时，你会感到空虚、迷茫，或者发现自己一直在追逐的东西其实毫无意义。空窗期会非常难熬，你可能会抓住任何能暂时填满空洞的东西，哪怕你知道它不对。'
+        }
     };
 
+    // --------------------------------------------------------------
+    // 引擎与沙盒基础映射（仅用于题库构建，不参与计算）
+    // --------------------------------------------------------------
     const engines = ['O','V','D','E','T'];
     const sandboxes = ['PN','AN','RN','IN','MN','FN'];
     const engineFull = { O:'O-金-收束', V:'V-土-承载', D:'D-火-突破', E:'E-水-漫延', T:'T-木-穿透' };
     const sandboxFull = { PN:'物理底盘', AN:'能力进化', RN:'深度连接', IN:'社会舞台', MN:'意义导航', FN:'系统运转' };
 
-    // 题库保持不变...
+    // 频率题完整题干
     const freqTexts = {
-        'O_PN': ['我能清晰感知自己身体的边界...', ...], // ... 保持原来的全部题干
+        'O_PN': ['我能清晰感知自己身体的边界——什么时候该休息、什么时候还能继续。','我对钱、物资、生活空间有明确的规划和控制感。','当身体发出疲惫信号时，我能按自己定的规则停下来，而不是被外部压力推着继续。'],
+        'O_AN': ['我对自己的成长路径有清晰的阶段性规划。','我能按计划推进学习或能力提升，每一步都清楚自己在做什么。','复盘自己的进步和不足时，我能客观地看到规律，而不是笼统地觉得自己不够好。'],
+        'O_RN': ['在关系中，我清楚自己的边界在哪里——什么是我的责任，什么是对方的。','当关系中出现模糊地带时，我能够主动澄清规则或分工。','我能按照自己设定的互动规则维护一段长期关系，不觉得被消耗。'],
+        'O_IN': ['我在群体中清楚自己的角色和定位，不乱位。','面对群体中的隐性规则，我能看透并找到自己的行动边界。','我能用清晰的规则保护自己，不被群体评价裹挟。'],
+        'O_MN': ['我有一套自洽的信念体系来指导自己的选择。','当现实反馈和原有信念冲突时，我能重新调整框架而不崩溃。','我的目标和行动之间有一条清晰的逻辑链——我知道自己为什么在做这件事。'],
+        'O_FN': ['我能够为自己建立有效的工作或生活习惯系统。','建立的流程或规则，能稳定运行而不需要反复重建。','当旧系统失效时，我能快速迭代出新的机制。'],
+        'V_PN': ['我的身体让我感到安全和踏实，不是负担。','我在自己的居住空间里感到安稳和归属。','我对自己的物质生活有稳定的安全感，不担心突然失去。'],
+        'V_AN': ['我对自己正在走的路有一种持续的确认感——不摇摆、不漂移。','即使成长速度不如预期，我仍然感到自己在正确的方向上。','回顾过去几年的积累，我确信这些东西属于我、不会消失。'],
+        'V_RN': ['我至少有一个让我感到安全、可以依赖的人。','在重要关系中，我相信对方不会轻易离开或伤害我。','当我需要支持时，我知道可以向谁寻求帮助。'],
+        'V_IN': ['我在某个群体中有稳定的归属感。','即使不被所有人喜欢，我仍感到自己在群体中有立足之地。','我不需要通过讨好来维持自己在群体中的位置。'],
+        'V_MN': ['我内心有一个稳定的价值锚点，让我觉得自己的人生有方向。','即使外部世界变化很快，我仍然相信某些东西是值得坚守的。','我没有感到自己在意义的海洋里漂泊——我有自己的坐标。'],
+        'V_FN': ['我依赖的日常习惯或系统让我感到踏实和安心。','即使遇到意外，我知道自己的常规系统能兜住大部分日常运转。','我不需要用尽意志力来维持基本的生活秩序——它们已经变成了稳定的习惯。'],
+        'D_PN': ['当我需要行动时，身体能给我足够的能量支撑。','我能主动调整身体状态——累了就休息，恢复后就行动，节奏在我手里。','面对体力上的挑战，我不害怕，甚至愿意试试自己能走多远。'],
+        'D_AN': ['遇到能力瓶颈时，我有推开它的冲动和能量。','我能主动向更难的目标发起冲刺，不需要别人催促。','即使在长期没有正反馈的阶段，我仍然保持着推进的动能。'],
+        'D_RN': ['当关系中出现沉默或僵局时，我愿意主动打破它。','我能推动一段关系向更真实、更深入的方向发展。','在关系中遇到冲突时，我不会立刻想逃——我能在这个张力中站住。'],
+        'D_IN': ['在群体中，我有表达自己立场和争取位置的冲动。','当群体方向走偏时，我愿意提出不同意见。','面对群体中的竞争或挑战，我不会退缩。'],
+        'D_MN': ['我对过时的信念有质疑和打破的冲动。','我能主动重写自己已经不再相信的目标，而不是停在原地。','当旧意义崩塌后，我有动力去寻找新的意义，而不是陷入虚无。'],
+        'D_FN': ['当旧流程不再适用时，我有推倒重来的魄力。','我能主动发起系统层面的变革，而不是被动修补。','面对低效或僵化的机制，我有推动重构的行动力。'],
+        'E_PN': ['我对自己能获得更多物质资源有信心。','我能够主动扩大自己的生活空间或资源边界。','面对新的资源机会时，我不会因为害怕失控而退缩。'],
+        'E_AN': ['我对新的技能、知识或成长方向保持好奇和尝试的冲动。','我能够在多个成长方向之间找到平衡，不觉得必须只选一条路。','面对一个新领域，我愿意投入时间去探索，即使短期内没有成果。'],
+        'E_RN': ['我愿意主动认识新的人，扩大自己的关系网络。','我能够同时维护多段关系，不让任何一段感到被忽略。','在关系网络中，我善于连接不同的人，让资源在中间流动。'],
+        'E_IN': ['我渴望进入更大的平台或更有影响力的圈层。','我能够主动扩大自己在群体中的话语权和可见度。','面对更多曝光和关注，我不会因为压力而收缩。'],
+        'E_MN': ['我希望自己的理念或信念能够影响更多人。','我能够将自己的价值观传播到更大的范围，而不只是自己默默相信。','当我的理念被更多人接受时，我感到充实而不是恐慌。'],
+        'E_FN': ['我能够将自己建立的系统复制到更大的范围。','面对规模扩张，我的机制能保持稳定而不是失控。','我善于将一个小范围有效的方法，放大为可规模化的流程。'],
+        'T_PN': ['我能够跳出身体的不适，从更高维度理解它背后的信号。','当被困在身体或物质的限制中时，我仍能保持精神的抽离和自由。','我能从身体和物质现实中提炼出规律或底层逻辑。'],
+        'T_AN': ['当原有成长路径失效时，我能重新定义什么是"成长"。','我能够跳出既定的能力评价标准，从更根本的角度看自己的发展。','我能从零散的经验中提炼出可迁移的规律或模型。'],
+        'T_RN': ['我能够跳出情绪，看清楚一段关系的本质模式。','当被困在关系纠结中时，我仍能抽离出来重新理解这段关系的底层动力学。','我能从过去的关系经验中提炼出规律，而不是每次都从零开始。'],
+        'T_IN': ['我能够跳出群体评价，观察权力结构和社会运行机制。','当被舆论裹挟时，我能抽离出来看清背后是谁在设置议题。','我能从群体的表面互动中看出深层的结构和逻辑。'],
+        'T_MN': ['当我原有信念体系崩溃时，我能从更高维度重构它。','我能够跳出自己相信的东西，审视它是否仍然成立。','我能将个人经验升华为对人类处境的更深理解。'],
+        'T_FN': ['我能够跳出具体流程，抽象出背后的底层机制和第一性原理。','当系统出现问题时，我能从模型层面诊断，而不是只修表面。','我能从不同领域的系统中提取共性规律，形成跨域的洞察。']
     };
-    // ... 由于篇幅，请确保 freqTexts 和 forcedQuestions 保持完整，这里省略完整定义，实际使用需包含全部。
 
+    // 构建频率题列表
     let freqQuestions = [];
     let qid = 0;
     for(let e of engines) {
@@ -369,11 +472,29 @@
         }
     }
 
+    // 18道迫选题完整
     const forcedQuestions = [
-        { id: 200, sandbox:'PN', qtype:'Q1', text:'你最依赖什么来稳住自己？', opts:[...] },
-        // ... 保持全部18题
+        { id: 200, sandbox:'PN', qtype:'Q1', text:'你最依赖什么来稳住自己？', opts:['A. 靠在最熟悉的环境里待着，这里有我需要的安全感','B. 靠自己把一切都整理好、按计划来——秩序让我感到踏实','C. 靠手里的资源足够多、余地足够大——有后路就不慌','D. 靠能随时调整状态、说动就能动起来的能力','E. 靠跳出身体感受，从更高处看一切——这具身体只是载体'] },
+        { id: 201, sandbox:'PN', qtype:'Q2', text:'你最难忍受什么？', opts:['A. 身体和精力的透支——那之后我对消耗变得格外警惕','B. 资源突然缩减——经历过一次不安全之后，我对储备特别在意','C. 身体被困住动不了——那让我感觉像被活埋','D. 长期处于匮乏但没崩溃的灰色状态——慢性消耗比一次爆发更折磨','E. 身体被过度关注——我不太愿意把注意力放在身体感受上'] },
+        { id: 202, sandbox:'PN', qtype:'Q3', text:'当身体报警时，你更倾向怎么做？', opts:['A. 先停一下，回到一个安全的地方缓一缓','B. 硬撑着把事情做完，然后按计划休息','C. 继续推进——还有机会和空间等着我去打开','D. 越累越冲——撞过去就能突破极限','E. 不太关注它——身体不舒服的时候，我就把注意力转移到思考上'] },
+        { id: 203, sandbox:'AN', qtype:'Q1', text:'你在成长中最依赖什么？', opts:['A. 一个稳定的方向和身份锚点——让我知道自己一直在积累','B. 清晰的规划和阶段目标——每一步都踏在预定的轨道上','C. 不断有新的机会和可能性打开——让我看到更大的版图','D. 持续突破瓶颈的快感——冲不过去的东西让我兴奋','E. 跳出来重新定义"成长"本身——不被旧路径锁死'] },
+        { id: 204, sandbox:'AN', qtype:'Q2', text:'你经历过什么让你不再信任原有的成长方式？', opts:['A. 沿着别人设定的路努力了很久，突然觉得这些没意义了','B. 花了很多时间提升某个能力，但它解决不了我真正在意的问题','C. 遇到意外或重大挫折，在那之后我重新定义了成长','D. 长期卡在一个地方，怎么都突破不了——对"变强"这件事失去了确定感','E. 我似乎从未认真相信过任何一条成长路径'] },
+        { id: 205, sandbox:'AN', qtype:'Q3', text:'你最不想面对什么？', opts:['A. 发现自己一直走的路可能是错的，需要重新选择','B. 计划被打乱——没有清晰路径的时候我会感到焦虑','C. 只需要精耕一个方向的时候——我害怕错过了更多的可能性','D. 成长太慢了——我需要感受到明显的进展','E. 所有人都说这条路好，但我内心知道它不适合我'] },
+        { id: 206, sandbox:'RN', qtype:'Q1', text:'你在关系中最依赖什么？', opts:['A. 对方稳定的回应和陪伴——让我感到有安全底座','B. 清晰的边界和分工——让我知道什么是我的、什么是对方的','C. 关系能带来更多的连接和资源——让我的世界变得更大','D. 能推动关系变化的冲动——冲突和张力让我感觉自己还活着','E. 跳出情绪看清关系的底层模式——不被绑定'] },
+        { id: 207, sandbox:'RN', qtype:'Q2', text:'你经历过什么让你对"信任"变得谨慎？', opts:['A. 被过度索取或消耗——之后我对别人的热情和大方显著下降','B. 被辜负过信任——之后我的信任门槛明显变高了','C. 在协作中被过度担责收获低——之后我更倾向一个人做','D. 在关系中被拖慢或干扰——一个人更高效','E. 我本来就不太投入关系，更愿意相信事实，所以谈不上变得更谨慎'] },
+        { id: 208, sandbox:'RN', qtype:'Q3', text:'曾经你最不敢在关系中做什么？', opts:['A. 让对方看到我真实的需要——我怕被拒绝','B. 打破沉默和僵局——我不确定冲突会不会让关系更糟','C. 在关系混乱的时候提出明确的规则——我怕显得太冷','D. 信任他人并在适当的时候依赖他们——我怕暴露弱点','E. 主动结束一段已经不再滋养我的关系——我怕失去'] },
+        { id: 209, sandbox:'IN', qtype:'Q1', text:'你在群体中最依赖什么？', opts:['A. 一个稳定的位置和归属感——让我在群体里有落点','B. 清楚的规则和角色——让我知道怎样不乱位','C. 足够大的活动半径和辐射力——让更多人看到我','D. 能表达、竞争和争取位置的冲动——让我不被动吞没','E. 跳出评价看透群体结构——不被舆论牵着走'] },
+        { id: 210, sandbox:'IN', qtype:'Q2', text:'你经历过什么让你对群体退避？', opts:['A. 被持续误解或贴上不准确的标签——之后我不再让外部评价定义我','B. 因为不合群或坚持立场而付出代价——之后我减少了出头','C. 曾经争取位置但发现规则不公——之后我退出了','D. 我似乎从未真正关心过自己在群体里的位置','E. 我在群体里一直能被人看到真实的样子——没有退避'] },
+        { id: 211, sandbox:'IN', qtype:'Q3', text:'你在群体中最怕什么？', opts:['A. 被孤立——没有一个人站在我这边','B. 被评价体系裹挟——失去了自己的判断标准','C. 位置被取代——我在群体里的位置和话语权动摇','D. 被看到真实的自己——他们可能会发现我并不如表面那样','E. 冲突升级——我本意只是想表达不同意见'] },
+        { id: 212, sandbox:'MN', qtype:'Q1', text:'你在意义系统中最依赖什么？', opts:['A. 一个能长期确认自我认同的信念锚点——让我不漂移','B. 一套清晰自洽的信念结构——让我的目标不散乱','C. 让我的观念影响更多人——进入更大的现实空间','D. 不断质疑和打破旧信念的冲动——让意义不僵化','E. 从更高层重构意义的能力——让我获得精神自由'] },
+        { id: 213, sandbox:'MN', qtype:'Q2', text:'你经历过什么让你对"意义"变得警觉？', opts:['A. 曾经信过，后来发现它兑现不了——之后我对所有大道理都保持距离','B. 信了之后发现那只是环境氛围营造——不是我真正想要的','C. 被说得很好听但不切实际颅内高潮——之后我变得非常看重能不能落地','D. 我从来就没真正信过什么宏大的东西','E. 我仍然持有一个核心信念，它一直在给我方向'] },
+        { id: 214, sandbox:'MN', qtype:'Q3', text:'你在意义层面最不敢做什么？', opts:['A. 放弃一个曾经让我确信的信念——空窗期太可怕了','B. 把我真正相信的东西说给别人听——我怕被嘲笑太理想化','C. 改变方向——已经在这条路上投入太多了','D. 承认自己其实没有真正相信什么东西——只是在表演','E. 拒绝外部给定的期望——我怕辜负期待'] },
+        { id: 215, sandbox:'FN', qtype:'Q1', text:'你在系统中最依赖什么？', opts:['A. 固定的习惯和可依赖的模板——让系统不因变化而失灵','B. 清晰的流程和反馈闭环——让系统低损耗运行','C. 可复制放大的结构——让系统规模越来越大','D. 敢于打破旧流程的动力——不让系统被低效拖死','E. 抽离出来理解底层逻辑的能力——获得更高维控制'] },
+        { id: 216, sandbox:'FN', qtype:'Q2', text:'你经历过什么让你不再信任外部系统？', opts:['A. 外部系统让我失望过——之后我自己给自己搭系统','B. 我遵守好的系统并从中受益——更信任清晰的外部规则','C. 外部环境太乱了——我不得不建一个自己能控制的空间','D. 我试着建立过自己的系统，但很难坚持下来','E. 我没有特别关注过外部系统的规则或流程'] },
+        { id: 217, sandbox:'FN', qtype:'Q3', text:'你建系统的时候，最怕什么发生？', opts:['A. 系统失效——我依赖的秩序崩塌了','B. 规则太密把自己也困住了','C. 规模超出承载——扩张失控','D. 系统变旧后我没有推倒重来的勇气','E. 沉浸在系统设计里，忽略了现实的执行和落地'] }
     ];
 
+    // 答案存储
     let answers = { freq: {}, forced: {} };
     let savedAnswers = localStorage.getItem('psychologyTestAnswers');
     if (savedAnswers) {
@@ -384,6 +505,7 @@
         } catch(e) {}
     }
 
+    // 频率选项完整文字
     const freqOptionTexts = {
         'A': 'A. 从未有过这种感觉',
         'B': 'B. 偶尔有，但很快就过去了',
@@ -392,10 +514,62 @@
         'E': 'E. 这就是我的常态'
     };
 
+    // 渲染全部题目
     function renderAllQuestions() {
-        // ... 渲染逻辑保持不变
+        let html = '';
+        html += `<div class="section"><div class="section-header"><h2>🌱 8号 · 生命种子探测（90题）</h2></div><div class="questions-grid">`;
+        freqQuestions.forEach(q => {
+            const ans = answers.freq[q.id] || '';
+            const missingClass = (ans === '') ? 'missing' : '';
+            html += `<div class="q-card ${missingClass}" data-qid="freq_${q.id}" data-type="freq">
+                        <div class="q-title">${q.label}</div>
+                        <div class="q-text">${q.text}</div>
+                        <div class="options">
+                            ${['A','B','C','D','E'].map(opt => `<label><input type="radio" name="freq_${q.id}" value="${opt}" ${ans===opt ? 'checked' : ''}> ${freqOptionTexts[opt]}</label>`).join('')}
+                        </div>
+                    </div>`;
+        });
+        html += `</div></div>`;
+
+        html += `<div class="section"><div class="section-header"><h2>🔹 9号 · 迫选结构题（18题）</h2></div><div class="questions-grid">`;
+        forcedQuestions.forEach(fq => {
+            const ans = answers.forced[fq.id] || '';
+            const missingClass = (ans === '') ? 'missing' : '';
+            html += `<div class="q-card ${missingClass}" data-qid="forced_${fq.id}" data-type="forced">
+                        <div class="q-title">${fq.sandbox} · ${fq.qtype}</div>
+                        <div class="q-text">${fq.text}</div>
+                        <div class="options">
+                            ${fq.opts.map((opt, idx) => { let letter = String.fromCharCode(65+idx); return `<label><input type="radio" name="forced_${fq.id}" value="${letter}" ${ans===letter ? 'checked' : ''}> ${opt}</label>`; }).join('')}
+                        </div>
+                    </div>`;
+        });
+        html += `</div></div>`;
+        document.getElementById('questionsContainer').innerHTML = html;
+        attachRadioEvents();
+        updateProgress();
     }
-    function attachRadioEvents() { /* ... */ }
+
+    function attachRadioEvents() {
+        freqQuestions.forEach(q => {
+            const radios = document.querySelectorAll(`input[name="freq_${q.id}"]`);
+            radios.forEach(r => r.addEventListener('change', (e) => {
+                answers.freq[q.id] = e.target.value;
+                updateProgress();
+                const card = document.querySelector(`.q-card[data-qid="freq_${q.id}"]`);
+                if(card) card.classList.remove('missing');
+            }));
+        });
+        forcedQuestions.forEach(fq => {
+            const radios = document.querySelectorAll(`input[name="forced_${fq.id}"]`);
+            radios.forEach(r => r.addEventListener('change', (e) => {
+                answers.forced[fq.id] = e.target.value;
+                updateProgress();
+                const card = document.querySelector(`.q-card[data-qid="forced_${fq.id}"]`);
+                if(card) card.classList.remove('missing');
+            }));
+        });
+    }
+
     function updateProgress() {
         let answered = 0;
         freqQuestions.forEach(q => { if(answers.freq[q.id]) answered++; });
@@ -404,11 +578,19 @@
         document.getElementById('progressDisplay').innerHTML = `📋 进度 ${answered} / ${total}`;
         localStorage.setItem('psychologyTestAnswers', JSON.stringify(answers));
     }
-    function scrollToFirstMissing() { /* ... */ }
+
+    function scrollToFirstMissing() {
+        const missingCards = document.querySelectorAll('.q-card.missing');
+        if(missingCards.length > 0) {
+            missingCards[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            missingCards[0].style.transition = '0.2s';
+            missingCards[0].style.boxShadow = '0 0 0 2px #e11d48';
+            setTimeout(() => { missingCards[0].style.boxShadow = ''; }, 1500);
+        }
+    }
 
     let currentRecordId = null;
 
-    // ========= Gemini 方案：提交按钮 =========
     document.getElementById('submitReport').addEventListener('click', () => {
         let totalQ = freqQuestions.length + forcedQuestions.length;
         let answeredCount = 0;
@@ -440,7 +622,7 @@
                 return;
             }
 
-            currentRecordId = resData.recordId;
+            currentRecordId = resData.recordId; 
 
             let topButtons = '<button id="btnDownloadReport" style="background: #1e4bd2; border: none; color: white; padding: 10px 28px; border-radius: 60px; cursor: pointer; font-size: 1rem; font-weight: 600; margin-bottom: 20px;">📥 保存报告（打印为PDF）</button>';
 
@@ -477,9 +659,7 @@
                 star.addEventListener('click', function() {
                     let val = parseInt(this.getAttribute('data-val'));
                     document.getElementById('ratingValue').value = val;
-                    stars.forEach(s => {
-                        s.innerText = parseInt(s.getAttribute('data-val')) <= val ? '★' : '☆';
-                    });
+                    stars.forEach(s => { s.innerText = parseInt(s.getAttribute('data-val')) <= val ? '★' : '☆'; });
                 });
             });
 
@@ -518,8 +698,42 @@
     renderAllQuestions();
 </script>
 
+<!-- AI 提示词模块 -->
 <div style="margin-top: 48px; padding: 20px; background: #f0f5ff; border-radius: 24px; border: 1px solid #bfd9ff;">
-    <!-- AI提示词模块保持不变 -->
+    <h3 style="color: #1e3a8a; margin-bottom: 12px;">🤖 与 AI 深入分析 · 操作说明</h3>
+    <p style="margin-bottom: 12px;">【具体沙盒与具体引擎】之间的五行生克关系，可借助 AI 进行个性化推演。测量工具的价值在于提供一个阿基米德支点，而非穷尽真理。人类的体感是流动的。强行在六个沙盒里塞满描述，不仅耗费极高的创作成本，还容易因作者自身经验的盲区导致“翻车”。</p>
+    <p style="margin-bottom: 12px;"><strong>👉 复制下方文字，粘贴并发送给任意 AI：</strong></p>
+    <textarea id="aiPromptTemplate" rows="10" style="width: 100%; background: white; border: 1px solid #bfd9ff; border-radius: 16px; padding: 12px; font-family: monospace; font-size: 0.85rem;" readonly>
+对话背景：我完成了一套名为心灵地图 · 五行驱动力与沙盒的心理测试。我会提供我的底层代码和具体的沙盒数据，请帮我推演它在现实生活中是怎么卡住我的。
+
+我的关心的底层代码（生克关系）：
+【请从上方报告中复制"触发的因果链"中的某一条，例如：旺T克衰V，描述...】
+
+我现在针对的（沙盒）：
+【例如：RN 深度连接-局域网，或附上你的引擎×沙盒热度图截图】
+
+我的具体烦恼：
+【在这里写下你最近心烦的一件事，越具体越好】
+
+请帮我分析：
+1. 看破根因：结合这个沙盒里各引擎的得分（繁茂/生长/卷缩/被掩埋），直接告诉我为什么我的"底层代码"在这个场景里失灵了？
+2. 推演后果：如果我顺着本能不管它，在这个具体的沙盒，这件事最后会烂成什么样？
+3. 给个"解药"：给我一个反本能的、立刻就能做的物理动作，帮我强行制衡目前的局面。
+
+要求：说话直接点，简单点，别绕弯子，别给鸡汤。
+    </textarea>
+    <div style="margin-top: 12px; display: flex; gap: 12px; justify-content: flex-end;">
+        <button id="copyPromptBtn" style="background: #1e4bd2; border: none; color: white; padding: 6px 16px; border-radius: 30px; cursor: pointer;">📋 复制提示词</button>
+    </div>
+    <p style="font-size: 0.75rem; color: #5b6e8c; margin-top: 12px;">💡 提示：您可以先复制上方因果链中的具体描述，填入"底层代码"位置；再选择您感到困惑的沙盒（如PN、RN等），描述具体烦恼，AI 会给出针对性建议。</p>
 </div>
+<script>
+    document.getElementById('copyPromptBtn')?.addEventListener('click', function() {
+        const textarea = document.getElementById('aiPromptTemplate');
+        textarea.select();
+        document.execCommand('copy');
+        alert('提示词已复制，可粘贴到 AI 对话中');
+    });
+</script>
 </body>
 </html>
