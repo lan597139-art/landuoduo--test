@@ -953,7 +953,7 @@ if (savedAnswers) {
         for (const [k, v] of Object.entries(answers.forced)) { combinedAnswers[k] = v; }
 
         // 2. 背景双轨制：跨境直连 Vercel 云端黑盒算分落盘
-        fetch('https://landuoduo-test.vercel.app/api/submit_psych', {
+    fetch('https://landuoduo-test.vercel.app/api/submit_psych', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: null, userAnswers: combinedAnswers })
