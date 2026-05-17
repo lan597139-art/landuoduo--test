@@ -1,23 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
-// 1. 提取 Vercel 环境变量中的三大通信密钥
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default async function handler(req, res) {
-    // 阻断非正常访问，仅允许 POST 提交答卷
     if (req.method !== 'POST') {
         return res.status(405).json({ error: '非法请求：算法黑盒拒绝访问' });
     }
 
     try {
-        // 接收前端传来的纯净选项数组（没有任何计算逻辑，只有ABCD）
         const { userId, userAnswers } = req.body;
 
-        // ==========================================
         // 核心计分引擎：OVTDE 物理隔离区
-        // ==========================================
         let S_pool = { O: 0, V: 0, D: 0, E: 0, T: 0 };
         let N_pool = { PN: 0, AN: 0, RN: 0, IN: 0, MN: 0, FN: 0 };
         let F_pool = { SS: 0, DS: 0, SN: 0, DN: 0, Ch: 0 };
@@ -27,7 +22,6 @@ export default async function handler(req, res) {
         let G_pos = { A: 0, B: 0, C: 0, D: 0 };
         let eps = [];
 
-        // 遍历答卷进行后端防篡改运算
         for (const [id, val] of Object.entries(userAnswers)) {
             if (id.startsWith("S-C") || /^C0[1-4]$/.test(id)) {
                 let m = { A: "O", B: "V", C: "D", D: "E", E: "T" };
@@ -64,33 +58,28 @@ export default async function handler(req, res) {
             }
         }
 
-        // 封装备存的最终结果矩阵
-        const finalScores = {
-            S_pool, N_pool, F_pool, Sigma, SL_pool, G_neg, G_pos, eps
-        };
+        const finalScores = { S_pool, N_pool, F_pool, Sigma, SL_pool, G_neg, G_pos, eps };
 
-        // ==========================================
-        // 强制持久化写入 Supabase 数据库
-        // ==========================================
-        const { data, error } = await supabase
+        // 终极锁：强制静默生成占位档案，防数据库外键崩溃
+        const targetUserId = userId || '00000000-0000-0000-0000-000000000000';
+        await supabase.from('profiles').upsert([{ id: targetUserId }]);
+
+        // 写入最终测试数据
+        const { error: insertError } = await supabase
             .from('test_records')
             .insert([
                 {
-                    user_id: userId || '00000000-0000-0000-0000-000000000000', // 暂定匿名，后续接 Auth 时替换
+                    user_id: targetUserId,
                     raw_answers: userAnswers,
                     ovtde_scores: finalScores,
                     is_paid: false
                 }
             ]);
 
-        if (error) {
-            console.error("数据库写入失败:", error);
-            throw error;
+        if (insertError) {
+            throw insertError;
         }
 
-        // ==========================================
-        // 将计算结果安全下发给前端进行纯渲染
-        // ==========================================
         return res.status(200).json({
             success: true,
             message: "数据已加密落盘并完成计算",
