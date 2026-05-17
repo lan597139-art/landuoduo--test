@@ -11,6 +11,32 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     if (req.method === 'OPTIONS') return res.status(200).end();
+        try {
+        // 强行解除跨域限制，允许静态 GitHub Pages 跨境提交数据
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        if (req.method === 'OPTIONS') return res.status(200).end();
+        
+        // ==========================================
+        // 🎯 问卷拦截器：处理前端发来的二次增量更新
+        // ==========================================
+        if (req.body && req.body.isFeedbackUpdate) {
+            const { recordId, feedbackComment } = req.body;
+            
+            const { data, error } = await supabase
+                .from('test_records') 
+                .update({ comment: feedbackComment })
+                .eq('id', recordId);
+
+            if (error) {
+                return res.status(500).json({ success: false, error: error.message });
+            }
+            return res.status(200).json({ success: true, message: "问卷数据物理落盘成功" });
+        }
+
+        const body = req.body || {};
+        const userAnswers = body.userAnswers;
         const body = req.body || {};
         const userAnswers = body.userAnswers;
 
