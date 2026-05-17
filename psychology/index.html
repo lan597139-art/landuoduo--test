@@ -1085,7 +1085,8 @@ if (savedAnswers) {
             this.innerText = '问卷同步中...';
             this.disabled = true;
 
-            fetch('/api/submit_psych', {
+            // 🎯 修复点：改用绝对路径跨境发射数据
+            fetch('https://landuoduo-test.vercel.app/api/submit_psych', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
