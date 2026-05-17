@@ -968,34 +968,82 @@ if (savedAnswers) {
 
         // 3. 直接调用你原本写好的前端渲染函数，保证UI文案与排版绝对正常！
         let fullReport = generateFullReport();
-
-        // ==========================================
-        // 4. 追加【导出下载PDF按钮】与【动态反馈舱】
+// ==========================================
+        // 4. 追加【导出下载PDF按钮】与【动态反馈舱】（全新PMF双轨问卷版）
         // ==========================================
         let topButtons = '<button id="btnDownloadReport" style="background: #1e4bd2; border: none; color: white; padding: 10px 28px; border-radius: 60px; cursor: pointer; font-size: 1rem; font-weight: 600; margin-bottom: 20px;">📥 保存报告（打印为PDF）</button>';
 
         let feedbackHtml = `
         <div id="feedbackBox" style="margin-top:48px; padding:24px; background:rgba(30,75,210,0.04); border-radius:20px; border:2.5px dashed #1e4bd2;">
-            <h3 style="color:#1e3a8a; margin-bottom:14px; font-size:1.15rem;">🧭 动态体感反馈：这份瞬时快照质量如何？</h3>
-            <p style="font-size:0.85rem; color:#5b6e8c; margin-bottom:20px; line-height:1.5;">本测试负责切片扫描当下的应激极化状态，不进行刻板人物画像。请基于此时此刻的真实状况提供数据校准：</p>
+            <h3 style="color:#1e3a8a; margin-bottom:14px; font-size:1.15rem;">🧭 测后反馈：协助系统校准你的画像</h3>
+            <p style="font-size:0.85rem; color:#5b6e8c; margin-bottom:24px; line-height:1.6;">为了提升沙盘引擎的测绘精度，我们需要回收一些真实的体感数据。您的反馈将被完全匿名加密处理。</p>
             
-            <div style="margin-bottom:18px;">
-                <label style="display:block; font-weight:600; margin-bottom:8px; font-size:0.9rem;">1. 当下状态吻合度（测量准度与敏感度）：</label>
-                <div id="starRating" style="font-size:1.6rem; cursor:pointer; user-select:none; letter-spacing:6px;">
-                    <span data-val="1">☆</span><span data-val="2">☆</span><span data-val="3">☆</span><span data-val="4">☆</span><span data-val="5">☆</span>
-                </div>
-                <input type="hidden" id="ratingValue" value="0">
+            <style>
+                .sv-group { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px dashed #cbd5e1; }
+                .sv-title { font-weight: 600; color: #1e3a8a; margin-bottom: 12px; font-size: 0.95rem; }
+                .sv-label { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; font-size: 0.9rem; color: #334155; cursor: pointer; line-height: 1.4; }
+                .sv-label input { margin-top: 3px; accent-color: #1e4bd2; }
+                .sv-label:hover { color: #1e4bd2; }
+            </style>
+
+            <div class="sv-group">
+                <div class="sv-title">1. 您的当前年龄段为：</div>
+                <label class="sv-label"><input type="radio" name="sv_age" value="18岁及以下"> A. 18岁及以下</label>
+                <label class="sv-label"><input type="radio" name="sv_age" value="19-24岁"> B. 19-24岁</label>
+                <label class="sv-label"><input type="radio" name="sv_age" value="25-30岁"> C. 25-30岁</label>
+                <label class="sv-label"><input type="radio" name="sv_age" value="31-35岁"> D. 31-35岁</label>
+                <label class="sv-label"><input type="radio" name="sv_age" value="36岁及以上"> E. 36岁及以上</label>
             </div>
 
-            <div style="margin-bottom:18px;">
-                <label style="display:block; font-weight:600; margin-bottom:8px; font-size:0.9rem;">2. 现实卡点解释力（生态效度）及槽点：</label>
-                <textarea id="feedbackComment" rows="3" placeholder="因果链条切中你的现实烂摊子了吗？有哪些关键点说对了，或者觉得哪里算错了？" style="width:100%; padding:12px; border-radius:12px; border:1px solid #cbd5e1; font-family:inherit; font-size:0.85rem; background:white; color:#0f172a;"></textarea>
+            <div class="sv-group">
+                <div class="sv-title">2. 触发您本次参与测试的原因是什么？</div>
+                <label class="sv-label"><input type="radio" name="sv_motive" value="面临选专业/求职定位"> A. 面临选专业、分班或求职，急需确立初始的人生发展定位</label>
+                <label class="sv-label"><input type="radio" name="sv_motive" value="内耗严重/寻找破局转行"> B. 当前内耗严重或缺乏成就感，寻找破局与转行方向</label>
+                <label class="sv-label"><input type="radio" name="sv_motive" value="深度向内探索"> C. 纯粹渴望深度向内探索</label>
+                <label class="sv-label"><input type="radio" name="sv_motive" value="洞察他人/优化团队协作"> D. 需洞察他人特质，优化团队人际协作与组织资源配置</label>
+                <label class="sv-label"><input type="radio" name="sv_motive" value="转折点/评估抗压阈值"> E. 处于生活重大转折点，需重新评估自身的系统稳定性与抗压阈值</label>
+                <label class="sv-label"><input type="radio" name="sv_motive" value="消解关系困惑"> F. 想了解身边的关系，消解关系里的困惑</label>
+            </div>
+
+            <div class="sv-group">
+                <div class="sv-title">3. 在作答过程中，您是否经常遇到“必须做出艰难抉择”的情况？</div>
+                <label class="sv-label"><input type="radio" name="sv_pressure" value="极少，很容易判断"> A. 极少，选项很容易做出判断</label>
+                <label class="sv-label"><input type="radio" name="sv_pressure" value="偶尔，能对应常规自我"> B. 偶尔，大部分情境能快速对应常规自我</label>
+                <label class="sv-label"><input type="radio" name="sv_pressure" value="经常，暴露直觉反应"> C. 经常，部分题目迫使我暴露了剥离社会身份后的直觉反应</label>
+                <label class="sv-label"><input type="radio" name="sv_pressure" value="极度痛苦，极限施压"> D. 极度痛苦，感觉选项在进行极限施压与撕裂</label>
+            </div>
+
+            <div class="sv-group">
+                <div class="sv-title">4. 报告对您内驱力与能耗的剖析，穿透力如何？</div>
+                <label class="sv-label"><input type="radio" name="sv_accuracy" value="极度精准"> A. 极度精准，精确扫描到了未曾表露的底层逻辑</label>
+                <label class="sv-label"><input type="radio" name="sv_accuracy" value="较精准"> B. 较精准，解答了现实中存在的部分长期的困惑</label>
+                <label class="sv-label"><input type="radio" name="sv_accuracy" value="一般，存在偏颇"> C. 一般，部分描述符合，但存在明显的偏颇与未对齐之处</label>
+                <label class="sv-label"><input type="radio" name="sv_accuracy" value="偏差较大"> D. 偏差较大，感觉系统未能测绘到真实的自我</label>
+            </div>
+
+            <div class="sv-group">
+                <div class="sv-title">5. 您会推荐给朋友体验吗？</div>
+                <label class="sv-label"><input type="radio" name="sv_nps" value="会，非常愿意"> A. 会，非常愿意分享</label>
+                <label class="sv-label"><input type="radio" name="sv_nps" value="看情况，推荐给特定人"> B. 看情况，可能会推荐给特定需要的人</label>
+                <label class="sv-label"><input type="radio" name="sv_nps" value="不会，比较私人"> C. 不会，感觉比较私人或帮助不大</label>
+            </div>
+
+            <div class="sv-group">
+                <div class="sv-title">6. 您会阶段性（如经历重大变化后）再来测试吗？</div>
+                <label class="sv-label"><input type="radio" name="sv_retention" value="会，观测状态变化"> A. 会，想观测自己的状态变化</label>
+                <label class="sv-label"><input type="radio" name="sv_retention" value="也许会，看心境"> B. 也许会，看当时的心境</label>
+                <label class="sv-label"><input type="radio" name="sv_retention" value="测一次就够了"> C. 测一次就够了</label>
+            </div>
+
+            <div style="margin-bottom:24px;">
+                <div class="sv-title">7. 您有什么话想对我们说？（选填，对某道题的感受、报告建议等）</div>
+                <textarea id="sv_comment" rows="3" placeholder="写下你的真实体感..." style="width:100%; padding:12px; border-radius:12px; border:1px solid #cbd5e1; font-family:inherit; font-size:0.9rem; background:white; color:#0f172a; resize:vertical;"></textarea>
             </div>
 
             <div style="display:flex; justify-content:flex-end;">
-                <button id="btnSubmitFeedback" style="background:#1e4bd2; color:white; border:none; padding:10px 28px; border-radius:30px; font-weight:600; cursor:pointer; font-size:0.9rem;">向系统投喂我的真实体感</button>
+                <button id="btnSubmitFeedback" style="background:#1e4bd2; color:white; border:none; padding:12px 32px; border-radius:30px; font-weight:600; cursor:pointer; font-size:0.95rem;">加密提交问卷</button>
             </div>
-            <p id="feedbackMsg" style="text-align:right; font-size:0.9rem; color:#10b981; display:none; margin-top:10px; font-weight:600;">✓ 匿名反馈落盘成功。感谢你协助校准动态算法！</p>
+            <p id="feedbackMsg" style="text-align:right; font-size:0.9rem; color:#10b981; display:none; margin-top:12px; font-weight:600;">✓ 数据回收成功，感谢你的协助！</p>
         </div>`;
 
         // 5. 将顶部按钮、原版报告、底部反馈舱 完美拼合
@@ -1015,19 +1063,52 @@ if (savedAnswers) {
             };
         }
 
-        // 7. 绑定反馈舱的打分动画与提交动作
-        const stars = document.querySelectorAll('#starRating span');
-        stars.forEach(star => {
-            star.addEventListener('click', function() {
-                let val = parseInt(this.getAttribute('data-val'));
-                document.getElementById('ratingValue').value = val;
-                stars.forEach(s => {
-                    if (parseInt(s.getAttribute('data-val')) <= val) {
-                        s.innerText = '★'; s.style.color = '#fbbf24';
-                    } else {
-                        s.innerText = '☆'; s.style.color = '#000';
-                    }
-                });
+        // 7. 绑定新版问卷的提交动作
+        document.getElementById('btnSubmitFeedback').addEventListener('click', function() {
+            // 获取所有单选框的值
+            let getRadioValue = (name) => document.querySelector(`input[name="${name}"]:checked`)?.value || '未作答';
+            
+            let payload = {
+                recordId: currentRecordId || '测试环境无ID',
+                surveyData: {
+                    age: getRadioValue('sv_age'),
+                    motive: getRadioValue('sv_motive'),
+                    pressure: getRadioValue('sv_pressure'),
+                    accuracy: getRadioValue('sv_accuracy'),
+                    nps: getRadioValue('sv_nps'),
+                    retention: getRadioValue('sv_retention'),
+                    comment: document.getElementById('sv_comment').value.trim()
+                }
+            };
+            
+            // 简单校验：防止全是白卷
+            if (payload.surveyData.age === '未作答' && payload.surveyData.motive === '未作答' && payload.surveyData.comment === '') {
+                alert('请至少选择几个选项或留下一句话吧！');
+                return;
+            }
+
+            this.innerText = '问卷同步中...';
+            this.disabled = true;
+
+            // 如果 Vercel 后端还未写新的问卷接收接口，可以直接将 surveyData 转为 string 塞入原有的结构，确保不死机
+            fetch('/api/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    recordId: payload.recordId,
+                    rating: 5, // 兼容旧后端的打分字段
+                    comment: JSON.stringify(payload.surveyData) // 将结构化问卷压缩为字符串传给旧接口
+                })
+            })
+            .then(res => res.json())
+            .then(fdData => {
+                this.style.display = 'none';
+                document.getElementById('feedbackMsg').style.display = 'block';
+            })
+            .catch(err => {
+                alert('反馈通信故障：' + err.message);
+                this.innerText = '重新提交问卷';
+                this.disabled = false;
             });
         });
 
