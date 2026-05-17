@@ -749,7 +749,7 @@ function updateProgress() {
     localStorage.setItem('careerTestAnswers', JSON.stringify(userAnswers));
 }
   // ── 提交 & 计分引擎（完全保留您原版的逻辑）──
-  document.getElementById("btnSubmit").onclick = function() {
+document.getElementById("btnSubmit").onclick = function() {
     // 漏题检查：若未答完，则定位跳转
     var answeredCount = Object.keys(userAnswers).length;
     if (answeredCount < total) {
@@ -787,7 +787,7 @@ function updateProgress() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            userId: null, // 留空，由 Supabase 后端分配默认匿名 ID
+            userId: null, 
             userAnswers: userAnswers
         })
     })
@@ -802,23 +802,27 @@ function updateProgress() {
             return;
         }
 
-        // 从后端传回算好的数字矩阵（S_pool, N_pool...）
-        var S_pool = resData.scores.S_pool;
-        var N_pool = resData.scores.N_pool;
-        var F_pool = resData.scores.F_pool;
-        var Sigma  = resData.scores.Sigma;
-        var SL_pool = resData.scores.SL_pool;
-        var G_neg = resData.scores.G_neg;
-        var G_pos = resData.scores.G_pos;
-        var eps = resData.scores.eps;
+        // 安全防线：如果后端返回的池子不存在，自动在前端初始化零矩阵
+        var S_pool = resData.scores.S_pool || { O:0, V:0, D:0, E:0, T:0 };
+        var N_pool = resData.scores.N_pool || { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
+        var F_pool = resData.scores.F_pool || { SS:0, DS:0, SN:0, DN:0, Ch:0 };
+        var Sigma  = resData.scores.Sigma  || { s0:0, s1:0, s2s:0, s2c:0 };
+        var SL_pool = resData.scores.SL_pool || { O:0, V:0, D:0, E:0, T:0 };
+        var G_neg = resData.scores.G_neg || { A:0, B:0, C:0, D:0 };
+        var G_pos = resData.scores.G_pos || { A:0, B:0, C:0, D:0 };
+        var eps = resData.scores.eps || [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3];
 
         // ==========================================
         // 前端纯文字解密与渲染层（不含任何计分权重）
         // ==========================================
         var sArr = Object.entries(S_pool).sort(function(a,b){return b[1]-a[1];});
-        var S1 = sArr[0][0], S2 = sArr.length>1 && sArr[1][1]>0 ? sArr[1][0] : null;
+        var S1 = sArr[0] ? sArr[0][0] : "O";
+        var S2 = sArr.length>1 && sArr[1][1]>0 ? sArr[1][0] : null;
+        
         var nArr = Object.entries(N_pool).sort(function(a,b){return b[1]-a[1];});
-        var N1 = nArr[0][0], N2 = nArr.length>1 && nArr[1][1]>0 ? nArr[1][0] : null;
+        var N1 = nArr[0] ? nArr[0][0] : "PN";
+        var N2 = nArr.length>1 && nArr[1][1]>0 ? nArr[1][0] : null;
+        
         var dualS = F_pool.DS >= F_pool.SS && F_pool.DS > F_pool.Ch;
         var dualN = F_pool.DN >= F_pool.SN && F_pool.DN > F_pool.Ch;
 
@@ -840,7 +844,7 @@ function updateProgress() {
         var careerByConfidant = {
             "谋臣型心腹": {dir:"战略、研究、咨询、架构、顶层设计", pos:"战略顾问、管理咨询、行业研究、产品战略、创始人参谋、组织诊断", unsuit:"纯执行、强应酬、低信息透明、只背锅无决策权", auth:"授权系统诊断与长期规划权；禁止置于极速变现或高压应酬区"},
             "守门型心腹": {dir:"风控、合规、财务、审计、规则、边界管理", pos:"法务、合规、风控、财务审核、内控、质量管理、流程审核", unsuit:"灰区套利、高速扩张、规则模糊但要求背责", auth:"授权风控审计、合规审查与边界管理权；禁止置于灰度套利或高速扩张岗位"},
-            "开疆型心腹": {dir:"市场突破、资源置换、商务拓展、圈层扩张", pos:"BD、销售负责人、渠道经理、市场增长、资源整合", unsuit:"核心机密无制衡、高权限低监管、长期纯后台", auth:"授权市场突破、资源置换与圈层扩张权；需配套强力风控审计"},
+            "开疆型心腹": {dir:"市场突破、资源置换、商务拓展、圈层扩张", pos:"BD、销售负责人、渠道经理、市场增长、资源整合", unsuit:"核心机密无制衡、高权限低监管、长期纯后台", auth:"授权 market 突破、资源置换与圈层扩张权；需配套强力风控审计"},
             "维稳型心腹": {dir:"底盘维护、关系调停、风险兜底、内部稳定", pos:"HRBP、员工关系、行政总管、客户成功、社群运营", unsuit:"高权力决策、复杂利益分配、强对抗谈判", auth:"授权底盘维护、关系调停与风险兜底权；给予充足的缓冲资源"},
             "布道型心腹": {dir:"文化建设、愿景解释、外部影响力、品牌叙事", pos:"品牌经理、公关、内容总监、布道师、社区领袖", unsuit:"纯执行流水线、低自主性、无话语权", auth:"授权文化建设、愿景解释与外部影响力构建权；防范虚化现实成本"},
             "执行型心腹": {dir:"项目推进、流程落地、运营交付、战术管理", pos:"项目经理、运营经理、PMO、交付负责人、教务主管", unsuit:"长期无目标、频繁改口、多头指挥、无反馈环境", auth:"授权流程落地与交付权；必须搭配明确目标指示，禁止置于无序环境中"},
@@ -855,10 +859,12 @@ function updateProgress() {
         var sigArr = [Sigma.s0, Sigma.s1, Sigma.s2s, Sigma.s2c];
         var sigMax = Math.max.apply(null, sigArr);
         var sigDom = sigArr[0]===sigMax?"σ0":sigArr[1]===sigMax?"σ1":sigArr[2]===sigMax?"σ2_switch":"σ2_collapse";
-        var L1 = Object.entries(SL_pool).sort(function(a,b){return b[1]-a[1];})[0][0];
+        
+        var slArr = Object.entries(SL_pool).sort(function(a,b){return b[1]-a[1];});
+        var L1 = slArr[0] ? slArr[0][0] : "O";
 
         function getMetaLabel(c) {
-            var m = Math.max(c.A,c.B,c.C,c.D);
+            var m = Math.max(c.A||0, c.B||0, c.C||0, c.D||0);
             var dom = c.D===m?"空转主导":c.C===m?"内源主导":c.B===m?"灰度主导":"外源主导";
             var arr = Object.entries(c).sort(function(a,b){return b[1]-a[1];});
             if (arr.length>1 && arr[1][1]>=3 && arr[1][1]<m) {
@@ -1081,6 +1087,7 @@ function updateProgress() {
         btn.innerText = "提交并生成报告";
         btn.disabled = false;
     });
+};
 };
       renderQuestions();
 })();
