@@ -64,8 +64,8 @@ export default async function handler(req, res) {
         const targetUserId = userId || '00000000-0000-0000-0000-000000000000';
         await supabase.from('profiles').upsert([{ id: targetUserId }]);
 
-        // 写入最终测试数据
-        const { error: insertError } = await supabase
+        // 写入最终测试数据（带回传 ID 功能）
+        const { data, error: insertError } = await supabase
             .from('test_records')
             .insert([
                 {
@@ -74,7 +74,8 @@ export default async function handler(req, res) {
                     ovtde_scores: finalScores,
                     is_paid: false
                 }
-            ]);
+            ])
+            .select();
 
         if (insertError) {
             throw insertError;
@@ -82,6 +83,7 @@ export default async function handler(req, res) {
 
         return res.status(200).json({
             success: true,
+            recordId: data && data.length > 0 ? data[0].id : null,
             message: "数据已加密落盘并完成计算",
             scores: finalScores
         });
