@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
     try {
         const { userId, userAnswers } = req.body;
-        const answers = userAnswers; // { freq: {}, forced: {} }
+        const answers = userAnswers; 
 
         // ==========================================
         // 1. 云端闭门计算得分 (绝对隔离)
@@ -21,7 +21,6 @@ export default async function handler(req, res) {
         const engineFull = { O:'O-金-收束', V:'V-土-承载', D:'D-火-突破', E:'E-水-漫延', T:'T-木-穿透' };
         const sandboxFull = { PN:'物理底盘', AN:'能力进化', RN:'深度连接', IN:'社会舞台', MN:'意义导航', FN:'系统运转' };
 
-        // 还原频率题的映射关系
         let freqQuestions = [];
         let qid = 0;
         for(let e of engines) {
@@ -110,7 +109,7 @@ export default async function handler(req, res) {
         }
 
         // ==========================================
-        // 2. 云端组装 HTML 报告 (不让前端碰任何文字)
+        // 2. 云端组装 HTML 报告 (绝不让前端碰任何文字)
         // ==========================================
         let matrixHtml = `<h3>一、🌡️ 总览矩阵</h3><h4>引擎 × 沙盒 热度图</h4><table><thead><tr><th>项目\\沙盒</th>`;
         for(let s of sandboxes) { matrixHtml += `<th>${s}</th>`; }
@@ -160,14 +159,10 @@ export default async function handler(req, res) {
         const shengMap = { T:'D', D:'V', V:'O', O:'E', E:'T' };
         const keMap = { T:'V', V:'E', E:'D', D:'O', O:'T' };
 
-        // (在此处截断了大量文案防爬虫，仅保留核心判断骨架，实际部署时你可以把你的 detailedDesc 字典全塞在下面)
+        // 🚨【安全核心护城河】🚨：把你刚才从前端删掉的那个 detailedDesc 完整字典，全部粘贴覆盖在下面这个 {} 里！
         const detailedDesc = {
             'T克V_healthy': '聚变的绝对追问没有摧毁底盘，而是精准剔除了失效的依赖...',
-            'V克E_healthy': '扎实的回声底座为狂热的狩猎装上了筛选器...',
-            'E克D_healthy': '广阔的狩猎版图完美分流了过载的燃烧势能。多维度的扩张不是精力的涣散，而是为破局行动打造了多极管网。',
-            'D克O_healthy': '破局的燃烧之火没有熔毁框架，反而淬炼了结晶的秩序...',
-            'O克T_healthy': '冷峻的结晶秩序为聚变的追问装上了高倍瞄准镜...',
-            // 提示：你可以把原来的几千字文案全部粘到这里，绝对安全
+            // ... 这里粘贴你的几千字原本文案 ...
         };
 
         let chainAdded = new Set();
@@ -189,4 +184,50 @@ export default async function handler(req, res) {
                 }
                 if (shengMap[a] === b) {
                     if (isWang(a) && isShuai(b)) {
-                        chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 旺生衰 · ${engineFull[a]}生${engineFull[b]}（压熄
+                        chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 旺生衰 · ${engineFull[a]}生${engineFull[b]}（压熄与窒息）</div><div class="causal-item-desc">${detailedDesc[`${a}生${b}_weak`] || '燃料太旺压垮火种。'}</div></div>`);
+                    } else if (isShuai(a) && isWang(b)) {
+                        chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 衰生旺 · ${engineFull[a]}生${engineFull[b]}（反噬与枯竭）</div><div class="causal-item-desc">${detailedDesc[`${a}生${b}_reverse`] || '生者太弱被反噬。'}</div></div>`);
+                    } else if (isWang(a) && isWang(b)) {
+                        let hasBuried = !isHealthy(a) || !isHealthy(b);
+                        let type = hasBuried ? '过载态（催熟超压）' : '健康态（转化攀升）';
+                        chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 旺生旺 · ${type} · ${engineFull[a]}生${engineFull[b]}</div><div class="causal-item-desc">${detailedDesc[`${a}生${b}_${hasBuried?'over':'healthy'}`] || '能量传导与系统共振。'}</div></div>`);
+                    }
+                }
+            }
+        }
+        if (chainText.length === 0) chainText.push('<div class="causal-item-desc">未触发典型旺衰生克链，引擎间关系相对平衡。</div>');
+
+        let chainHtml = `<h3>五、⛓️ 因果链与层级流动分析</h3>
+        <div class="causal-base-box">
+            <div style="margin-bottom: 12px;"><span class="causal-base-title">引擎旺衰判定</span><span class="causal-base-text">旺（极化）：${wangList.join(', ') || '无'}<br>衰（坍缩）：${shuaiList.join(', ') || '无'}</span></div>
+        </div>
+        <div style="margin-bottom: 14px; font-weight: 600; font-size: 1.1rem; color: #1e3a8a;">触发的因果链</div>
+        ${chainText.join('')}`;
+
+        // 拼接最终要传给前端的 HTML 巨无霸字符串
+        const finalReportHtml = matrixHtml + statsHtml + engineBodyHtml + sandboxBodyHtml + forcedRecords + chainHtml;
+
+        // ==========================================
+        // 3. 静默落盘与返还 (发放 Record ID)
+        // ==========================================
+        const targetUserId = userId || '00000000-0000-0000-0000-000000000000';
+        await supabase.from('profiles').upsert([{ id: targetUserId }]);
+
+        const { data, error: insertError } = await supabase
+            .from('test_records')
+            .insert([{ user_id: targetUserId, raw_answers: answers, ovtde_scores: { engineScores, seedStatus }, is_paid: false }])
+            .select();
+
+        if (insertError) throw insertError;
+
+        // 把拼好的纯净 HTML 发回前端，算法机密永留云端！
+        return res.status(200).json({
+            success: true,
+            recordId: data && data.length > 0 ? data[0].id : null,
+            reportHtml: finalReportHtml
+        });
+
+    } catch (error) {
+        return res.status(500).json({ error: '黑盒算法执行异常', details: error.message });
+    }
+}
