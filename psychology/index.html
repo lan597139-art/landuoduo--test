@@ -926,7 +926,7 @@ if (savedAnswers) {
         
         return matrixHtml + statsHtml + engineBodyHtml + sandboxBodyHtml + forcedRecords + chainHtml + fearHtml;
     }
-            document.getElementById('submitReport').addEventListener('click', () => {
+        document.getElementById('submitReport').addEventListener('click', () => {
         let totalQ = freqQuestions.length + forcedQuestions.length;
         let answeredCount = 0;
         freqQuestions.forEach(q => { if(answers.freq[q.id]) answeredCount++; });
@@ -936,271 +936,22 @@ if (savedAnswers) {
             scrollToFirstMissing();
             return;
         }
+        let fullReport = generateFullReport();   // ✅ 改成 let，允许拼接
+        // 在报告最前面加入导出按钮
+        fullReport = '<button id="btnDownloadReport" style="background: #1e4bd2; border: none; color: white; padding: 10px 28px; border-radius: 60px; cursor: pointer; font-size: 1rem; font-weight: 600; margin-bottom: 20px;">📥 保存报告（打印为PDF）</button>' + fullReport;
+        document.getElementById('reportHtml').innerHTML = fullReport;
+        document.getElementById('reportSection').style.display = 'block';
+        window.scrollTo({ top: document.getElementById('reportSection').offsetTop - 30, behavior: 'smooth' });
 
-        // 显示加载状态，防止用户重复点击
-        const btn = document.getElementById("submitReport");
-        const originalText = btn.innerText;
-        btn.innerText = "⚡ 正在通过云端算法计算中...";
-        btn.disabled = true;
-
-        // 合并成后端可识别的单层矩阵格式
-        const combinedAnswers = {};
-        for (const [k, v] of Object.entries(answers.freq)) {
-            combinedAnswers[k] = v;
+        // ✅ 绑定导出按钮事件（新增）
+        let downloadBtn = document.getElementById('btnDownloadReport');
+        if (downloadBtn) {
+            downloadBtn.onclick = function() {
+                window.print();
+            };
         }
-        for (const [k, v] of Object.entries(answers.forced)) {
-            combinedAnswers[k] = v;
-        }
-
-        // 发送纯净答卷包给后端黑盒
-        fetch('/api/submit', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                userId: null,
-                userAnswers: combinedAnswers
-            })
-        })
-        .then(res => res.json())
-        .then(resData => {
-            if (!resData.success) {
-                alert('云端计算失败：' + resData.error);
-                btn.innerText = originalText;
-                btn.disabled = false;
-                return;
-            }
-
-            // 从后端成功抓取算好的数字池
-            const engineScoresRaw = resData.scores.S_pool;
-            const sandboxTotals = resData.scores.N_pool;
-            const F_pool = resData.scores.F_pool;
-            const Sigma = resData.scores.Sigma;
-            const SL_pool = resData.scores.SL_pool;
-            const G_neg = resData.scores.G_neg;
-            const G_pos = resData.scores.G_pos;
-            const eps = resData.scores.eps;
-
-            // 为了完美兼容前端已有的矩阵渲染逻辑，在前端将多域对象重组还原为 seedStatus 状态
-            let engineScores = { O:{}, V:{}, D:{}, E:{}, T:{} };
-            freqQuestions.forEach(q => {
-                let ans = answers.freq[q.id];
-                let score = { 'A':1,'B':2,'C':3,'D':4,'E':5 }[ans];
-                engineScores[q.engine][q.sandbox] = (engineScores[q.engine][q.sandbox] || 0) + score;
-            });
-
-            let engineTotals = {};
-            for(let e of engines) {
-                let total = 0;
-                for(let s of sandboxes) total += (engineScores[e][s] || 0);
-                engineTotals[e] = total;
-            }
-
-            let seedStatus = {};
-            for(let e of engines) {
-                seedStatus[e] = {};
-                for(let s of sandboxes) seedStatus[e][s] = getState(engineScores[e][s]);
-            }
-
-            let countFM=0,countSZ=0,countJS=0,countBYM=0;
-            for(let e of engines) for(let s of sandboxes) {
-                let st = seedStatus[e][s];
-                if(st==='繁茂') countFM++; else if(st==='生长') countSZ++; else if(st==='卷缩') countJS++; else countBYM++;
-            }
-
-            let maxE = Object.keys(engineTotals).reduce((a,b)=> engineTotals[a]>engineTotals[b]?a:b);
-            let secondMax = Object.keys(engineTotals).sort((a,b)=>engineTotals[b]-engineTotals[a])[1];
-            let verdict = '';
-            if(countFM>=10 && countBYM<=3) verdict = '整体生命活力充沛，多引擎协同活跃，能量格局呈多点开花态势。';
-            else if(countFM<=5 && (countJS+countBYM)>=20 && engineTotals[maxE] > engineTotals[secondMax]*1.3) verdict = '整体生命活力偏低，能量格局呈单引擎独旺、其余全面收缩的失衡状态。';
-            else if(countJS >= 30) verdict = '整体偏向保守收缩，多股驱动力处于休眠待激活状态。';
-            else verdict = '整体能量分布不均，存在明显的优势区 and 薄弱区。';
-
-            // ====================================================
-            // 心理学原版文案组装渲染层
-            // ====================================================
-            let engineBodyHtml = `<h3>二、⚙️ 引擎体感判定</h3><table><thead><tr><th>引擎</th><th>覆盖面积</th><th>体感描述</th></tr></thead><tbody>`;
-            for(let e of engines) {
-                let fm = Object.values(seedStatus[e]).filter(v=>v==='繁茂').length;
-                let sz = Object.values(seedStatus[e]).filter(v=>v==='生长').length;
-                let js = Object.values(seedStatus[e]).filter(v=>v==='卷缩').length;
-                let bym = Object.values(seedStatus[e]).filter(v=>v==='被掩埋').length;
-                let keyword = getEngineKeyword(e, engineTotals[e]);
-                engineBodyHtml += `<tr><td>${engineFull[e]}</td><td>繁茂${fm}个、生长${sz}个、卷缩${js}个、被掩埋${bym}个</td><td>${keyword}</td></tr>`;
-            }
-            engineBodyHtml += `</tbody></table>`;
-
-            let sandboxBodyHtml = `<h3>三、🧩 沙盒体感判定</h3><table><thead><tr><th>沙盒</th><th>意象</th><th>体感分数</th><th>体感描述</th></tr></thead><tbody>`;
-            for(let s of sandboxes) {
-                let total = sandboxTotals[s];
-                let midDesc = getSandboxMidDesc(s, total);
-                sandboxBodyHtml += `<tr><td>${s}</td><td>${sandboxFull[s]}</td><td>${total}</td><td>${midDesc}</td></tr>`;
-            }
-            sandboxBodyHtml += `</tbody></table>`;
-
-            let forcedRecords = `<h3>四、🔍 9号追选题作答记录</h3><table><thead><tr><th>沙盒</th><th>Q1 最依赖的驱动力</th><th>Q2 经历过的创伤</th><th>Q3 最深的恐惧</th></tr></thead><tbody>`;
-            for(let s of sandboxes) {
-                let q1 = forcedQuestions.find(f => f.sandbox===s && f.qtype==='Q1');
-                let q2 = forcedQuestions.find(f => f.sandbox===s && f.qtype==='Q2');
-                let q3 = forcedQuestions.find(f => f.sandbox===s && f.qtype==='Q3');
-                let q1Ans = answers.forced[q1?.id] || '';
-                let q2Ans = answers.forced[q2?.id] || '';
-                let q3Ans = answers.forced[q3?.id] || '';
-                let q1Text = q1Ans ? (q1.opts[parseInt(q1Ans.charCodeAt(0)-65)] || '') : '';
-                let q2Text = q2Ans ? (q2.opts[parseInt(q2Ans.charCodeAt(0)-65)] || '') : '';
-                let q3Text = q3Ans ? (q3.opts[parseInt(q3Ans.charCodeAt(0)-65)] || '') : '';
-                forcedRecords += `<tr><td>${sandboxFull[s]}</td><td>${q1Ans} – ${q1Text}</td><td>${q2Ans} – ${q2Text}</td><td>${q3Ans} – ${q3Text}</td></tr>`;
-            }
-            forcedRecords += `</tbody></table>`;
-
-            function isWang(e) { return engineTotals[e]>=65 || Object.values(seedStatus[e]).filter(v=>v==='繁茂').length>=3; }
-            function isShuai(e) { return engineTotals[e]<35 || Object.values(seedStatus[e]).filter(v=>v==='被掩埋').length>=1; }
-            function isHealthy(e) { return !Object.values(seedStatus[e]).includes('被掩埋'); }
-
-            let wangList = engines.filter(e => isWang(e)).map(e=>engineFull[e]);
-            let shuaiList = engines.filter(e => isShuai(e)).map(e=>engineFull[e]);
-            let healthyList = engines.filter(e => isHealthy(e)).map(e=>engineFull[e]);
-
-            let chainAdded = new Set();
-            let chainText = [];
-
-            for (let i = 0; i < engines.length; i++) {
-                for (let j = 0; j < engines.length; j++) {
-                    if (i === j) continue;
-                    let a = engines[i];
-                    let b = engines[j];
-                    if (keMap[a] === b) {
-                        let aWang = isWang(a), bWang = isWang(b), aShuai = isShuai(a), bShuai = isShuai(b);
-                        if (aWang && bShuai) {
-                            let key = `${a}克${b}_weak`;
-                            if (!chainAdded.has(key)) {
-                                chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 旺克衰 · ${engineFull[a]}克${engineFull[b]}（穿透与流失）</div><div class="causal-item-desc">${detailedDesc[key] || '旺者克衰者，强势驱动力不断消耗弱势底盘。'}</div></div>`);
-                                chainAdded.add(key);
-                            }
-                        } else if (aShuai && bWang) {
-                            let key = `${a}克${b}_reverse`;
-                            if (!chainAdded.has(key)) {
-                                chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 衰克旺 · ${engineFull[a]}克${engineFull[b]}（崩卷与反弹）</div><div class="causal-item-desc">${detailedDesc[key] || '衰者克旺者，弱势试图约束强势反而耗尽自身。'}</div></div>`);
-                                chainAdded.add(key);
-                            }
-                        } else if (aWang && bWang) {
-                            let hasBuried = !isHealthy(a) || !isHealthy(b);
-                            let stateKey = hasBuried ? 'over' : 'healthy';
-                            let key = `${a}克${b}_${stateKey}`;
-                            if (!chainAdded.has(key)) {
-                                let type = hasBuried ? '过载态（互耗磨损）' : '健康态（修剪蜕变）';
-                                chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 旺克旺 · ${type} · ${engineFull[a]}克${engineFull[b]}</div><div class="causal-item-desc">${detailedDesc[key] || '强强相克。'}</div></div>`);
-                                chainAdded.add(key);
-                            }
-                        }
-                    }
-                    if (shengMap[a] === b) {
-                        let aWang = isWang(a), bWang = isWang(b), aShuai = isShuai(a), bShuai = isShuai(b);
-                        if (aWang && bShuai) {
-                            let key = `${a}生${b}_weak`;
-                            if (!chainAdded.has(key)) {
-                                chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 旺生衰 · ${engineFull[a]}生${engineFull[b]}（压熄与窒息）</div><div class="causal-item-desc">${detailedDesc[key] || '旺者生衰者，燃料太旺压垮火种。'}</div></div>`);
-                                chainAdded.add(key);
-                            }
-                        } else if (aShuai && bWang) {
-                            let key = `${a}生${b}_reverse`;
-                            if (!chainAdded.has(key)) {
-                                chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 衰生旺 · ${engineFull[a]}生${engineFull[b]}（反噬与枯竭）</div><div class="causal-item-desc">${detailedDesc[key] || '衰者生旺者，生者太弱被反噬。'}</div></div>`);
-                                chainAdded.add(key);
-                            }
-                        } else if (aWang && bWang) {
-                            let hasBuried = !isHealthy(a) || !isHealthy(b);
-                            let stateKey = hasBuried ? 'over' : 'healthy';
-                            let key = `${a}生${b}_${stateKey}`;
-                            if (!chainAdded.has(key)) {
-                                let type = hasBuried ? '过载态（催熟超压）' : '健康态（转化攀升）';
-                                chainText.push(`<div class="causal-item"><div class="causal-item-title">➤ 旺生旺 · ${type} · ${engineFull[a]}生${engineFull[b]}</div><div class="causal-item-desc">${detailedDesc[key] || '能量传导。'}</div></div>`);
-                                chainAdded.add(key);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (chainText.length === 0) chainText.push('<div class="causal-item-desc">未触发典型旺衰生克链，引擎间关系相对平衡。</div>');
-
-            let chainHtml = `<h3>五、⛓️ 因果链与层级流动分析</h3>
-            <div class="causal-base-box">
-                <div style="margin-bottom: 12px;">
-                    <span class="causal-base-title">基础设定</span>
-                    <span class="causal-base-text">生循环：T🌲 → D🔥 → V⛰️ → O💎 → E🌊 → T🌲<br>克循环：T🌲 → V⛰️ → E🌊 → D🔥 → O💎 → T🌲</span>
-                </div>
-                <div>
-                    <span class="causal-base-title">引擎旺衰判定</span>
-                    <span class="causal-base-text">
-                    旺（极化）：${wangList.join(', ') || '无'}<br>
-                    衰（坍缩）：${shuaiList.join(', ') || '无'}<br>
-                    健康校验：${healthyList.join(', ') || '无'}
-                    </span>
-                </div>
-            </div>
-            <div style="margin-bottom: 14px; font-weight: 600; font-size: 1.1rem; color: #1e3a8a;">触发的因果链</div>
-            ${chainText.join('')}`;
-
-            let fearHtml = `<h3>六、😨 恐惧禁区映射（Q3汇总）</h3><table><thead><tr><th>沙盒</th><th>Q3选项</th><th>恐惧含义</th></tr></thead><tbody>`;
-            for(let s of sandboxes) {
-                let q3 = forcedQuestions.find(f => f.sandbox===s && f.qtype==='Q3');
-                let opt = answers.forced[q3?.id] || '—';
-                fearHtml += `<tr><td>${sandboxFull[s]}</td><td>${opt}</td><td>${fearMap[opt] || '未选'}</td></tr>`;
-            }
-            fearHtml += `</tbody></table>`;
-
-            let matrixHtml = `<h3>一、🌡️ 总览矩阵</h3><h4>引擎 × 沙盒 热度图（点击引擎名/沙盒名/状态词查看详细解释）</h4><table><thead><tr><th>项目\\沙盒</th>`;
-            for(let s of sandboxes) {
-                matrixHtml += `<th style="cursor:pointer; text-decoration:underline dotted;" onclick="alert(explanations.sandboxes['${s}'])">${s}</th>`;
-            }
-            matrixHtml += `<th>总分</th> </thead><tbody>`;
-            for(let e of engines) {
-                let engineDisplay = `<span style="cursor:pointer; text-decoration:underline dotted;" onclick="alert(explanations.engines['${engineFull[e]}'])">${engineFull[e]}</span>`;
-                matrixHtml += `<tr><td style="font-weight:600">${engineDisplay}</td>`;
-                for(let s of sandboxes) {
-                    let sc = engineScores[e][s] || 0;
-                    let st = seedStatus[e][s];
-                    let colorClass = st==='繁茂'?'status-bloom':(st==='生长'?'status-grow':(st==='卷缩'?'status-shrink':'status-buried'));
-                    let statusDisplay = `<span style="cursor:pointer; border-bottom:1px dashed #666;" onclick="alert(explanations.energy['${st}'])">${st}</span>`;
-                    matrixHtml += `<td class="${colorClass}">${sc}<br>${statusDisplay}</td>`;
-                }
-                matrixHtml += `<td><strong>${engineTotals[e]}</strong></td>`;
-                matrixHtml += `</tr>`;
-            }
-            matrixHtml += `<tr style="background:#f5f9ff;"><td style="font-weight:600">沙盒总分</td>`;
-            for(let s of sandboxes) matrixHtml += `<td><strong>${sandboxTotals[s]}</strong></td>`;
-            matrixHtml += `<td>—</td> </tr></tbody></table>`;
-
-            let statsHtml = `<div class="stat-badge">🌳 繁茂：${countFM}个 🌱 生长：${countSZ}个 🐚 卷缩：${countJS}个 🪦 被掩埋：${countBYM}个</div>
-            <div><strong>🧩 综合判定</strong> ${verdict}</div>`;
-
-            let fullReport = matrixHtml + statsHtml + engineBodyHtml + sandboxBodyHtml + forcedRecords + chainHtml + fearHtml;
-            fullReport = '<button id="btnDownloadReport" style="background: #1e4bd2; border: none; color: white; padding: 10px 28px; border-radius: 60px; cursor: pointer; font-size: 1rem; font-weight: 600; margin-bottom: 20px;">📥 保存报告（打印为PDF）</button>' + fullReport;
-            
-            document.getElementById('reportHtml').innerHTML = fullReport;
-            document.getElementById('reportSection').style.display = 'block';
-            window.scrollTo({ top: document.getElementById('reportSection').offsetTop - 30, behavior: 'smooth' });
-
-            let downloadBtn = document.getElementById('btnDownloadReport');
-            if (downloadBtn) {
-                downloadBtn.onclick = function() {
-                    window.print();
-                };
-            }
-
-            // 还原按钮状态
-            btn.innerText = originalText;
-            btn.disabled = false;
-        })
-        .catch(err => {
-            alert('算法黑盒通信异常：' + err.message);
-            btn.innerText = originalText;
-            btn.disabled = false;
-        });
     });
-
+    
     document.getElementById('resetAll').addEventListener('click', () => {
         answers = { freq: {}, forced: {} };
         renderAllQuestions();
@@ -1209,3 +960,43 @@ if (savedAnswers) {
     });
     
     renderAllQuestions();
+</script>
+<!-- AI 提示词模块，放在 footer 上方 -->
+<div style="margin-top: 48px; padding: 20px; background: #f0f5ff; border-radius: 24px; border: 1px solid #bfd9ff;">
+    <h3 style="color: #1e3a8a; margin-bottom: 12px;">🤖 与 AI 深入分析 · 操作说明</h3>
+    <p style="margin-bottom: 12px;">【具体沙盒与具体引擎】之间的五行生克关系，可借助 AI 进行个性化推演。测量工具的价值在于提供一个阿基米德支点，而非穷尽真理。人类的体感是流动的。强行在六个沙盒里塞满描述，不仅耗费极高的创作成本，还容易因作者自身经验的盲区导致“翻车”。</p>
+    <p style="margin-bottom: 12px;"><strong>👉 复制下方文字，粘贴并发送给任意 AI：</strong></p>
+    <textarea id="aiPromptTemplate" rows="10" style="width: 100%; background: white; border: 1px solid #bfd9ff; border-radius: 16px; padding: 12px; font-family: monospace; font-size: 0.85rem;" readonly>
+对话背景：我完成了一套名为心灵地图 · 五行驱动力与沙盒的心理测试。我会提供我的底层代码和具体的沙盒数据，请帮我推演它在现实生活中是怎么卡住我的。
+
+我的关心的底层代码（生克关系）：
+【请从上方报告中复制“触发的因果链”中的某一条，例如：旺T克衰V，描述...】
+
+我现在针对的（沙盒）：
+【例如：RN 深度连接-局域网，或附上你的引擎×沙盒热度图截图】
+
+我的具体烦恼：
+【在这里写下你最近心烦的一件事，越具体越好】
+
+请帮我分析：
+1. 看破根因：结合这个沙盒里各引擎的得分（繁茂/生长/卷缩/被掩埋），直接告诉我为什么我的“底层代码”在这个场景里失灵了？
+2. 推演后果：如果我顺着本能不管它，在这个具体的沙盒，这件事最后会烂成什么样？
+3. 给个“解药”：给我一个反本能的、立刻就能做的物理动作，帮我强行制衡目前的局面。
+
+要求：说话直接点，简单点，别绕弯子，别给鸡汤。
+    </textarea>
+    <div style="margin-top: 12px; display: flex; gap: 12px; justify-content: flex-end;">
+        <button id="copyPromptBtn" style="background: #1e4bd2; border: none; color: white; padding: 6px 16px; border-radius: 30px; cursor: pointer;">📋 复制提示词</button>
+    </div>
+    <p style="font-size: 0.75rem; color: #5b6e8c; margin-top: 12px;">💡 提示：您可以先复制上方因果链中的具体描述，填入“底层代码”位置；再选择您感到困惑的沙盒（如PN、RN等），描述具体烦恼，AI 会给出针对性建议。</p>
+</div>
+<script>
+    document.getElementById('copyPromptBtn')?.addEventListener('click', function() {
+        const textarea = document.getElementById('aiPromptTemplate');
+        textarea.select();
+        document.execCommand('copy');
+        alert('提示词已复制，可粘贴到 AI 对话中');
+    });
+</script>
+</body>
+<html>
