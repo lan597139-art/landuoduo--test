@@ -926,32 +926,148 @@ if (savedAnswers) {
         
         return matrixHtml + statsHtml + engineBodyHtml + sandboxBodyHtml + forcedRecords + chainHtml + fearHtml;
     }
-        document.getElementById('submitReport').addEventListener('click', () => {
+       // 定义全局变量，接住后端的身份证
+    let currentRecordId = null;
+
+    document.getElementById('submitReport').addEventListener('click', () => {
         let totalQ = freqQuestions.length + forcedQuestions.length;
         let answeredCount = 0;
         freqQuestions.forEach(q => { if(answers.freq[q.id]) answeredCount++; });
         forcedQuestions.forEach(fq => { if(answers.forced[fq.id]) answeredCount++; });
+        
+        // 漏题校验
         if(answeredCount !== totalQ) {
             alert(`您还有 ${totalQ - answeredCount} 道题未答，已为您定位到第一道未答题。`);
             scrollToFirstMissing();
             return;
         }
-        let fullReport = generateFullReport();   // ✅ 改成 let，允许拼接
-        // 在报告最前面加入导出按钮
-        fullReport = '<button id="btnDownloadReport" style="background: #1e4bd2; border: none; color: white; padding: 10px 28px; border-radius: 60px; cursor: pointer; font-size: 1rem; font-weight: 600; margin-bottom: 20px;">📥 保存报告（打印为PDF）</button>' + fullReport;
-        document.getElementById('reportHtml').innerHTML = fullReport;
+
+        const btn = document.getElementById("submitReport");
+        const originalText = btn.innerText;
+        btn.innerText = "⚡ 正在生成心灵地图并加密存档...";
+        btn.disabled = true;
+
+        // 1. 组装纯净答案包
+        const combinedAnswers = {};
+        for (const [k, v] of Object.entries(answers.freq)) { combinedAnswers[k] = v; }
+        for (const [k, v] of Object.entries(answers.forced)) { combinedAnswers[k] = v; }
+
+        // 2. 背景双轨制：异步发给后端落盘，拿回专属 ID
+        fetch('/api/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: null, userAnswers: combinedAnswers })
+        })
+        .then(res => res.json())
+        .then(resData => {
+            if (resData.success) {
+                currentRecordId = resData.recordId; // 成功拿到该用户的独立数据行号
+            }
+        })
+        .catch(err => console.error("黑盒通讯静默异常:", err));
+
+        // 3. 直接调用你原本写好的前端渲染函数，保证UI文案与排版绝对正常！
+        let fullReport = generateFullReport();
+
+        // ==========================================
+        // 4. 追加【导出下载PDF按钮】与【动态反馈舱】
+        // ==========================================
+        let topButtons = '<button id="btnDownloadReport" style="background: #1e4bd2; border: none; color: white; padding: 10px 28px; border-radius: 60px; cursor: pointer; font-size: 1rem; font-weight: 600; margin-bottom: 20px;">📥 保存报告（打印为PDF）</button>';
+
+        let feedbackHtml = `
+        <div id="feedbackBox" style="margin-top:48px; padding:24px; background:rgba(30,75,210,0.04); border-radius:20px; border:2.5px dashed #1e4bd2;">
+            <h3 style="color:#1e3a8a; margin-bottom:14px; font-size:1.15rem;">🧭 动态体感反馈：这份瞬时快照质量如何？</h3>
+            <p style="font-size:0.85rem; color:#5b6e8c; margin-bottom:20px; line-height:1.5;">本测试负责切片扫描当下的应激极化状态，不进行刻板人物画像。请基于此时此刻的真实状况提供数据校准：</p>
+            
+            <div style="margin-bottom:18px;">
+                <label style="display:block; font-weight:600; margin-bottom:8px; font-size:0.9rem;">1. 当下状态吻合度（测量准度与敏感度）：</label>
+                <div id="starRating" style="font-size:1.6rem; cursor:pointer; user-select:none; letter-spacing:6px;">
+                    <span data-val="1">☆</span><span data-val="2">☆</span><span data-val="3">☆</span><span data-val="4">☆</span><span data-val="5">☆</span>
+                </div>
+                <input type="hidden" id="ratingValue" value="0">
+            </div>
+
+            <div style="margin-bottom:18px;">
+                <label style="display:block; font-weight:600; margin-bottom:8px; font-size:0.9rem;">2. 现实卡点解释力（生态效度）及槽点：</label>
+                <textarea id="feedbackComment" rows="3" placeholder="因果链条切中你的现实烂摊子了吗？有哪些关键点说对了，或者觉得哪里算错了？" style="width:100%; padding:12px; border-radius:12px; border:1px solid #cbd5e1; font-family:inherit; font-size:0.85rem; background:white; color:#0f172a;"></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end;">
+                <button id="btnSubmitFeedback" style="background:#1e4bd2; color:white; border:none; padding:10px 28px; border-radius:30px; font-weight:600; cursor:pointer; font-size:0.9rem;">向系统投喂我的真实体感</button>
+            </div>
+            <p id="feedbackMsg" style="text-align:right; font-size:0.9rem; color:#10b981; display:none; margin-top:10px; font-weight:600;">✓ 匿名反馈落盘成功。感谢你协助校准动态算法！</p>
+        </div>`;
+
+        // 5. 将顶部按钮、原版报告、底部反馈舱 完美拼合
+        document.getElementById('reportHtml').innerHTML = topButtons + fullReport + feedbackHtml;
         document.getElementById('reportSection').style.display = 'block';
         window.scrollTo({ top: document.getElementById('reportSection').offsetTop - 30, behavior: 'smooth' });
 
-        // ✅ 绑定导出按钮事件（新增）
+        // 恢复按钮状态
+        btn.innerText = originalText;
+        btn.disabled = false;
+
+        // 6. 激活【保存报告】的下载打印功能
         let downloadBtn = document.getElementById('btnDownloadReport');
         if (downloadBtn) {
-            downloadBtn.onclick = function() {
-                window.print();
+            downloadBtn.onclick = function() { 
+                window.print(); 
             };
         }
+
+        // 7. 绑定反馈舱的打分动画与提交动作
+        const stars = document.querySelectorAll('#starRating span');
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                let val = parseInt(this.getAttribute('data-val'));
+                document.getElementById('ratingValue').value = val;
+                stars.forEach(s => {
+                    if (parseInt(s.getAttribute('data-val')) <= val) {
+                        s.innerText = '★'; s.style.color = '#fbbf24';
+                    } else {
+                        s.innerText = '☆'; s.style.color = '#000';
+                    }
+                });
+            });
+        });
+
+        document.getElementById('btnSubmitFeedback').addEventListener('click', function() {
+            let rating = document.getElementById('ratingValue').value;
+            let comment = document.getElementById('feedbackComment').value;
+            
+            if (rating == 0 && comment.trim() === '') {
+                alert('请至少打个分或留下一句话。');
+                return;
+            }
+            if (!currentRecordId) {
+                alert('数据还在加密同步中，请稍等一秒再试。');
+                return;
+            }
+
+            this.innerText = '反馈同步中...';
+            this.disabled = true;
+
+            fetch('/api/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    recordId: currentRecordId,
+                    rating: rating,
+                    comment: comment
+                })
+            })
+            .then(res => res.json())
+            .then(fdData => {
+                this.style.display = 'none';
+                document.getElementById('feedbackMsg').style.display = 'block';
+            })
+            .catch(err => {
+                alert('反馈通信故障：' + err.message);
+                this.innerText = '向系统投喂我的真实体感';
+                this.disabled = false;
+            });
+        });
     });
-    
     document.getElementById('resetAll').addEventListener('click', () => {
         answers = { freq: {}, forced: {} };
         renderAllQuestions();
