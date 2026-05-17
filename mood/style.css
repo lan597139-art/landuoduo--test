@@ -1,0 +1,178 @@
+/* 心理测试 - 基础样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background-color: #ffffff;
+    color: #2d3748;
+    line-height: 1.8;
+    min-height: 100vh;
+}
+
+/* 主容器 */
+.test-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+}
+
+/* 进度条 */
+.progress-bar {
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    padding: 16px 0;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 32px;
+    z-index: 10;
+}
+
+.progress-text {
+    font-size: 14px;
+    color: #718096;
+    margin-bottom: 8px;
+}
+
+.progress-track {
+    width: 100%;
+    height: 4px;
+    background: #edf2f7;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #3182ce;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* 题目卡片 */
+.question-card {
+    background: #ffffff;
+    border: 2px solid #3182ce;
+    border-radius: 12px;
+    padding: 28px 24px;
+    margin-bottom: 24px;
+    transition: border-color 0.2s ease;
+}
+
+.question-card:hover {
+    border-color: #2b6cb0;
+}
+
+.question-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+/* 选项列表 */
+.options-list {
+    list-style: none;
+}
+
+.option-item {
+    margin-bottom: 10px;
+}
+
+.option-item:last-child {
+    margin-bottom: 0;
+}
+
+.option-label {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.option-label:hover {
+    background: #ebf8ff;
+    border-color: #90cdf4;
+}
+
+.option-radio {
+    margin-right: 12px;
+    margin-top: 3px;
+    flex-shrink: 0;
+    accent-color: #3182ce;
+}
+
+.option-text {
+    font-size: 15px;
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+/* 选中状态 */
+.option-radio:checked + .option-text {
+    color: #2b6cb0;
+    font-weight: 500;
+}
+
+.option-radio:checked ~ .option-text {
+    /* 通过兄弟选择器高亮整行 */
+}
+
+.option-label:has(.option-radio:checked) {
+    background: #ebf8ff;
+    border-color: #3182ce;
+}
+
+/* 提交按钮 */
+.submit-btn {
+    display: block;
+    width: 100%;
+    padding: 14px 24px;
+    background: #3182ce;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 32px;
+    transition: background 0.2s ease;
+}
+
+.submit-btn:hover {
+    background: #2b6cb0;
+}
+
+.submit-btn:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+}
+
+/* 报告容器 */
+.report-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+/* 响应式 */
+@media (max-width: 640px) {
+    .test-container {
+        padding: 20px 16px 40px;
+    }
+    
+    .question-card {
+        padding: 20px 16px;
+    }
+    
+    .option-label {
+        padding: 10px 12px;
+    }
+}
