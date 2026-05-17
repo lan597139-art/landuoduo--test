@@ -1081,19 +1081,161 @@ if (answeredCount < total) {
       report += '<p style="font-weight:bold;font-size:16px;margin-top:16px;">⚠️ 当前主要脆弱点：' + drainLabel[drainType] + '</p>';
       report += '<p style="margin-top:0;line-height:1.8;">' + drainFullText[drainType] + '</p>';
     }
-// 在报告最前面加入导出按钮
+// ==========================================
+// 4. 追加【导出下载PDF按钮】与【全新PMF双轨反馈舱】
+// ==========================================
 report = '<button id="btnDownloadReport" class="btn" style="margin-bottom:20px;">📥 保存报告（打印为PDF）</button>' + report;
-    document.getElementById("reportBox").innerHTML = report;
+
+let feedbackHtml = `
+<div id="feedbackBox" style="margin-top:48px; padding:24px; background:rgba(37,99,235,0.04); border-radius:20px; border:2.5px dashed #2563eb; text-align: left;">
+    <h3 style="color:#2563eb; margin-bottom:14px; font-size:1.15rem; font-weight:600;">🧭 测后反馈：协助系统校准你的职业沙盘</h3>
+    <p style="font-size:0.85rem; color:#475569; margin-bottom:24px; line-height:1.6;">为了提升沙盘引擎的职业发展测绘精度，我们需要回收一些真实的体感数据。您的反馈将被完全匿名加密处理。</p>
+    
+    <style>
+        .sv-group { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px dashed #e2e8f0; }
+        .sv-title { font-weight: 600; color: #2563eb; margin-bottom: 12px; font-size: 0.95rem; }
+        .sv-label { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; font-size: 0.9rem; color: #1e293b; cursor: pointer; line-height: 1.4; text-align: left; }
+        .sv-label input { margin-top: 3px; accent-color: #2563eb; flex-shrink: 0; }
+        .sv-label:hover { color: #2563eb; }
+    </style>
+
+    <div class="sv-group">
+        <div class="sv-title">1. 您的当前年龄段为：</div>
+        <label class="sv-label"><input type="radio" name="sv_age" value="18岁及以下"> A. 18岁及以下</label>
+        <label class="sv-label"><input type="radio" name="sv_age" value="19-24岁"> B. 19-24岁</label>
+        <label class="sv-label"><input type="radio" name="sv_age" value="25-30岁"> C. 25-30岁</label>
+        <label class="sv-label"><input type="radio" name="sv_age" value="31-35岁"> D. 31-35岁</label>
+        <label class="sv-label"><input type="radio" name="sv_age" value="36岁及以上"> E. 36岁及以上</label>
+    </div>
+
+    <div class="sv-group">
+        <div class="sv-title">2. 触发您本次参与测试的原因是什么？</div>
+        <label class="sv-label"><input type="radio" name="sv_motive" value="面临选专业/求职定位"> A. 面临选专业、分班或求职，急需确立初始的人生发展定位</label>
+        <label class="sv-label"><input type="radio" name="sv_motive" value="内耗严重/寻找破局转行"> B. 当前内耗严重或缺乏成就感，寻找破局与转行方向</label>
+        <label class="sv-label"><input type="radio" name="sv_motive" value="深度向内探索"> C. 纯粹渴望深度向内探索</label>
+        <label class="sv-label"><input type="radio" name="sv_motive" value="洞察他人/优化团队协作"> D. 需洞察他人特质，优化团队人际协作与组织资源配置</label>
+        <label class="sv-label"><input type="radio" name="sv_motive" value="转折点/评估抗压阈值"> E. 处于生活重大转折点，需重新评估自身的系统稳定性与抗压阈值</label>
+        <label class="sv-label"><input type="radio" name="sv_motive" value="消解关系困惑"> F. 想了解身边的关系，消解关系里的困惑</label>
+    </div>
+
+    <div class="sv-group">
+        <div class="sv-title">3. 在作答过程中，您是否经常遇到“必须做出艰难抉择”的情况？</div>
+        <label class="sv-label"><input type="radio" name="sv_pressure" value="极少，很容易判断"> A. 极少，选项很容易做出判断</label>
+        <label class="sv-label"><input type="radio" name="sv_pressure" value="偶尔，能对应常规自我"> B. 偶尔，大部分情境能快速对应常规自我</label>
+        <label class="sv-label"><input type="radio" name="sv_pressure" value="经常，暴露直觉反应"> C. 经常，部分题目迫使我暴露了剥离社会身份后的直觉反应</label>
+        <label class="sv-label"><input type="radio" name="sv_pressure" value="极度痛苦，极限施压"> D. 极度痛苦，感觉选项在进行极限施压与撕裂</label>
+    </div>
+
+    <div class="sv-group">
+        <div class="sv-title">4. 报告对您内驱力与能耗的剖析，穿透力如何？</div>
+        <label class="sv-label"><input type="radio" name="sv_accuracy" value="极度精准"> A. 极度精准，精确扫描到了未曾表露的底层逻辑</label>
+        <label class="sv-label"><input type="radio" name="sv_accuracy" value="较精准"> B. 较精准，解答了现实中存在的部分长期的困惑</label>
+        <label class="sv-label"><input type="radio" name="sv_accuracy" value="一般，存在偏颇"> C. 一般，部分描述符合，但存在明显的偏颇与未对齐之处</label>
+        <label class="sv-label"><input type="radio" name="sv_accuracy" value="偏差较大"> D. 偏差较大，感觉系统未能测绘到真实的自我</label>
+    </div>
+
+    <div class="sv-group">
+        <div class="sv-title">5. 您会推荐给朋友体验吗？</div>
+        <label class="sv-label"><input type="radio" name="sv_nps" value="会，非常愿意"> A. 会，非常愿意分享</label>
+        <label class="sv-label"><input type="radio" name="sv_nps" value="看情况，推荐给特定人"> B. 看情况，可能会推荐给特定需要的人</label>
+        <label class="sv-label"><input type="radio" name="sv_nps" value="不会，比较私人"> C. 不会，感觉比较私人或帮助不大</label>
+    </div>
+
+    <div class="sv-group">
+        <div class="sv-title">6. 您会阶段性（如经历重大变化后）再来测试吗？</div>
+        <label class="sv-label"><input type="radio" name="sv_retention" value="会，观测状态变化"> A. 会，想观测自己的状态变化</label>
+        <label class="sv-label"><input type="radio" name="sv_retention" value="也许会，看心境"> B. 也许会，看当时的心境</label>
+        <label class="sv-label"><input type="radio" name="sv_retention" value="测一次就够了"> C. 测一次就够了</label>
+    </div>
+
+    <div style="margin-bottom:24px;">
+        <div class="sv-title" style="color: #2563eb;">7. 您有什么话想对我们说？（选填，对某道题的感受、报告建议等）</div>
+        <textarea id="sv_comment" rows="3" placeholder="写下你的真实体感..." style="width:100%; padding:12px; border-radius:12px; border:1px solid #cbd5e1; font-family:inherit; font-size:0.9rem; background:var(--bg-card); color:var(--text-main); resize:vertical;"></textarea>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end;">
+        <button id="btnSubmitFeedback" class="btn" style="padding:10px 32px; border-radius:30px; font-weight:600; font-size:0.95rem;">加密提交问卷</button>
+    </div>
+    <p id="feedbackMsg" style="text-align:right; font-size:0.9rem; color:#10b981; display:none; margin-top:12px; font-weight:600;">✓ 数据回收成功，感谢你的协助！</p>
+</div>`;
+
+    // 将反馈问卷完美拼接在报告最底端
+    document.getElementById("reportBox").innerHTML = report + feedbackHtml;
     document.getElementById("reportBox").style.display = "block";
     document.getElementById("reportBox").scrollIntoView({behavior:"smooth"});
-       // 绑定导出按钮
+
+    // 绑定打印导出功能
     var downloadBtn = document.getElementById('btnDownloadReport');
     if (downloadBtn) {
         downloadBtn.onclick = function() {
             window.print();
         };
     }
-  };
+
+    // ── 异步发射数据到云端黑盒接口 ──
+    var cleanAnswers = {};
+    for (var qid in userAnswers) { cleanAnswers[qid] = userAnswers[qid]; }
+
+    var careerRecordId = null;
+    fetch('https://landuoduo-test.vercel.app/api/submit', { // 对应职业测试的提交黑盒路径
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: null, userAnswers: cleanAnswers })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(resData) {
+        if (resData.success) { careerRecordId = resData.recordId; }
+    })
+    .catch(function(err) { console.error("黑盒通讯静默异常:", err); });
+
+    // 绑定新版问卷的按钮提交动作
+    document.getElementById('btnSubmitFeedback').onclick = function() {
+        var getRadioValue = function(name) {
+            var checked = document.querySelector('input[name="' + name + '"]:checked');
+            return checked ? checked.value : '未作答';
+        };
+        
+        var surveyData = {
+            age: getRadioValue('sv_age'),
+            motive: getRadioValue('sv_motive'),
+            pressure: getRadioValue('sv_pressure'),
+            accuracy: getRadioValue('sv_accuracy'),
+            nps: getRadioValue('sv_nps'),
+            retention: getRadioValue('sv_retention'),
+            comment: document.getElementById('sv_comment').value.trim()
+        };
+        
+        if (surveyData.age === '未作答' && surveyData.motive === '未作答' && surveyData.comment === '') {
+            alert('请至少选择几个选项或留下一句话吧！');
+            return;
+        }
+
+        var feedbackBtn = this;
+        feedbackBtn.innerText = '问卷同步中...';
+        feedbackBtn.disabled = true;
+
+        // 平滑打包塞入原有 comment 字段，无损兼容原有 Supabase 数据库结构
+        fetch('/api/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                recordId: careerRecordId || '测试环境无ID',
+                rating: 5,
+                comment: JSON.stringify(surveyData)
+            })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(fdData) {
+            feedbackBtn.style.display = 'none';
+            document.getElementById('feedbackMsg').style.display = 'block';
+        })
+        .catch(function(err) {
+            alert('反馈通信故障：' + err.message);
+            feedbackBtn.innerText = '重新提交问卷';
+            feedbackBtn.disabled = false;
+        });
+    };
+};
       renderQuestions();
 })();
 </script>
