@@ -749,348 +749,354 @@ function updateProgress() {
     localStorage.setItem('careerTestAnswers', JSON.stringify(userAnswers));
 }
   // ── 提交 & 计分引擎（完全保留您原版的逻辑）──
-document.getElementById("btnSubmit").onclick = function() {
+  document.getElementById("btnSubmit").onclick = function() {
     // 漏题检查：若未答完，则定位跳转
-    var answeredCount = Object.keys(userAnswers).length;
-    if (answeredCount < total) {
-        alert('您还有 ' + (total - answeredCount) + ' 道题未答，正在为您定位到第一道漏题。');
+var answeredCount = Object.keys(userAnswers).length;
+if (answeredCount < total) {
+    alert('您还有 ' + (total - answeredCount) + ' 道题未答，正在为您定位到第一道漏题。');
 
-        var firstMissingQid = null;
-        for (var i = 0; i < ALL_QUESTIONS.length; i++) {
-            if (!userAnswers[ALL_QUESTIONS[i].id]) {
-                firstMissingQid = ALL_QUESTIONS[i].id;
-                break;
-            }
+    // 找到第一个未回答的题目id
+    var firstMissingQid = null;
+    for (var i = 0; i < ALL_QUESTIONS.length; i++) {
+        if (!userAnswers[ALL_QUESTIONS[i].id]) {
+            firstMissingQid = ALL_QUESTIONS[i].id;
+            break;
         }
-        if (firstMissingQid) {
-            document.querySelectorAll('.card.missing').forEach(function(card) {
-                card.classList.remove('missing');
-            });
-            var missingCard = document.querySelector('.card[data-qid="' + firstMissingQid + '"]');
-            if (missingCard) {
-                missingCard.classList.add('missing');
-                missingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-        return;
     }
-
-    // 显示加载中状态，防止用户重复点击
-    var btn = document.getElementById("btnSubmit");
-    btn.innerText = "正在通过安全黑盒计算中...";
-    btn.disabled = true;
-
-    // 物理通联：将纯净答案包强行灌入 Vercel 后端
-    fetch('/api/submit', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            userId: null, 
-            userAnswers: userAnswers
-        })
-    })
-    .then(function(response) {
-        return response.json();
-    })
-    .then(function(resData) {
-        if (!resData.success) {
-            alert('后端黑盒计算拒绝：' + resData.error);
-            btn.innerText = "提交并生成报告";
-            btn.disabled = false;
-            return;
+    if (firstMissingQid) {
+        // 清除之前可能残留的红色标记
+        document.querySelectorAll('.card.missing').forEach(function(card) {
+            card.classList.remove('missing');
+        });
+        // 找到对应的卡片并标红、滚动
+        var missingCard = document.querySelector('.card[data-qid="' + firstMissingQid + '"]');
+        if (missingCard) {
+            missingCard.classList.add('missing');
+            missingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            missingCard.style.boxShadow = '0 0 0 3px #ef4444';
+            setTimeout(function() {
+                missingCard.style.boxShadow = '';
+            }, 2000);
         }
+    }
+    return; // 阻止继续往下执行计分和生成报告
+}
+      // 初始化计分池
+    var S_pool = { O:0, V:0, D:0, E:0, T:0 };
+    var N_pool = { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
+    var F_pool = { SS:0, DS:0, SN:0, DN:0, Ch:0 };
+    var Sigma  = { s0:0, s1:0, s2s:0, s2c:0 };
+    var Trigger = [];
+    var SL_pool = { O:0, V:0, D:0, E:0, T:0 };
+    var G_neg = { A:0, B:0, C:0, D:0 };
+    var G_pos = { A:0, B:0, C:0, D:0 };
+    var eps = [];
 
-        // 安全防线：如果后端返回的池子不存在，自动在前端初始化零矩阵
-        var S_pool = resData.scores.S_pool || { O:0, V:0, D:0, E:0, T:0 };
-        var N_pool = resData.scores.N_pool || { PN:0, AN:0, RN:0, IN:0, MN:0, FN:0 };
-        var F_pool = resData.scores.F_pool || { SS:0, DS:0, SN:0, DN:0, Ch:0 };
-        var Sigma  = resData.scores.Sigma  || { s0:0, s1:0, s2s:0, s2c:0 };
-        var SL_pool = resData.scores.SL_pool || { O:0, V:0, D:0, E:0, T:0 };
-        var G_neg = resData.scores.G_neg || { A:0, B:0, C:0, D:0 };
-        var G_pos = resData.scores.G_pos || { A:0, B:0, C:0, D:0 };
-        var eps = resData.scores.eps || [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3];
+    // 遍历所有题目，根据用户选项计入各计分池
+    ALL_QUESTIONS.forEach(function(q) {
+      var val = userAnswers[q.id];
+      if (!val) return;
+      var id = q.id;
 
-        // ==========================================
-        // 前端纯文字解密与渲染层（不含任何计分权重）
-        // ==========================================
-        var sArr = Object.entries(S_pool).sort(function(a,b){return b[1]-a[1];});
-        var S1 = sArr[0] ? sArr[0][0] : "O";
-        var S2 = sArr.length>1 && sArr[1][1]>0 ? sArr[1][0] : null;
-        
-        var nArr = Object.entries(N_pool).sort(function(a,b){return b[1]-a[1];});
-        var N1 = nArr[0] ? nArr[0][0] : "PN";
-        var N2 = nArr.length>1 && nArr[1][1]>0 ? nArr[1][0] : null;
-        
-        var dualS = F_pool.DS >= F_pool.SS && F_pool.DS > F_pool.Ch;
-        var dualN = F_pool.DN >= F_pool.SN && F_pool.DN > F_pool.Ch;
-
-        var confidant = "";
-        var S_has = function(e){ return (S1===e || S2===e); };
-        var N_has = function(s){ return (N1===s || N2===s); };
-        if ((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN"))) { confidant = "谋臣型心腹"; }
-        else if ((S1==="O" || S2==="O") && !S_has("T") && !S_has("D") && !S_has("E") && (N_has("FN")||N_has("PN"))) { confidant = "守门型心腹"; }
-        else if ((S_has("D")||S_has("E")) && (N_has("IN")||N_has("PN")) && !((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN")))) { confidant = "开疆型心腹"; }
-        else if ((S_has("V")||(S1==="O"&&S2==="V")||(S2==="V"&&S1==="O")) && (N_has("RN")||N_has("PN")) && !((S1==="O"||S2==="O") && !S_has("T") && !S_has("D") && !S_has("E") && (N_has("FN")||N_has("PN")))) { confidant = "维稳型心腹"; }
-        else if ((S_has("T")||S_has("E")) && (N_has("MN")||N_has("IN")||N_has("RN")) && !((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN")))) { confidant = "布道型心腹"; }
-        else if ((S_has("O")||S_has("D")) && (N_has("FN")||N_has("AN")||N_has("PN")) && !((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN"))) && !((S1==="O"||S2==="O") && !S_has("T") && !S_has("D") && !S_has("E") && (N_has("FN")||N_has("PN")))) { confidant = "执行型心腹"; }
-        else if (S_has("D") && !((S_has("D")||S_has("E")) && (N_has("IN")||N_has("PN"))) && !((S_has("O")||S_has("D")) && (N_has("FN")||N_has("AN")||N_has("PN")))) { confidant = "破局型心腹"; }
-        else if (N_has("FN") && !((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN"))) && !((S1==="O"||S2==="O") && !S_has("T") && !S_has("D") && !S_has("E") && (N_has("FN")||N_has("PN"))) && !((S_has("O")||S_has("D")) && (N_has("FN")||N_has("AN")||N_has("PN")))) { confidant = "系统型心腹"; }
-        else if (S_has("E") && !((S_has("D")||S_has("E")) && (N_has("IN")||N_has("PN"))) && !((S_has("T")||S_has("E")) && (N_has("MN")||N_has("IN")||N_has("RN")))) { confidant = "资源型心腹"; }
-        else if (S_has("V") && N_has("RN") && !((S_has("V")||(S1==="O"&&S2==="V")||(S2==="V"&&S1==="O")) && (N_has("RN")||N_has("PN")))) { confidant = "情感型心腹"; }
-        else { confidant = "镜子型心腹"; }
-
-        var careerByConfidant = {
-            "谋臣型心腹": {dir:"战略、研究、咨询、架构、顶层设计", pos:"战略顾问、管理咨询、行业研究、产品战略、创始人参谋、组织诊断", unsuit:"纯执行、强应酬、低信息透明、只背锅无决策权", auth:"授权系统诊断与长期规划权；禁止置于极速变现或高压应酬区"},
-            "守门型心腹": {dir:"风控、合规、财务、审计、规则、边界管理", pos:"法务、合规、风控、财务审核、内控、质量管理、流程审核", unsuit:"灰区套利、高速扩张、规则模糊但要求背责", auth:"授权风控审计、合规审查与边界管理权；禁止置于灰度套利或高速扩张岗位"},
-            "开疆型心腹": {dir:"市场突破、资源置换、商务拓展、圈层扩张", pos:"BD、销售负责人、渠道经理、市场增长、资源整合", unsuit:"核心机密无制衡、高权限低监管、长期纯后台", auth:"授权 market 突破、资源置换与圈层扩张权；需配套强力风控审计"},
-            "维稳型心腹": {dir:"底盘维护、关系调停、风险兜底、内部稳定", pos:"HRBP、员工关系、行政总管、客户成功、社群运营", unsuit:"高权力决策、复杂利益分配、强对抗谈判", auth:"授权底盘维护、关系调停与风险兜底权；给予充足的缓冲资源"},
-            "布道型心腹": {dir:"文化建设、愿景解释、外部影响力、品牌叙事", pos:"品牌经理、公关、内容总监、布道师、社区领袖", unsuit:"纯执行流水线、低自主性、无话语权", auth:"授权文化建设、愿景解释与外部影响力构建权；防范虚化现实成本"},
-            "执行型心腹": {dir:"项目推进、流程落地、运营交付、战术管理", pos:"项目经理、运营经理、PMO、交付负责人、教务主管", unsuit:"长期无目标、频繁改口、多头指挥、无反馈环境", auth:"授权流程落地与交付权；必须搭配明确目标指示，禁止置于无序环境中"},
-            "破局型心腹": {dir:"改革、危机处理、突击项目、竞争突破", pos:"改革项目负责人、危机公关、销售冲锋、增长突击", unsuit:"长期低刺激维护、细水长流陪伴、纯规则文书岗", auth:"授权危机处理、改革推进与竞争突破权；需接受其带来的短期规则摩擦"},
-            "系统型心腹": {dir:"系统设计、产品、流程、组织机制、知识体系", pos:"产品经理、业务架构师、流程架构、SOP设计、知识库负责人", unsuit:"纯人情场、短期杂活、无边界救火、无授权背锅", auth:"授权流程架构、系统搭建与知识体系建设权；需提供足够的抽象空间和长周期项目"},
-            "资源型心腹": {dir:"商务、增长、市场、渠道、人脉、资源整合", pos:"BD、销售负责人、渠道经理、融资助理、增长负责人", unsuit:"核心机密无制衡、高权限低监管、长期纯后台", auth:"授权商务拓展、资源整合与市场增长权；需配套清晰的风控边界和利益绑定机制"},
-            "情感型心腹": {dir:"关系维护、用户陪伴、社群、服务、内部稳定", pos:"HRBP、员工关系、客户成功、社群运营、心理陪伴", unsuit:"高权力决策、复杂利益分配、强对抗谈判、长期单向消耗", auth:"授权员工关系、客户陪伴与社群运营权；需保护其不被过度索取情绪资源"},
-            "镜子型心腹": {dir:"价值校准、内容、咨询、复盘、精神陪伴", pos:"教练、咨询顾问、深度内容作者、品牌理念顾问、战略复盘顾问", unsuit:"要求无条件站队、纯情绪安抚、强服从体系", auth:"授权深度复盘、理念咨询与精神陪伴权；需接受其低服从性和高独立需求"}
+      if (id.startsWith("S-C") || /^C0[1-4]$/.test(id)) {
+        var m={A:"O",B:"V",C:"D",D:"E",E:"T"}; if(m[val]) S_pool[m[val]]+=2;
+      } else if (id.startsWith("N-C")) {
+        var m={A:"PN",B:"AN",C:"RN",D:"IN",E:"MN",F:"FN"}; if(m[val]) N_pool[m[val]]+=2;
+      } else if (/^F0[1-4]$/.test(id)) {
+        var fMap = { 
+          F01:{A:{SN:2,SS:2},B:{SN:2,DS:2},C:{DN:2,SS:2},D:{DN:2,DS:2},E:{Ch:2}}, 
+          F02:{A:{SS:2},B:{DS:2},C:{DS:1,SS:1},D:{DS:2},E:{Ch:2}}, 
+          F03:{A:{SN:2},B:{DN:2},C:{DN:1,Ch:1},D:{DN:1,Ch:1},E:{Ch:2}}, 
+          F04:{A:{SS:2,SN:2},B:{DS:2,SN:2},C:{SS:2,DN:2},D:{DS:2,DN:2},E:{Ch:2}} 
         };
-        var career = careerByConfidant[confidant] || careerByConfidant["镜子型心腹"];
-
-        var sigArr = [Sigma.s0, Sigma.s1, Sigma.s2s, Sigma.s2c];
-        var sigMax = Math.max.apply(null, sigArr);
-        var sigDom = sigArr[0]===sigMax?"σ0":sigArr[1]===sigMax?"σ1":sigArr[2]===sigMax?"σ2_switch":"σ2_collapse";
-        
-        var slArr = Object.entries(SL_pool).sort(function(a,b){return b[1]-a[1];});
-        var L1 = slArr[0] ? slArr[0][0] : "O";
-
-        function getMetaLabel(c) {
-            var m = Math.max(c.A||0, c.B||0, c.C||0, c.D||0);
-            var dom = c.D===m?"空转主导":c.C===m?"内源主导":c.B===m?"灰度主导":"外源主导";
-            var arr = Object.entries(c).sort(function(a,b){return b[1]-a[1];});
-            if (arr.length>1 && arr[1][1]>=3 && arr[1][1]<m) {
-                var aux = arr[1][0]==="C"?"内源辅助":arr[1][0]==="B"?"灰度辅助":arr[1][0]==="A"?"外源辅助":"空转倾向";
-                return dom + " · " + aux;
-            }
-            return dom;
+        if (fMap[id] && fMap[id][val]) { 
+          var a=fMap[id][val]; 
+          F_pool.SS+=a.SS||0; F_pool.DS+=a.DS||0; F_pool.SN+=a.SN||0; F_pool.DN+=a.DN||0; F_pool.Ch+=a.Ch||0; 
         }
-        var metaNegRaw = getMetaLabel(G_neg), metaPosRaw = getMetaLabel(G_pos);
-
-        var loadPool=0,stressPool=0,emotionPool=0,motivePool=0;
-        for(var i=0;i<eps.length;i++) {
-            if(i<4) loadPool+=eps[i];
-            else if(i<8) stressPool+=eps[i];
-            else if(i<12) emotionPool+=eps[i];
-            else motivePool+=eps[i];
-        }
-        var epsTotal = loadPool+stressPool+emotionPool+motivePool;
-        var epsZone = epsTotal<=28?"🔴 全面断电":epsTotal<=44?"🟠 省电模式":epsTotal<=60?"🟢 收支平衡":epsTotal<=72?"🔵 满电输出":"🟣 狂热超频";
-        var drainArr = [loadPool,stressPool,emotionPool,motivePool];
-        var drainMin = Math.min.apply(null,drainArr);
-        var drainType = loadPool===drainMin?"Load":stressPool===drainMin?"Stress":emotionPool===drainMin?"Emotion":"Motive";
-
-        var eName = {O:"O-结构 (Order)",V:"V-锚定 (Anchor)",D:"D-动力 (Drive)",E:"E-扩张 (Expand)",T:"T-超越 (Transcend)"};
-        var nName = {PN:"PN-身体底盘",AN:"AN-能力进化",RN:"RN-深度连接",IN:"IN-社会舞台",MN:"MN-意义导航",FN:"FN-系统运转"};
-        var eDesc = {
-            O:"你的一生都在追求秩序对混乱的物理统治。你不满足于简单的顺从，而是致力于亲手打造一个精密、可预测且严丝合缝的闭环世界...",
-            V:"你是系统在动荡与变局中的最后支点。你重视历史连接与安全底座...",
-            D:"你拒绝平庸的温吞维持，生命力在强力的碰撞中才达到巅峰...",
-            E:"你对已知的存量版图毫无眷恋，嗅觉永远锚定在未知的增量边界...",
-            T:"你并不住在现成的规则里，你住在逻辑之上的云端..."
-        };
-        var nDesc = {
-            PN:"你的力量必须降落在物理底盘（作息、健康、现金流、物资及空间秩序）上才能真正生效...",
-            AN:"你的力量必须降落在个人演化（技能训练、职业履历、项目经验及试错路径）上才能真正生效...",
-            RN:"你的力量必须降落于人际连接（同伴、伴侣、合伙人及长期契约）上才能真正生效...",
-            IN:"你的力量必须降落在社会网络（组织占位、圈层话语权、公众评价及身份标签）上才能真正生效...",
-            MN:"你的力量必须降落在精神范式（人生愿景、价值信仰、底层观念及宏大叙事）上才能真正生效...",
-            FN:"你的力量必须降落在抽象架构（商业模型、协作规则、工具链及反馈闭环）上才能真正生效..."
-        };
-        var confText = {
-            "谋臣型心腹":"你最核心的价值在于提供超越现状的判断力，系统应当授予你全局诊断与长期战略规划的重权...",
-            "执行型心腹":"你是确保目标从概念转化为现实的关键，应授权你负责流程落地与交付闭环...",
-            "开疆型心腹":"你是打破存量僵局的利刃，适合授权你进行市场突破、资源置换与外部圈层扩张...",
-            "维稳型心腹":"你是系统抵御风险的防火墙，应授权你负责底盘维护、人际关系调停与风险兜底...",
-            "布道型心腹":"你是组织共识与影响力的构建核心，适合授权你负责文化建设、愿景解释与外部影响力构建...",
-            "守门型心腹":"你是系统规则与底线的最后屏障，适合授权你负责风控审计、合规审查与边界管理...",
-            "破局型心腹":"你是系统陷入僵死状态时的强行重启键，适合授权你负责危机处理、改革推进与竞争突破...",
-            "系统型心腹":"你是组织机制的底层设计者，适合授权你负责流程架构、系统搭建与知识体系建设...",
-            "资源型心腹":"你是系统与外部世界的连接器，适合授权你负责商务拓展、资源整合与市场增长...",
-            "情感型心腹":"你是组织温度与信任关系的维护者，适合授权你负责员工关系、客户陪伴与社群运营...",
-            "镜子型心腹":"你是价值罗盘的校准者，适合授权你负责深度复盘、理念咨询与精神陪伴..."
-        };
-        var sigmaDesc = {
-            "σ1":"变色龙（高弹性转译型）\n说到抗压和变通，你就像一只变色龙...",
-            "σ0":"硬骨头（原教旨刚性型）\n在原则问题上，你就是一块硬骨头...",
-            "σ2_switch":"壁虎断尾（现实割肉重组型）\n你是个纯粹的生存主义者，关键时刻非常果断...",
-            "σ2_collapse":"系统宕机（无序溃散型）\n你的心理防线比较薄弱，一旦压力过载..."
-        };
-        var authTextMap = {
-            "σ1":"对你保持全量授权。弹性极佳，可授权其处理高度灰度与不确定性的复杂结算场域。",
-            "σ0":"对你进行灰度权限死锁闭关。严禁将其放置于需要灵活变通、和光同尘的资源运作位...",
-            "σ2_switch":"⚠️ 向你设立强监控机制。必须设定明确的刚性清算协议与利益绑定机制...",
-            "σ2_collapse":"⚠️ 向你剥夺核心授权。抗压极差，仅限外围低压环境使用..."
-        };
-        var sLogicTextFull = {
-            O:"面对危机，你最容易将问题的根源归咎于规则的模糊与流程的断裂...",
-            V:"面对危机，你最容易将问题的根源归咎于安全感的丧失与关系底座的过度紧绷...",
-            D:"面对危机，你最容易将问题的根源归咎于动能的停滞与真实冲突的被回避...",
-            E:"面对危机，你最容易将问题的根源归咎于输入的贫瘠与视角的封闭...",
-            T:"面对危机，你最容易将问题的根源归咎于底层逻辑的错误或系统目标的虚无..."
-        };
-        var metaNegFull = {
-            "内源主导":"纯内源型·硬扛模式\n你是个完全“自带干粮”的系统...",
-            "内源主导 · 灰度辅助":"内源主导·偶尔迂回\n你是个“自带干粮”的系统...",
-            "内源主导 · 外源辅助":"内源主导·按需妥协...",
-            "外源主导":"纯外源型·全盘接收...",
-            "外源主导 · 灰度辅助":"外源主导·暗中修补...",
-            "外源主导 · 内源辅助":"外源主导·底线刹车...",
-            "灰度主导":"纯灰度型·太极高手...",
-            "灰度主导 · 内源辅助":"灰度主导·底线锚定...",
-            "灰度主导 · 外源辅助":"灰度主导·按需迎合...",
-            "空转主导":"能量漏斗型·被动耗散..."
-        };
-        var metaPosFull = {
-            "内源主导":"纯内源型·拒绝裹挟...",
-            "内源主导 · 灰度辅助":"内源主导·接住转化...",
-            "内源主导 · 外源辅助":"内源主导·按需加速...",
-            "外源主导":"纯外源型·全量追随...",
-            "外源主导 · 灰度辅助":"外源主导·设风控...",
-            "外源主导 · 内源辅助":"外源主导·路径校准...",
-            "灰度主导":"纯灰度型·转化工厂...",
-            "灰度主导 · 内源辅助":"灰度主导·锚定内核...",
-            "灰度主导 · 外源辅助":"灰度主导·高价值冲刺...",
-            "空转主导":"能量漏斗型·被动耗散..."
-        };
-        var epsFullText = {
-            "🔴 全面断电":"你现在的状态就像是电量只剩 1% 且正在闪烁红灯...",
-            "🟠 省电模式":"你现在的状态就像开启了“省电模式”...",
-            "🟢 收支平衡":"你现在的状态处于正常的“收支平衡”...",
-            "🔵 满电输出":"你现在的状态简直是“电量满格”...",
-            "🟣 狂热超频":"你现在的状态处于一种“狂热超频”中..."
-        };
-        var drainLabel = { "Load": "物理承载", "Stress": "心理承压", "Emotion": "情绪极性", "Motive": "动机烈度" };
-        var confQuote = {
-            "谋臣型心腹": "我的价值不在于执行，在于能看见别人看不到的东西",
-            "执行型心腹": "别跟我谈愿景，告诉我具体怎么做，我来搞定",
-            "开疆型心腹": "存量没有意思，我要去打开那些还没有碰过的地方",
-            "维稳型心腹": "你们往前冲，我在后面把一切稳住，不让系统散架",
-            "布道型心腹": "我需要让更多人理解这件事的意义，不然推不动",
-            "守门型心腹": "扩张可以，但有些红线不能碰，我就是那条红线",
-            "破局型心腹": "系统快死了？让我来，我有办法在废墟上重新点火",
-            "系统型心腹": "混乱是因为没有好结构，我负责搭一个能自己跑起来的框架",
-            "情感型心腹": "你们都在讲效率，但没有人关心这里的人还好不好",
-            "镜子型心腹": "我不是来告诉你该做什么，我是来帮你看清你到底想要什么",
-            "资源型心腹": "你们缺的不是能力，是缺对的人，缺对的资源，我能找到"
-        };
-        var complexityLabel = dualS&&dualN ? "多维调度型" : dualS ? "专项攻坚型" : dualN ? "跨界串联型" : "深度穿透型";
-        var complexityQuote = {
-            "深度穿透型": "我只做一件事，但我要把这件事做穿。",
-            "专项攻坚型": "我能在一个领域里调动多套逻辑，处理那些别人搞不定的复杂项目。",
-            "跨界串联型": "我擅长把不同领域的资源串起来，让它们产生化学反应。",
-            "多维调度型": "我能同时处理多件性质不同的事，但要警惕自己因此烧干。"
-        };
-        var complexityDesc = {
-            "深度穿透型": "专注于单一维度的单线击穿...",
-            "专项攻坚型": "具备在单一领域内调动多重逻辑的厚度...",
-            "跨界串联型": "习惯用一套底层逻辑打通多个现实场域...",
-            "多维调度型": "具备同时处理异构任务的高阶算力..."
-        };
-        var archeCode = dualS&&dualN ? S1+"+"+S2+" × "+N1+"+"+N2 : dualS ? S1+"+"+S2+" × "+N1 : dualN ? S1+" × "+N1+"+"+N2 : S1+" × "+N1;
-        var drainFullText = {
-            "Load": "你当前的物理承载已严重过载...",
-            "Stress": "你的心理承压能力已接近临界点...",
-            "Emotion": "你的情绪极性正偏向负面与防御...",
-            "Motive": "你的动机烈度处于低迷状态..."
-        };
-
-        var report = "";
-        report += '<h2>🔧 你的内在引擎：是什么在驱动你</h2>';
-        report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">主引擎：' + eName[S1] + '</p>';
-        report += '<p style="margin-top:0;line-height:1.8;">' + eDesc[S1] + '</p>';
-        if (S2) {
-            report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">副引擎：' + eName[S2] + '</p>';
-            report += '<p style="margin-top:0;line-height:1.8;">' + eDesc[S2] + '</p>';
-        }
-        report += '<h2>🌐 你的现实领地：你把能量投向了哪里</h2>';
-        report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">主战场：' + nName[N1] + '</p>';
-        report += '<p style="margin-top:0;line-height:1.8;">' + nDesc[N1] + '</p>';
-        if (N2) {
-            report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">副战场：' + nName[N2] + '</p>';
-            report += '<p style="margin-top:0;line-height:1.8;">' + nDesc[N2] + '</p>';
-        }
-        report += '<h2>🧠 你的操作系统：如何处理复杂任务</h2>';
-        report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">拓扑结构：' + archeCode + '｜' + complexityLabel + '</p>';
-        report += '<p style="font-style:italic;color:#555;margin-top:0;">“' + (complexityQuote[complexityLabel]||"") + '”</p>';
-        report += '<p style="margin-top:0;line-height:1.8;">' + (complexityDesc[complexityLabel]||"") + '</p>';
-        report += '<h2>🤝 你的协作位置：在团队中发挥什么价值</h2>';
-        report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">协作角色：' + confidant + '</p>';
-        report += '<p style="font-style:italic;color:#555;margin-top:0;">“' + (confQuote[confidant]||"") + '”</p>';
-        report += '<p style="margin-top:0;line-height:1.8;">' + (confText[confidant]||"") + '</p>';
-        report += '<p style="margin-top:12px;"><strong>最适合职业方向：</strong>' + career.dir + '</p>';
-        report += '<p style="margin-top:12px;"><strong>C授权标签：</strong>' + (career.auth || "") + '</p>';
-        report += '<p><strong>典型岗位：</strong>' + career.pos + '</p>';
-        report += '<p><strong>不适合方向：</strong>' + career.unsuit + '</p>';
-        report += '<h2>⚡ 你的抗压模式：极限压力下你会怎样</h2>';
-        var sigmaLines = (sigmaDesc[sigDom]||"").split('\n');
-        var sigmaTitle = sigmaLines[0] || "";
-        var sigmaBody = sigmaLines.slice(1).join('<br>') || "";
-        report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">主导相变状态：' + sigDom + '｜' + sigmaTitle + '</p>';
-        report += '<p style="margin-top:0;line-height:1.8;">' + sigmaBody + '</p>';
-        report += '<p style="margin-top:8px;"><strong>授权调整：</strong>' + (authTextMap[sigDom]||"") + '</p>';
-        report += '<h2>🔍 你的诊断视角：你认为问题出在哪</h2>';
-        report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">第一归因倾向：' + eName[L1] + '</p>';
-        var logicRaw = sLogicTextFull[L1]||"";
-        var logicHtml = logicRaw.replace(/\n\n/g, '</p><p style="margin-top:12px;line-height:1.8;">').replace(/\n/g, '<br>');
-        report += '<p style="margin-top:0;line-height:1.8;">' + logicHtml + '</p>';
-        report += '<h2>🔄 你的反馈处理：如何应对外部正负反馈</h2>';
-        report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">面对压力：' + metaNegRaw + '</p>';
-        var negFull = metaNegFull[metaNegRaw] || metaNegFull[metaNegRaw.split(" · ")[0]] || metaNegRaw;
-        var negLines = negFull.split('\n');
-        var negBody = negLines.length > 1 ? negLines.slice(1).join('<br>') : negLines[0];
-        report += '<p style="margin-top:0;line-height:1.8;">' + negBody + '</p>';
-        report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;margin-top:16px;">面对机会：' + metaPosRaw + '</p>';
-        var posFull = metaPosFull[metaPosRaw] || metaPosFull[metaPosRaw.split(" · ")[0]] || metaPosRaw;
-        var posLines = posFull.split('\n');
-        var posBody = posLines.length > 1 ? posLines.slice(1).join('<br>') : posLines[0];
-        report += '<p style="margin-top:0;line-height:1.8;">' + posBody + '</p>';
-        report += '<h2>🔋 你的当下状态：此刻的身心能量水平</h2>';
-        report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">综合评分：' + epsTotal + '分｜工况：' + epsZone + '</p>';
-        var epsRaw = epsFullText[epsZone]||"";
-        var epsParts = epsRaw.split('【建议】');
-        var epsMain = epsParts[0] || "";
-        var epsAdvice = epsParts.length > 1 ? epsParts[1] : "";
-        report += '<p style="margin-top:0;line-height:1.8;">' + epsMain.replace(/\n/g, '<br>') + '</p>';
-        if (epsAdvice) {
-            report += '<p style="margin-top:8px;line-height:1.8;"><strong>【建议】</strong>' + epsAdvice.replace(/\n/g, '<br>') + '</p>';
-        }
-        if (drainType) {
-            report += '<p style="font-weight:bold;font-size:16px;margin-top:16px;">⚠️ 当前主要脆弱点：' + drainLabel[drainType] + '</p>';
-            report += '<p style="margin-top:0;line-height:1.8;">' + drainFullText[drainType] + '</p>';
-        }
-
-        report = '<button id="btnDownloadReport" class="btn" style="margin-bottom:20px;">📥 保存报告（打印为PDF）</button>' + report;
-        document.getElementById("reportBox").innerHTML = report;
-        document.getElementById("reportBox").style.display = "block";
-        document.getElementById("reportBox").scrollIntoView({behavior:"smooth"});
-
-        var downloadBtn = document.getElementById('btnDownloadReport');
-        if (downloadBtn) {
-            downloadBtn.onclick = function() { window.print(); };
-        }
-        
-        // 恢复按钮文字状态
-        btn.innerText = "提交并生成报告";
-        btn.disabled = false;
-    })
-    .catch(function(err) {
-        alert('黑盒网络通联发生故障：' + err.message);
-        btn.innerText = "提交并生成报告";
-        btn.disabled = false;
+      } else if (id.startsWith("st-")) {
+        var m={A:"s0",B:"s1",C:"s2s",D:"s2c"}; 
+        if(m[val]) { Sigma[m[val]]++; if(val==="C"||val==="D") Trigger.push(id); }
+      } else if (id.startsWith("SL-")) {
+        var m={A:"V",B:"D",C:"O",D:"E",E:"T"}; if(m[val]) SL_pool[m[val]]+=2;
+      } else if (id.startsWith("Γ-N")) {
+        var m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_neg[m[val]]++;
+      } else if (id.startsWith("Γ-P")) {
+        var m={A:"A",B:"B",C:"C",D:"D"}; if(m[val]) G_pos[m[val]]++;
+      } else if (id.startsWith("ε-")) {
+        var s={A:1,B:2,C:3,D:4,E:5}; if(s[val]) eps.push(s[val]);
+      }
     });
-};
-};
+
+    // ---- 后续所有计分结算、报告生成逻辑 ----
+
+    // S_drive 结算
+    var sArr = Object.entries(S_pool).sort(function(a,b){return b[1]-a[1];});
+    var S1 = sArr[0][0], S2 = sArr.length>1 && sArr[1][1]>0 ? sArr[1][0] : null;
+    var nArr = Object.entries(N_pool).sort(function(a,b){return b[1]-a[1];});
+    var N1 = nArr[0][0], N2 = nArr.length>1 && nArr[1][1]>0 ? nArr[1][0] : null;
+    var dualS = F_pool.DS >= F_pool.SS && F_pool.DS > F_pool.Ch;
+    var dualN = F_pool.DN >= F_pool.SN && F_pool.DN > F_pool.Ch;
+
+    // 心腹角色判定（11型）
+    var confidant = "";
+    var S_has = function(e){ return (S1===e || S2===e); };
+    var N_has = function(s){ return (N1===s || N2===s); };
+    if ((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN"))) { confidant = "谋臣型心腹"; }
+    else if ((S1==="O" || S2==="O") && !S_has("T") && !S_has("D") && !S_has("E") && (N_has("FN")||N_has("PN"))) { confidant = "守门型心腹"; }
+    else if ((S_has("D")||S_has("E")) && (N_has("IN")||N_has("PN")) && !((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN")))) { confidant = "开疆型心腹"; }
+    else if ((S_has("V")||(S1==="O"&&S2==="V")||(S2==="V"&&S1==="O")) && (N_has("RN")||N_has("PN")) && !((S1==="O"||S2==="O") && !S_has("T") && !S_has("D") && !S_has("E") && (N_has("FN")||N_has("PN")))) { confidant = "维稳型心腹"; }
+    else if ((S_has("T")||S_has("E")) && (N_has("MN")||N_has("IN")||N_has("RN")) && !((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN")))) { confidant = "布道型心腹"; }
+    else if ((S_has("O")||S_has("D")) && (N_has("FN")||N_has("AN")||N_has("PN")) && !((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN"))) && !((S1==="O"||S2==="O") && !S_has("T") && !S_has("D") && !S_has("E") && (N_has("FN")||N_has("PN")))) { confidant = "执行型心腹"; }
+    else if (S_has("D") && !((S_has("D")||S_has("E")) && (N_has("IN")||N_has("PN"))) && !((S_has("O")||S_has("D")) && (N_has("FN")||N_has("AN")||N_has("PN")))) { confidant = "破局型心腹"; }
+    else if (N_has("FN") && !((S_has("T")||S_has("O")) && (N_has("FN")||N_has("MN")||N_has("AN"))) && !((S1==="O"||S2==="O") && !S_has("T") && !S_has("D") && !S_has("E") && (N_has("FN")||N_has("PN"))) && !((S_has("O")||S_has("D")) && (N_has("FN")||N_has("AN")||N_has("PN")))) { confidant = "系统型心腹"; }
+    else if (S_has("E") && !((S_has("D")||S_has("E")) && (N_has("IN")||N_has("PN"))) && !((S_has("T")||S_has("E")) && (N_has("MN")||N_has("IN")||N_has("RN")))) { confidant = "资源型心腹"; }
+    else if (S_has("V") && N_has("RN") && !((S_has("V")||(S1==="O"&&S2==="V")||(S2==="V"&&S1==="O")) && (N_has("RN")||N_has("PN")))) { confidant = "情感型心腹"; }
+    else { confidant = "镜子型心腹"; }
+
+    var careerByConfidant = {
+      "谋臣型心腹": {dir:"战略、研究、咨询、架构、顶层设计", pos:"战略顾问、管理咨询、行业研究、产品战略、创始人参谋、组织诊断", unsuit:"纯执行、强应酬、低信息透明、只背锅无决策权", auth:"授权系统诊断与长期规划权；禁止置于极速变现或高压应酬区"},
+      "守门型心腹": {dir:"风控、合规、财务、审计、规则、边界管理", pos:"法务、合规、风控、财务审核、内控、质量管理、流程审核", unsuit:"灰区套利、高速扩张、规则模糊但要求背责", auth:"授权风控审计、合规审查与边界管理权；禁止置于灰度套利或高速扩张岗位"},
+      "开疆型心腹": {dir:"市场突破、资源置换、商务拓展、圈层扩张", pos:"BD、销售负责人、渠道经理、市场增长、资源整合", unsuit:"核心机密无制衡、高权限低监管、长期纯后台", auth:"授权市场突破、资源置换与圈层扩张权；需配套强力风控审计"},
+      "维稳型心腹": {dir:"底盘维护、关系调停、风险兜底、内部稳定", pos:"HRBP、员工关系、行政总管、客户成功、社群运营", unsuit:"高权力决策、复杂利益分配、强对抗谈判", auth:"授权底盘维护、关系调停与风险兜底权；给予充足的缓冲资源"},
+      "布道型心腹": {dir:"文化建设、愿景解释、外部影响力、品牌叙事", pos:"品牌经理、公关、内容总监、布道师、社区领袖", unsuit:"纯执行流水线、低自主性、无话语权", auth:"授权文化建设、愿景解释与外部影响力构建权；防范虚化现实成本"},
+      "执行型心腹": {dir:"项目推进、流程落地、运营交付、战术管理", pos:"项目经理、运营经理、PMO、交付负责人、教务主管", unsuit:"长期无目标、频繁改口、多头指挥、无反馈环境", auth:"授权流程落地与交付权；必须搭配明确目标指示，禁止置于无序环境中"},
+      "破局型心腹": {dir:"改革、危机处理、突击项目、竞争突破", pos:"改革项目负责人、危机公关、销售冲锋、增长突击", unsuit:"长期低刺激维护、细水长流陪伴、纯规则文书岗", auth:"授权危机处理、改革推进与竞争突破权；需接受其带来的短期规则摩擦"},
+      "系统型心腹": {dir:"系统设计、产品、流程、组织机制、知识体系", pos:"产品经理、业务架构师、流程架构、SOP设计、知识库负责人", unsuit:"纯人情场、短期杂活、无边界救火、无授权背锅", auth:"授权流程架构、系统搭建与知识体系建设权；需提供足够的抽象空间和长周期项目"},
+      "资源型心腹": {dir:"商务、增长、市场、渠道、人脉、资源整合", pos:"BD、销售负责人、渠道经理、融资助理、增长负责人", unsuit:"核心机密无制衡、高权限低监管、长期纯后台", auth:"授权商务拓展、资源整合与市场增长权；需配套清晰的风控边界和利益绑定机制"},
+      "情感型心腹": {dir:"关系维护、用户陪伴、社群、服务、内部稳定", pos:"HRBP、员工关系、客户成功、社群运营、心理陪伴", unsuit:"高权力决策、复杂利益分配、强对抗谈判、长期单向消耗", auth:"授权员工关系、客户陪伴与社群运营权；需保护其不被过度索取情绪资源"},
+      "镜子型心腹": {dir:"价值校准、内容、咨询、复盘、精神陪伴", pos:"教练、咨询顾问、深度内容作者、品牌理念顾问、战略复盘顾问", unsuit:"要求无条件站队、纯情绪安抚、强服从体系", auth:"授权深度复盘、理念咨询与精神陪伴权；需接受其低服从性和高独立需求"}
+    };
+    var career = careerByConfidant[confidant] || careerByConfidant["镜子型心腹"];
+
+    var sigArr = [Sigma.s0, Sigma.s1, Sigma.s2s, Sigma.s2c];
+    var sigMax = Math.max.apply(null, sigArr);
+    var sigDom = sigArr[0]===sigMax?"σ0":sigArr[1]===sigMax?"σ1":sigArr[2]===sigMax?"σ2_switch":"σ2_collapse";
+    var L1 = Object.entries(SL_pool).sort(function(a,b){return b[1]-a[1];})[0][0];
+
+    function getMetaLabel(c) {
+      var m = Math.max(c.A,c.B,c.C,c.D);
+      var dom = c.D===m?"空转主导":c.C===m?"内源主导":c.B===m?"灰度主导":"外源主导";
+      var arr = Object.entries(c).sort(function(a,b){return b[1]-a[1];});
+      if (arr.length>1 && arr[1][1]>=3 && arr[1][1]<m) {
+        var aux = arr[1][0]==="C"?"内源辅助":arr[1][0]==="B"?"灰度辅助":arr[1][0]==="A"?"外源辅助":"空转倾向";
+        return dom + " · " + aux;
+      }
+      return dom;
+    }
+    var metaNegRaw = getMetaLabel(G_neg), metaPosRaw = getMetaLabel(G_pos);
+
+    var loadPool=0,stressPool=0,emotionPool=0,motivePool=0;
+    for(var i=0;i<eps.length;i++) {
+      if(i<4) loadPool+=eps[i];
+      else if(i<8) stressPool+=eps[i];
+      else if(i<12) emotionPool+=eps[i];
+      else motivePool+=eps[i];
+    }
+    var epsTotal = loadPool+stressPool+emotionPool+motivePool;
+    var epsZone = epsTotal<=28?"🔴 全面断电":epsTotal<=44?"🟠 省电模式":epsTotal<=60?"🟢 收支平衡":epsTotal<=72?"🔵 满电输出":"🟣 狂热超频";
+    var drainArr = [loadPool,stressPool,emotionPool,motivePool];
+    var drainMin = Math.min.apply(null,drainArr);
+    var drainType = loadPool===drainMin?"Load":stressPool===drainMin?"Stress":emotionPool===drainMin?"Emotion":"Motive";
+
+    // 完整字典
+    var eName = {O:"O-结构 (Order)",V:"V-锚定 (Anchor)",D:"D-动力 (Drive)",E:"E-扩张 (Expand)",T:"T-超越 (Transcend)"};
+    var nName = {PN:"PN-身体底盘",AN:"AN-能力进化",RN:"RN-深度连接",IN:"IN-社会舞台",MN:"MN-意义导航",FN:"FN-系统运转"};
+    var eDesc = {
+      O:"你的一生都在追求秩序对混乱的物理统治。你不满足于简单的顺从，而是致力于亲手打造一个精密、可预测且严丝合缝的闭环世界，将一切不确定性彻底驯服为可控的铁律。为此能够牺牲短期灵活度；承担前期繁琐的搭建成本；忍受他人的不守规矩。",
+      V:"你是系统在动荡与变局中的最后支点。你重视历史连接与安全底座，当外部环境陷入失控与悬空时，你负责守住那一分归属感与最后的安全防线，是动荡中为众人提供灵魂依托的最后防线。为此你能够牺牲扩张速度；承受长期的维持性内耗；承担拖后腿的沉没成本。",
+      D:"你拒绝平庸的温吞维持，生命力在强力的碰撞中才达到巅峰。你像一个拒绝后退的破局者，擅长在僵局中制造剧烈的系统位移，通过直面阻力和对抗，强行点燃停滞事物的引擎，推动一切跨越障碍。为此你能够担高强度冲突；承受关系紧张；消耗大量体能与情绪。",
+      E:"你对已知的存量版图毫无眷恋，嗅觉永远锚定在未知的增量边界。你像一个不停开启新接口的捕猎者，永远在嗅探外部的新机会与新连接，持续扩大系统做功的吞吐量与影响力上限。为此你能够承担资源失控的风险；承受精力被极度拉散；忍受基本盘的不稳定。",
+      T:"你并不住在现成的规则里，你住在逻辑之上的云端。你习惯抽离一切现实表象的约束，直击核心的第一性原理；你从不盲从现有的结论，而是热衷于从地基处重新定义这个世界的最高解释权。为此你能够短期孤独与不被理解；慢回报；为了正确结构牺牲短期世俗舒适。"
+    };
+    var nDesc = {
+      PN:"你的力量必须降落在物理底盘（作息、健康、现金流、物资及空间秩序）上才能真正生效。你是一个现实世界的建造者，你并不相信虚无的承诺，只在乎那些看得见、摸得着、能被绝对掌控的物质安全与空间秩序。因此你拒绝纯虚拟、纯概念、无任何实物落地的空转地带。",
+      AN:"你的力量必须降落在个人演化（技能训练、职业履历、项目经验及试错路径）上才能真正生效。你将人生看作一场永不停歇的升级游戏，每一次做功都在为自己的能力版图增砖添瓦，致力于将自我打造成一个不可替代的进化体。因此你拒绝机械重复、一眼望到头、毫无成长空间的流水线。",
+      RN:"你的力量必须降落于人际连接（同伴、伴侣、合伙人及长期契约）上才能真正生效。你是一个灵魂与契约的编织者，你的影响力通过他人的信任、回应与深度协作来传递，在人与人的共振中实现价值的最大化。因此你拒绝纯粹冰冷的数据核算、绝对理性的杀伐决断区。",
+      IN:"你的力量必须降落在社会网络（组织占位、圈层话语权、公众评价及身份标签）上才能真正生效。你擅长在错综复杂的社会洋流中导航，通过夺取核心位置与塑造群体评价，将个人的姓名转化为一种具备统治力的符号与重权。因此你拒绝无人问津、极度封闭、无需任何社交背书的孤岛。",
+      MN:"你的力量必须降落在精神范式（人生愿景、价值信仰、底层观念及宏大叙事）上才能真正生效。你是一个火种的守护者，只在那些关于“意义”与“终极目标”的高海拔地带做功，通过对价值底座的修筑来决定现实世界的走向。因此你拒绝毫无意义的官僚内耗、每天朝令夕改的糊涂账区。",
+      FN:"你的力量必须降落在抽象架构（商业模型、协作规则、工具链及反馈闭环）上才能真正生效。你是一个逻辑的工程师，擅长将复杂的现实编码为隐形的机制，通过对反馈闭环的极致精准操作，确保整个世界像钟表一样分秒不差地运行。因此你拒绝毫无规则、纯靠人情世故和拍脑袋做决定的混沌区。"
+    };
+    var confText = {
+      "谋臣型心腹":"你最核心的价值在于提供超越现状的判断力，系统应当授予你全局诊断与长期战略规划的重权。为了确保逻辑的准确性，必须为你提供完整的信息透明度。应避免将你置于追求极速变现或高压社交应酬的环境中，以免损耗你的战略带宽。你会被谨慎的深用，并制衡全责。",
+      "执行型心腹":"你是确保目标从概念转化为现实的关键，应授权你负责流程落地与交付闭环。为了发挥你的最高效率，系统必须搭配明确的目标指示与验收标准。禁止将你置于高度无序的环境中，你需要清晰的规则边界来完成高标准的交付。你会被即插即用般的深用。",
+      "开疆型心腹":"你是打破存量僵局的利刃，适合授权你进行市场突破、资源置换与外部圈层扩张。由于你的做功方式通常具有破坏性，系统需配套强力的风控审计工具作为支撑。不宜将你放置在需要长期精细化维稳的岗位，那会抑制你的爆发力。你会被半核心地位使用，并接受强力的风控监管。",
+      "维稳型心腹":"你是系统抵御风险的防火墙，应授权你负责底盘维护、人际关系调停与风险兜底。为了确保你的稳定性，系统必须给予你足够的资源缓冲与心理余量。严禁要求你发起具有高风险的破坏性创新，以免动摇你的防御核心。你会被深用，置于后方核心。",
+      "布道型心腹":"你是组织共识与影响力的构建核心，适合授权你负责文化建设、愿景解释与外部影响力构建。你擅长赋予行动以意义感，但系统需同步防范你的愿景构思与现实成本脱节。禁止将你锁死在低维、机械重复的流水线作业中，那将是对你认知带宽的极大浪费。你会被视为外围/影响力圈核心。",
+      "守门型心腹":"你是系统规则与底线的最后屏障，适合授权你负责风控审计、合规审查与边界管理。你的价值在于在扩张冲动中守住不可逾越的红线。系统需为你提供清晰的判罚标准和独立裁决权。禁止将你置于需要灰度套利或高速扩张的岗位，那将直接废掉你的核心功能。",
+      "破局型心腹":"你是系统陷入僵死状态时的强行重启键，适合授权你负责危机处理、改革推进与竞争突破。你的价值在系统最需要位移的时刻达到巅峰。系统需接受你在破局过程中带来的短期混乱与规则摩擦。禁止将你放置在需要长期精细化维护和稳定的岗位，你的燃料是突破而非守成。",
+      "系统型心腹":"你是组织机制的底层设计者，适合授权你负责流程架构、系统搭建与知识体系建设。你的价值在于将散乱的经验编码为可复用的机制。系统需为你提供足够的抽象空间和长周期项目。禁止将你置于短期杂活、纯人情场或无授权背锅的环境中，那将直接瓦解你的结构化能力。",
+      "资源型心腹":"你是系统与外部世界的连接器，适合授权你负责商务拓展、资源整合与市场增长。你的价值在于将外部增量源源不断地注入系统。系统需为你配套清晰的风控边界和利益绑定机制。禁止将你置于长期纯后台、核心机密无制衡或高权限低监管的岗位。",
+      "情感型心腹":"你是组织温度与信任关系的维护者，适合授权你负责员工关系、客户陪伴与社群运营。你的价值在于在冷冰冰的系统运转中保留人的维度。系统需保护你不被过度索取情绪资源。禁止将你置于高权力决策、复杂利益分配或长期单向消耗的岗位。",
+      "镜子型心腹":"你是价值罗盘的校准者，适合授权你负责深度复盘、理念咨询与精神陪伴。你的价值在于在系统迷失方向时提供不受利益污染的判断。系统需接受你的低服从性和高独立需求。禁止将你置于要求无条件站队、纯情绪安抚或强服从体系的岗位。"
+    };
+    var sigmaDesc = {
+      "σ1":"变色龙（高弹性转译型）\n说到抗压和变通，你就像一只变色龙——不是没骨头，是懂借壳生蛋。就算遇到再大的冲击，你也能一边护住核心底盘，一边灵活调整边界。你会通过退让一些次要利益来换取大局的生存，咽下委屈套上别人的壳，但核心利益一点没少拿。这种“能屈能伸”的本领让你在复杂环境里活得很久。身为你的老板和合伙人，会因为你变通能力极强，他们可以放心把那些最复杂、最模糊、最需要“和光同尘”的高难度任务交给你处理。",
+      "σ0":"硬骨头（原教旨刚性型）\n在原则问题上，你就是一块硬骨头——宁折不弯。你完全不接受任何“灰色地带”，绝对死守自己的底线，宁可硬扛损失、甚至丢掉所有收益，也不愿意在规则上退后半步。对你来说，要么按规矩全拿，要么干脆彻底掀桌子，没有中间项。身为你的老板和合伙人，是不会让你负责那些需要灵活变通、低调处理的差事。你会因为太死板而把事情搞僵，甚至导致合作彻底破裂。",
+      "σ2_switch":"壁虎断尾（现实割肉重组型）\n你是个纯粹的生存主义者，关键时刻非常果断。你并不在乎所谓的“面子”或“传统”，只要能换取活命或核心利益，你可以随时把原来的规则和负担像壁虎断尾一样直接甩掉，在废墟上迅速换个活法。一旦闻到危险或血腥味，你随时切断旧关系，绝不陪葬。身为你的老板和合伙人，会时刻盯着你的利益点。因为一旦情况不对，你可能会为了自保而瞬间“卖掉”系统，甚至直接跑路。",
+      "σ2_collapse":"系统宕机（无序溃散型）\n你的心理防线比较薄弱，一旦压力过载，原有的底线就会像雪一样融化。你很难在冲突中保持清醒，很容易被环境彻底带偏，最后陷入一种随波逐流、甚至干脆摆烂的状态，被烂摊子彻底埋没。压力一过载，你会直接罢工摆烂，进入听天由命的流放态。身为你的老板和合伙人，会因你的抗压能力极差，只会给你干点安稳活。绝对不会让你负责任何“一旦出事就全盘皆输”的关键任务。"
+    };
+    var authTextMap = {
+      "σ1":"对你保持全量授权。弹性极佳，可授权其处理高度灰度与不确定性的复杂结算场域。",
+      "σ0":"对你进行灰度权限死锁闭关。严禁将其放置于需要灵活变通、和光同尘的资源运作位，极易引发教条式系统卡死与客情断裂。",
+      "σ2_switch":"⚠️ 向你设立强监控机制。必须设定明确的刚性清算协议与利益绑定机制，防止其在关键节点抛弃系统独立逃生。",
+      "σ2_collapse":"⚠️ 向你剥夺核心授权。抗压极差，仅限外围低压环境使用，严禁向其开放具有单点故障风险的系统核心库。"
+    };
+    var sLogicTextFull = {
+      O:"面对危机，你最容易将问题的根源归咎于规则的模糊与流程的断裂。在你看来，如果系统失灵，必然是因为权责边界不再清晰，或者是反馈闭环在某个环节失去了效力。因此，你的第一判断往往是定位到“哪条规则失效了”“哪个闭环断了”——你相信只要把结构重新理顺，系统就能恢复运转。\n\n洞察优势：你能迅速发现流程漏洞，一眼看出谁没尽责、哪里的闭环断了。在混乱中，你是那个最先画出清晰边界线的人。\n\n认知盲点：你可能高估规则和流程的修复效力，而低估参与者真实的情绪承载力以及非理性的动能消耗。当系统需要的不是更清晰的规则，而是情绪安抚或破局勇气时，你的第一判断可能偏离真正需要优先处理的问题。",
+      V:"面对危机，你最容易将问题的根源归咎于安全感的丧失与关系底座的过度紧绷。在你看来，当一个环境变得令人窒息，必然是因为底层失去了容错的缓冲以及相互支撑的依托。因此，你的第一判断往往是锁定“谁的心态崩了”“哪里缺乏兜底”——你相信只要恢复一个熟悉且安全的环境，系统就能重新站稳。\n\n洞察优势：你能敏锐察觉系统的不稳定因素，提前感知到谁的承受力已经到极限、哪里缺乏兜底的支点。在动荡中，你是那个最先伸出手稳住他人的人。\n\n认知盲点：你可能高估安全感和关系维护的修复效力，而低估客观效率的停滞以及必要硬性规则的缺失。当系统需要的不是温情而是清晰的指令和公平的追责时，你的第一判断可能让系统陷入低效空转。",
+      D:"面对危机，你最容易将问题的根源归咎于动能的停滞与真实冲突的被回避。在你看来，系统的腐朽通常始于温吞的维持——不是因为逻辑出了错、也不是因为规则缺了位，而是没人敢于打破僵局，让系统在惯性中逐渐失活。因此，你的第一判断往往是锁定那个“卡住不动”的关键节点：是谁在回避正面冲突？是哪一步失去了推进的动量？\n\n洞察优势：你能在所有人和稀泥时直击要害，迅速识别出系统中“需要被推动”的那一环。在僵局中，你是那个最先指出“问题就卡在这里”的人。\n\n认知盲点：你可能高估“推动”本身的效力，而低估长期维护、规则沉淀和缓冲设计的价值。当系统需要的是稳定沉淀而非重新点火时，你的第一判断可能指向错误方向。",
+      E:"面对危机，你最容易将问题的根源归咎于输入的贫瘠与视角的封闭。在你看来，系统之所以枯竭，是因为样本量不足或选择面太窄，由于拒绝引入外部的增量才陷入了存量的死循环。因此，你的第一判断往往是寻找被忽略的外部变量——新的资源渠道、新的参考样本、新的第三方视角。\n\n洞察优势：你拥有极其开阔的视野，能在别人死磕存量时瞬间找到外部破局的增量。在资源枯竭期，你是那个最先发现“另一条路”的人。\n\n认知盲点：你可能高估外部增量的修复效力，而低估内部现有资源的消化率以及核心目标的深度聚焦需求。当系统需要的不是更多选项而是把已有资源做深做透时，你的第一判断可能导致主线发散。",
+      T:"面对危机，你最容易将问题的根源归咎于底层逻辑的错误或系统目标的虚无。在你看来，最致命的失败通常源于手段被错当成目的，或者整个系统在一个完全错误的框架下进行徒劳的努力。因此，你的第一判断往往是重新审视问题本身：“我们到底在解决什么问题？这个框架本身是否成立？”\n\n洞察优势：你能很快看见别人看不见的结构漏洞，一眼剥离表面现象直击本质。在方向迷失时，你是那个最先问出“我们为什么要做这件事”的人。\n\n认知盲点：你可能高估底层逻辑重构的修复效力，而低估现实的紧迫性以及具体落地的琐碎细节。当系统需要的不是重新定义问题而是先把眼前的火扑灭时，你的第一判断可能让行动悬置。"
+    };
+    var metaNegFull = {
+      "内源主导":"纯内源型·硬扛模式\n你是个完全“自带干粮”的系统。外界的评价、规矩或是人情绑架，很难真正穿透你的内核，你只认逻辑，不认脸色。面对不合理的强压、甩锅或越界，你会选择毫不犹豫地正面迎击。你敢于承担不合群的代价，明确划定边界、要求规则对等，绝不接受不明不白的委屈和情绪剥削。你不常使用中间策略，处理方式直接而清晰。",
+      "内源主导 · 灰度辅助":"内源主导·偶尔迂回\n你是个“自带干粮”的系统，稳定性主要来自内心的那杆秤。面对不合理的强压、甩锅或越界，你的第一反应是设立边界、坚持规则对等，绝不接受不明不白的情绪剥削。与此同时，你保留了一套可调用的灰度手腕——当情境需要时，你能先降低冲突、做一部分表面配合，再把真正的精力转向修补核心漏洞。灰度转化不是你的主频段，但它赋予了你面对复杂博弈时不轻易卡死的灵活性。",
+      "内源主导 · 外源辅助":"内源主导·按需妥协\n你以内部标准为主轴，面对压力时优先设立边界、坚持自己的判断。但你并不完全封闭——在特定情境下，你会选择先顺应外部要求以降低冲突，保全关键关系或资源。这种外源策略是你的备用选项，而非默认模式。",
+      "外源主导":"纯外源型·全盘接收\n你是一个“高度开放”的系统，稳定性非常依赖外界的反馈和投喂。环境的夸奖、认可和资源能让你瞬间充满电，但如果周围全是负面噪音，你也会比别人更容易受内伤。面对不合理的要求、评价或低压消耗，你的反应往往是退让降噪。为了短期的安全和表面和谐，你倾向于委屈自己去配合大环境的节奏，先把麻烦应付过去再说。",
+      "外源主导 · 灰度辅助":"外源主导·暗中修补\n你是一个高度开放的系统，面对压力时倾向先退让降噪以保短期安全。但你并非一味顺从——你具备灰度转化能力，能在配合外部规则的同时悄悄修补自己的核心漏洞，在表面服从和内部建设之间找到平衡。",
+      "外源主导 · 内源辅助":"外源主导·底线刹车\n你通常优先响应外部要求和评价，以维持安全和表面和谐。但当你判断外部要求触碰底线或严重偏离事实时，你会调用内部标准设立边界。内源判断是你的刹车机制，虽不常用，但在关键时刻能为你守住红线。",
+      "灰度主导":"纯灰度型·太极高手\n你是个极聪明的“超级转化炉”。你既不盲目硬刚，也不委屈顺从，而是擅长把外界的压强和规则，悄悄转译成自己建设底盘的燃料，在和光同尘中完成系统升级。面对不合理的强压，你很会“打太极”。你不会直接掀桌子，而是先做一部分表面功夫交差，然后把真正的精力用来修补你认为重要的核心漏洞，在规则边缘给自己抠出余地。",
+      "灰度主导 · 内源辅助":"灰度主导·底线锚定\n你的主力策略是“边配合边建设”——面对压力，你先降低冲突、做表面配合，同时把精力转向修补核心漏洞。内源判断作为你的辅助锚点，确保你在灰度中不会迷失底线，关键时刻仍然能果断设立边界。",
+      "灰度主导 · 外源辅助":"灰度主导·按需迎合\n你的主力策略是“打太极”——在不掀桌子的前提下推动真实建设。但在某些情境下，你会选择完全顺应外部规则以换取安全和资源，外源适应作为你的备用策略存在。",
+      "空转主导":"能量漏斗型·被动耗散\n你目前的系统处于一种“能量漏斗”状态，对外界信号半脱机。你既没法有效吸收营养，也推不开周围的烂事，整个人处于一种被动消耗的失重感中。"
+    };
+    var metaPosFull = {
+      "内源主导":"纯内源型·拒绝裹挟\n你是个完全“自带干粮”的系统。越是面对巨大的诱惑和夸奖，你反而越警觉。你宁可走得慢一点、错过一些风口，也要死死守住自己的核心底盘和边界，绝不被外界的“大饼”和高帽子忽悠瘸了。外部正反馈几乎不会改变你的方向判断。",
+      "内源主导 · 灰度辅助":"内源主导·接住转化\n越是面对诱惑和夸奖，你反而越警觉。你不会因为外界的认可而改变方向，宁可走得慢一点、错过一些风口，也要守住核心底盘和边界。但你并不拒绝一切正反馈——你会接住认可带来的动力，将其拆解成可验证的阶段目标和风控线，让“好运气”沉淀为真正可复用的能力。灰度转化是你的辅助手段，让你在顺风局中既不失速也不失控。",
+      "内源主导 · 外源辅助":"内源主导·按需加速\n你以内部标准为主轴，面对奖励和机会时优先检查是否契合自己的路径和边界。但在某些情境下，你也会顺势接收外部正反馈带来的资源和动力，用于加速当前阶段的目标。外源吸收是你的备用加速器，而非导航仪。",
+      "外源主导":"纯外源型·全量追随\n你是一个“高度开放”的系统，稳定性非常依赖外界的反馈和投喂。环境的夸奖、认可和资源能让你瞬间充满电。当诱人的机会、资源或极高的评价出现时，你极易被这种“顺风局”带起节奏，倾向于全量压上，追求极致的版图扩张和认可度，哪怕这会让你精力过度分散、主线变模糊。",
+      "外源主导 · 灰度辅助":"外源主导·设风控\n你容易被认可和机会点燃状态，倾向于追随正反馈扩张版图。但你懂得在扩张中设风控——你会接住正反馈带来的动力，同时将其拆解为阶段目标、设置投入上限，让扩张不至于失控。灰度转化让你在顺风局中保持一定的结构意识。",
+      "外源主导 · 内源辅助":"外源主导·路径校准\n你通常追随正反馈的节奏，被认可和机会牵引行动方向。但当你判断外部正反馈指向的方向与自己的核心路径严重冲突时，你会调用内部标准踩刹车或调整方向。内源判断是你的校准机制，虽不常用，但能防止你被带偏太远。",
+      "灰度主导":"纯灰度型·转化工厂\n你是个极聪明的“超级转化炉”。面对好机会和夸奖，你懂得见好就收。你会接住这些动力，但马上会把它们拆解成阶段性的目标和风控线，确保这些“好运气”能沉淀为真正可复用的能力。你不盲追风口，也不拒绝善意，一切外部正反馈都被你转化为系统升级的燃料。",
+      "灰度主导 · 内源辅助":"灰度主导·锚定内核\n你的主力策略是将正反馈转化为长期资产——接住动力、设风控、沉淀可复用能力。内部标准作为你的辅助锚点，确保你在转化过程中不偏离核心路径，面对与底层逻辑冲突的“好机会”时能够果断放弃。",
+      "灰度主导 · 外源辅助":"灰度主导·高价值冲刺\n你擅长将正反馈拆解为可执行的结构和目标。但在某些高价值窗口出现时，你也会选择先全量投入抓住机会，事后再补风控和沉淀。外源追随是你的备用加速模式。",
+      "空转主导":"能量漏斗型·被动耗散\n你目前的系统处于一种“能量漏斗”状态，对外界信号半脱机。你既没法有效吸收营养，也推不开周围的烂事，整个人处于一种被动消耗的失重感中。"
+    };
+    var epsFullText = {
+      "🔴 全面断电":"你现在的状态就像是电量只剩 1% 且正在闪烁红灯。系统带宽已经彻底耗尽，物理机能和心理承压都到了崩溃边缘。你现在的自我防御机制已经全面开启，随时准备切断所有外部连接来保命。你现在什么都不想管了，只想断开一切，一个人待着。\n\n如果现在还继续强撑，你很可能会出现无差别的攻击性，或者直接“强制关机”开始摆烂，甚至会引发一场说病就病的物理大爆发。\n\n【建议】：现在你需要绝对的隔离和睡眠，禁止处理任何需要脑子或沟通的变量。",
+      "🟠 省电模式":"你现在的状态就像开启了“省电模式”。你只能沿着惯性勉强维持最基本的日常运转，对外界的信号非常敏感且极度缺乏耐心，任何多出来的麻烦都会让你觉得难以忍受。你还能勉强撑着日常，但任何额外的麻烦都会让你炸。\n\n如果现在继续给你加压，系统很快会过载报错，你会直接甩锅或者因为情绪崩盘而彻底断线。\n\n【建议】：现在只适合做点边界清晰的杂活，或者一个人安静地收尾。千万别去碰那些复杂的沟通或高难度的挑战。",
+      "🟢 收支平衡":"你现在的状态处于正常的“收支平衡”。你既不亢奋也不抗拒，能够非常客观地就事论事。现在的你拥有标准的算力带宽，能稳定地输出你原本该有的能力水平。你现在状态正常，该做的事能稳定推进，不亢奋也不抗拒。\n\n如果长期在高压下得不到正向反馈，你会很快退化到橙区的防御状态，开始斤斤计较自己的付出和回报。\n\n【建议】：可以正常推进业务和协同工作，但现阶段不要给你安排那些超出职权范围、责任模糊的重担。",
+      "🔵 满电输出":"你现在的状态简直是“电量满格”。系统运转非常丝滑，你不仅能轻松搞定自己的分内事，甚至还有余力去帮别人修补漏洞。你现在的抗压和抗干扰能力都处于巅峰状态。你现在状态很好，不仅能干完自己的，还能帮别人兜底。\n\n只要能给你对应的价值激励，你就能保持很长时间的高效率输出，是一个非常完美的攻坚期。\n\n【建议】：现在最适合让你去处理突发危机、带领新项目破局，千万别把你关在枯燥的机械重复里。",
+      "🟣 狂热超频":"你现在的状态处于一种“狂热超频”中。你不仅精力过剩，而且极度渴望搞点大动作，去打破旧规矩或开拓新版图。这种爆发式的能量很有攻击性，虽然很猛，但要小心这是在大脑透支。你现在精力过剩，想搞大动作，但要小心，冲太猛随时会断电。\n\n因为你现在完全无视了身体的承载上限，这种冲刺极可能会在不久后遭遇“断崖式断电”，让你直接虚脱掉回红区。\n\n【建议】：现在适合让你去干那些需要极大冲劲的拓荒活，但一定要有人在后方帮你踩刹车。"
+    };
+    var drainLabel = { "Load": "物理承载", "Stress": "心理承压", "Emotion": "情绪极性", "Motive": "动机烈度" };
+    var confQuote = {
+      "谋臣型心腹": "我的价值不在于执行，在于能看见别人看不到的东西",
+      "执行型心腹": "别跟我谈愿景，告诉我具体怎么做，我来搞定",
+      "开疆型心腹": "存量没有意思，我要去打开那些还没有碰过的地方",
+      "维稳型心腹": "你们往前冲，我在后面把一切稳住，不让系统散架",
+      "布道型心腹": "我需要让更多人理解这件事的意义，不然推不动",
+      "守门型心腹": "扩张可以，但有些红线不能碰，我就是那条红线",
+      "破局型心腹": "系统快死了？让我来，我有办法在废墟上重新点火",
+      "系统型心腹": "混乱是因为没有好结构，我负责搭一个能自己跑起来的框架",
+      "情感型心腹": "你们都在讲效率，但没有人关心这里的人还好不好",
+      "镜子型心腹": "我不是来告诉你该做什么，我是来帮你看清你到底想要什么",
+      "资源型心腹": "你们缺的不是能力，是缺对的人，缺对的资源，我能找到"
+    };
+    var complexityLabel = dualS&&dualN ? "多维调度型" : dualS ? "专项攻坚型" : dualN ? "跨界串联型" : "深度穿透型";
+    var complexityQuote = {
+      "深度穿透型": "我只做一件事，但我要把这件事做穿。",
+      "专项攻坚型": "我能在一个领域里调动多套逻辑，处理那些别人搞不定的复杂项目。",
+      "跨界串联型": "我擅长把不同领域的资源串起来，让它们产生化学反应。",
+      "多维调度型": "我能同时处理多件性质不同的事，但要警惕自己因此烧干。",
+      "潜能未定型": "我还没有找到那个让我扎根的点，但我的能量一直在，只是在等一个方向。"
+    };
+    var complexityDesc = {
+      "深度穿透型": "专注于单一维度的单线击穿，你的复杂度上限虽然受限，但抗干扰能力极强。你像一柄精准的手术刀，拒绝一切细碎的干扰与无谓的修饰，存在的唯一目的就是在选定的单点上实现极致的穿透与深度。",
+      "专项攻坚型": "具备在单一领域内调动多重逻辑的厚度，极其适合处理那些重型、高难度的复杂项目。你像一台全副武装的攻坚战车，能够吸收高压环境下的复杂矛盾，并将多重驱动力转化为击碎瓶颈的合力，实现专项领域的深度破局。",
+      "跨界串联型": "习惯用一套底层逻辑打通多个现实场域，是天生的中台调度者与跨部门协调者。你像一条流动的河流，能轻易穿透不同领域的行政与规则壁垒，让看似孤立的资源在你的逻辑链条下产生化学反应，实现高效的跨界输出。",
+      "多维调度型": "具备同时处理异构任务的高阶算力，系统调度能力极其强悍。你像一座昼夜不停的高速运转枢纽，能在大规模的并发需求中保持主线不乱，通过复杂的逻辑网络实现多维覆盖，但必须警惕由于极度耗能而引发的系统性宕机。",
+      "潜能未定型": "目前的系统尚未形成稳定的功耗结构，仍缺乏承重能力与持续做功的闭合机制。你正处于一种高能但散乱的叠加态，拥有巨大的潜能却尚未收束，急需在现实中寻找到一个坚固的锚点，来实现从自由游离到有效输出的质变。"
+    };
+    var archeCode = dualS&&dualN ? S1+"+"+S2+" × "+N1+"+"+N2 : dualS ? S1+"+"+S2+" × "+N1 : dualN ? S1+" × "+N1+"+"+N2 : S1+" × "+N1;
+    var drainFullText = {
+      "Load": "你当前的物理承载已严重过载，身体正在发出明确的透支信号。睡眠不足、疲劳堆积和作息紊乱正在侵蚀你的基础防线，导致精力恢复缓慢、免疫力下降。如果继续忽视这些信号，可能会引发头痛、肠胃问题或慢性疼痛。你需要立刻降低任务密度，优先保证连续高质量的睡眠和规律饮食，让身体回到安全基线。",
+      "Stress": "你的心理承压能力已接近临界点。面对不确定性或突发变化时，你会出现过度警觉、思维反刍和决策困难，大脑像一台持续过热的引擎，难以冷静处理信息。长期处于这种高压状态容易导致焦虑、易怒和注意力涣散。请主动为自己设置“信息屏蔽时段”，通过正念、散步或简单手工活动让神经系统降温。",
+      "Emotion": "你的情绪极性正偏向负面与防御，对外界刺激容易产生抵触、烦躁甚至敌意。你可能会过度解读他人的中性行为，并将小摩擦放大为攻击信号。这种情绪底色正在消耗你的社交能量，让你在关系中感到孤独和消耗。建议有意识地与可信任的人进行低冲突的倾诉，或通过日记、艺术表达释放积压的情绪，避免继续内耗。",
+      "Motive": "你的动机烈度处于低迷状态，曾经让你兴奋的目标现在变得灰暗且遥远。拖延和摆烂的冲动频繁出现，不是因为懒惰，而是内心的价值感与行动力暂时脱节。长期缺乏正反馈或目标与真实自我冲突，会导致这种“燃料耗尽”的感觉。试着从微小的成就开始重建行动惯性，并允许自己暂时放慢脚步，重新审视什么对你真正重要。"
+    };
+
+    // ==================== 拼接报告 ====================
+    var report = "";
+    report += '<h2>🔧 你的内在引擎：是什么在驱动你</h2>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">主引擎：' + eName[S1] + '</p>';
+    report += '<p style="margin-top:0;line-height:1.8;">' + eDesc[S1] + '</p>';
+    if (S2) {
+      report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">副引擎：' + eName[S2] + '</p>';
+      report += '<p style="margin-top:0;line-height:1.8;">' + eDesc[S2] + '</p>';
+    }
+    report += '<h2>🌐 你的现实领地：你把能量投向了哪里</h2>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">主战场：' + nName[N1] + '</p>';
+    report += '<p style="margin-top:0;line-height:1.8;">' + nDesc[N1] + '</p>';
+    if (N2) {
+      report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">副战场：' + nName[N2] + '</p>';
+      report += '<p style="margin-top:0;line-height:1.8;">' + nDesc[N2] + '</p>';
+    }
+    report += '<h2>🧠 你的操作系统：如何处理复杂任务</h2>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">拓扑结构：' + archeCode + '｜' + complexityLabel + '</p>';
+    report += '<p style="font-style:italic;color:#555;margin-top:0;">“' + (complexityQuote[complexityLabel]||"") + '”</p>';
+    report += '<p style="margin-top:0;line-height:1.8;">' + (complexityDesc[complexityLabel]||"") + '</p>';
+    report += '<h2>🤝 你的协作位置：在团队中发挥什么价值</h2>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">协作角色：' + confidant + '</p>';
+    report += '<p style="font-style:italic;color:#555;margin-top:0;">“' + (confQuote[confidant]||"") + '”</p>';
+    report += '<p style="margin-top:0;line-height:1.8;">' + (confText[confidant]||"") + '</p>';
+    report += '<p style="margin-top:12px;"><strong>最适合职业方向：</strong>' + career.dir + '</p>';
+    report += '<p style="margin-top:12px;"><strong>C授权标签：</strong>' + (career.auth || "") + '</p>';
+    report += '<p><strong>典型岗位：</strong>' + career.pos + '</p>';
+    report += '<p><strong>不适合方向：</strong>' + career.unsuit + '</p>';
+    report += '<h2>⚡ 你的抗压模式：极限压力下你会怎样</h2>';
+    var sigmaLines = (sigmaDesc[sigDom]||"").split('\n');
+    var sigmaTitle = sigmaLines[0] || "";
+    var sigmaBody = sigmaLines.slice(1).join('<br>') || "";
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">主导相变状态：' + sigDom + '｜' + sigmaTitle + '</p>';
+    report += '<p style="margin-top:0;line-height:1.8;">' + sigmaBody + '</p>';
+    report += '<p style="margin-top:8px;"><strong>授权调整：</strong>' + (authTextMap[sigDom]||"") + '</p>';
+    report += '<h2>🔍 你的诊断视角：你认为问题出在哪</h2>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">第一归因倾向：' + eName[L1] + '</p>';
+    var logicRaw = sLogicTextFull[L1]||"";
+    var logicHtml = logicRaw.replace(/\n\n/g, '</p><p style="margin-top:12px;line-height:1.8;">').replace(/\n/g, '<br>');
+    report += '<p style="margin-top:0;line-height:1.8;">' + logicHtml + '</p>';
+    report += '<h2>🔄 你的反馈处理：如何应对外部正负反馈</h2>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">面对压力：' + metaNegRaw + '</p>';
+    var negFull = metaNegFull[metaNegRaw] || metaNegFull[metaNegRaw.split(" · ")[0]] || metaNegRaw;
+    var negLines = negFull.split('\n');
+    var negBody = negLines.length > 1 ? negLines.slice(1).join('<br>') : negLines[0];
+    report += '<p style="margin-top:0;line-height:1.8;">' + negBody + '</p>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;margin-top:16px;">面对机会：' + metaPosRaw + '</p>';
+    var posFull = metaPosFull[metaPosRaw] || metaPosFull[metaPosRaw.split(" · ")[0]] || metaPosRaw;
+    var posLines = posFull.split('\n');
+    var posBody = posLines.length > 1 ? posLines.slice(1).join('<br>') : posLines[0];
+    report += '<p style="margin-top:0;line-height:1.8;">' + posBody + '</p>';
+    report += '<h2>🔋 你的当下状态：此刻的身心能量水平</h2>';
+    report += '<p style="font-weight:bold;font-size:18px;margin-bottom:2px;">综合评分：' + epsTotal + '分｜工况：' + epsZone + '</p>';
+    var epsRaw = epsFullText[epsZone]||"";
+    var epsParts = epsRaw.split('【建议】');
+    var epsMain = epsParts[0] || "";
+    var epsAdvice = epsParts.length > 1 ? epsParts[1] : "";
+    report += '<p style="margin-top:0;line-height:1.8;">' + epsMain.replace(/\n/g, '<br>') + '</p>';
+    if (epsAdvice) {
+      report += '<p style="margin-top:8px;line-height:1.8;"><strong>【建议】</strong>' + epsAdvice.replace(/\n/g, '<br>') + '</p>';
+    }
+    if (drainType) {
+      report += '<p style="font-weight:bold;font-size:16px;margin-top:16px;">⚠️ 当前主要脆弱点：' + drainLabel[drainType] + '</p>';
+      report += '<p style="margin-top:0;line-height:1.8;">' + drainFullText[drainType] + '</p>';
+    }
+// 在报告最前面加入导出按钮
+report = '<button id="btnDownloadReport" class="btn" style="margin-bottom:20px;">📥 保存报告（打印为PDF）</button>' + report;
+    document.getElementById("reportBox").innerHTML = report;
+    document.getElementById("reportBox").style.display = "block";
+    document.getElementById("reportBox").scrollIntoView({behavior:"smooth"});
+       // 绑定导出按钮
+    var downloadBtn = document.getElementById('btnDownloadReport');
+    if (downloadBtn) {
+        downloadBtn.onclick = function() {
+            window.print();
+        };
+    }
+  };
       renderQuestions();
 })();
 </script>
 </body>
 </html>
+      
