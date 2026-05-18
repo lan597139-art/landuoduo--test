@@ -6,7 +6,7 @@
     <title>组织与协作 - 动态沙盒探测系统</title>
     <style>
         /* ==========================================
-           1. 全局设计基准与变量
+           1. 完美复刻图一：全局样式与变量
            ========================================== */
         :root {
             --primary: #2563eb;
@@ -26,15 +26,24 @@
             background: var(--bg-page); 
             color: var(--text-main); 
             line-height: 1.8; 
-            padding-top: 120px; 
+            padding-top: 140px; /* 留出顶部黑框导航空间 */
         }
         a { text-decoration: none; color: inherit; }
 
         /* ==========================================
-           2. 顶部悬浮黑框导航栏
+           2. 完美复刻图一：顶部悬浮黑框导航栏
            ========================================== */
-        .site-header { position: fixed; top: 0; width: 100%; background: rgba(250, 250, 248, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; padding: 24px 20px; }
-        .nav-container { display: flex; align-items: center; gap: 32px; padding: 12px 40px; border: 2px solid var(--border-dark); border-radius: 99px; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .site-header { 
+            position: fixed; top: 0; width: 100%; 
+            background: rgba(250, 250, 248, 0.85); 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); 
+            z-index: 1000; display: flex; justify-content: center; padding: 24px 20px; 
+        }
+        .nav-container { 
+            display: flex; align-items: center; gap: 32px; padding: 12px 40px; 
+            border: 2px solid var(--border-dark); border-radius: 99px; 
+            background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+        }
         .nav-item { font-weight: 600; font-size: 0.95rem; color: #475569; position: relative; cursor: pointer; transition: color 0.2s; padding: 4px 0; }
         .nav-item:hover, .nav-item.active { color: var(--primary); }
         .dropdown { position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); opacity: 0; visibility: hidden; transition: all 0.2s ease; padding: 8px 0; }
@@ -44,47 +53,29 @@
         .dropdown-item:hover { background: #f1f5f9; color: var(--primary); font-weight: 600; }
 
         /* ==========================================
-           3. 双栏弹性拓扑控制架构 (核心修复防挤压)
+           3. 完美复刻图一：双栏吸顶弹性盒布局
            ========================================== */
-        .wiki-layout { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            display: flex; 
-            gap: 40px; 
-            padding: 40px 20px; 
-        }
+        .wiki-layout { max-width: 1200px; margin: 0 auto; display: flex; gap: 40px; padding: 40px 20px; }
         
         /* 左侧固定目录 */
         .wiki-sidebar { 
-            width: 260px; 
-            flex-shrink: 0; 
-            position: sticky; 
-            top: 140px; 
-            height: fit-content; 
-            background: var(--bg-card); 
-            padding: 24px; 
-            border-radius: var(--radius); 
-            border: 1px solid var(--border-color); 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02); 
+            width: 260px; flex-shrink: 0; position: sticky; top: 140px; height: fit-content; 
+            background: var(--bg-card); padding: 24px; border-radius: var(--radius); 
+            border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.02); 
         }
         .wiki-sidebar h3 { font-size: 1.1rem; color: var(--primary); margin-bottom: 16px; font-weight: 700; }
         .sidebar-link { display: block; padding: 10px 0; font-size: 0.95rem; color: var(--text-nav); transition: all 0.2s; border-bottom: 1px dashed var(--border-color); }
         .sidebar-link:last-child { border-bottom: none; }
         .sidebar-link:hover { color: var(--primary); font-weight: 600; padding-left: 6px; }
 
-        /* 右侧核心内容容器 (锁死窄口限制) */
-        .wiki-content { 
-            flex-grow: 1; 
-            max-width: 860px; 
-            min-width: 0; 
-            width: 100%; 
-        }
+        /* 右侧核心内容容器 (min-width: 0 锁死边界防止表格破坏布局) */
+        .wiki-content { flex-grow: 1; max-width: 860px; min-width: 0; width: 100%; }
         
         .page-title { font-size: 2.2rem; font-weight: 600; margin-bottom: 12px; color: var(--border-dark); }
         .page-desc { font-size: 1.05rem; color: var(--text-nav); margin-bottom: 48px; }
 
         /* ==========================================
-           4. 组件与卡片设计样式
+           4. 组件与内容精修样式
            ========================================== */
         .theory-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 32px; margin-bottom: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
         .card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; border-bottom: 2px solid #f3f3ee; padding-bottom: 16px; }
@@ -93,12 +84,10 @@
         
         .theory-section { margin-bottom: 28px; }
         .theory-section h4 { font-size: 1.05rem; color: var(--primary); margin-bottom: 10px; font-weight: 600; }
-        .theory-section p { font-size: 0.95rem; color: #475569; }
         
         .quote-box { background: #f8fafc; font-style: italic; color: #475569; padding: 14px 18px; border-radius: 8px; margin: 12px 0; font-size: 0.95rem; border-left: 3px solid #cbd5e1; }
         .anchor-offset { scroll-margin-top: 140px; }
 
-        /* 因果链自适应单元框 */
         .dynamic-item { background: #ffffff; border: 1px solid var(--border-color); border-left: 4px solid #ef4444; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; }
         .dynamic-item.health { border-left-color: #10b981; }
         .dynamic-title { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--border-dark); margin-bottom: 12px; font-size: 0.98rem; }
@@ -158,7 +147,7 @@
 
         <div class="wiki-content">
             <h1 class="page-title">组织与协作：生态位与动能博弈</h1>
-            <p class="page-desc">基于底层做功引擎与容纳沙盒的交叉并集，对并发处理算力、组织契约角色以及生克互耗密码实施刚性测绘，剥离非理性的管理内耗。</p>
+            <p class="page-desc">基于底层做功引擎与生存沙盒的交叉并集，实施精细化并发算力、组织契约角色以及生克互耗密码的客观测绘。</p>
 
             <div id="topology" class="anchor-offset">
                 <div class="theory-card">
@@ -167,19 +156,19 @@
                         <h2>系统算力拓扑与复杂度分层</h2>
                     </div>
                     <div class="theory-section">
-                        <h4 style="color:var(--primary); font-weight:600; margin-bottom:6px;">深度穿透型（单点专才）</h4>
+                        <h4>深度穿透型（单点专才）</h4>
                         <p>专注于单一维度的单线击穿，复杂度上限受限，但具备极强的抗干扰机能。犹如精准的手术刀，排斥细碎干预与流俗修饰，存在的确定性价值在于特定单点位置上的极致穿透与硬核深度。</p>
                         
-                        <h4 style="margin-top: 24px; color:var(--primary); font-weight:600; margin-bottom:6px;">专项攻坚型（专项复合人才）</h4>
+                        <h4 style="margin-top: 24px;">专项攻坚型（专项复合人才）</h4>
                         <p>具备在单一垂直领域内调动、咬合多重逻辑的厚度，极度契合重型、高难度复杂项目的接盘。宛如重装全副武装的攻坚战车，能够吸收并钝化高压环境下的错综矛盾，将多重驱动力收束为击碎瓶颈的合力。</p>
                         
-                        <h4 style="margin-top: 24px; color:var(--primary); font-weight:600; margin-bottom:6px;">跨界串联型（跨域管理者）</h4>
+                        <h4 style="margin-top: 24px;">跨界串联型（跨域管理者）</h4>
                         <p>习惯运用单一底层逻辑高效打通多个现实物理场域，属于天然的中台调度体与跨域协调者。犹如流动的河水，能轻易渗透、穿透不同子领域的行政或壁垒限制，使孤立资源在特定逻辑链条下发生高效的化学反应。</p>
                         
-                        <h4 style="margin-top: 24px; color:var(--primary); font-weight:600; margin-bottom:6px;">枢纽型架构师（枢纽算力）</h4>
-                        <p>具备同时调度、处理异构系统任务的高阶算力，整体调度机能极其强悍。相当于昼夜不停运转的高速枢纽网络，能在大规模事务并发中保持主线有条不紊。但必须严防由于极度耗能而引发系统性瘫痪。</p>
+                        <h4 style="margin-top: 24px;">枢纽型架构师（枢纽算力）</h4>
+                        <p>具备同时调度、处理异构系统任务的高阶算力，整体调度机能极其强悍。相当于昼夜不停运转的高速枢纽网络，能在大大规模事务并发中保持主线有条不紊。但必须严防由于极度耗能而引发系统性瘫痪。</p>
                         
-                        <h4 style="margin-top: 24px; color:var(--primary); font-weight:600; margin-bottom:6px;">游离散弹型（潜能未定型）</h4>
+                        <h4 style="margin-top: 24px;">游离散弹型（潜能未定型）</h4>
                         <p>心智系统尚未沉淀出稳定的功耗输出结构，缺乏现实承重能力与做功闭环。当前处于一种高能量、多维散乱的叠加态，具备爆发潜能但未收束。亟需在现实空间内寻找到坚固的锚点，完成从自由耗散到有效输出的相变。</p>
                     </div>
                 </div>
@@ -227,7 +216,7 @@
                                     <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">核心信念与愿景守护者</span><p style="color:#475569; margin-top:4px;">品牌基因守护、传统文化传承维系</p></td>
                                     <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">遗留系统与老旧机制兜底者</span><p style="color:#475569; margin-top:4px;">旧系统运维、兜底客服、遗留处理</p></td>
                                 </tr>
-                                <tr style="border-bottom: 1px solid #e2e8f0;">
+                                <tr>
                                     <td style="padding: 16px; font-weight: 700;">D 动力<br><span style="font-weight:normal; color:#64748b; font-size:0.8rem;">正面交锋与冲锋</span></td>
                                     <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">重资产攻坚与物理阻力破局者</span><p style="color:#475569; margin-top:4px;">重型硬件交付、线下地推铁军、工程攻坚</p></td>
                                     <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">成长突破与训练推进专家</span><p style="color:#475569; margin-top:4px;">攻坚教练、绩效冲刺主管、潜能激发</p></td>
@@ -327,9 +316,9 @@
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
                             <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">破局型心腹</h4>
-                            <div class="quote-box">“常规机制已陷入慢性僵死，系统将在混沌与废墟中强行二次重启”</div>
+                            <div class="quote-box">常规机制已陷入慢性僵死，系统将在混沌与废墟中强行二次重启</div>
                             <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>D, D+V, D+T</p>
                             <p style="font-size: 0.9rem; color: #2c2c2c;">组织在遭遇生态位停滞、死局时的暴力重启键。适合在危机处理、机制改革推行、或者遭遇恶性竞品夹击时进行短周期的无限制破冰授权。</p>
                             <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
@@ -337,7 +326,7 @@
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
                             <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">系统型心腹</h4>
                             <div class="quote-box">“散乱的经验没有繁衍价值，必须全量编码为自动运行的客观框架”</div>
                             <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>高度契合高分段系统结构件</p>
@@ -347,7 +336,7 @@
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
                             <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">情感型心腹</h4>
                             <div class="quote-box">“系统盲目追求效率指标时，必须留存个体体感与内部信任的基本边界”</div>
                             <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>V, V+O, V+D</p>
@@ -357,7 +346,7 @@
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
                             <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">镜子型心腹</h4>
                             <div class="quote-box">“不提供外置的目标导航，只通过反射机制协助内核看清原始意图”</div>
                             <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>T+V, V+T</p>
@@ -459,7 +448,7 @@
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">杯水车薪</span> 衰E🌊 克 旺D🔥</div>
-                        <div class="dynamic-desc">渴望破局与变化，燃烧本能极度亢奋总想冲锋，但吞噬新变量开拓新领地的能力严重不足。空有猛劲却没有开疆拓土的地图。行动力被困在存量空间里打转，火势极大却没有新的柴火可烧。</div>
+                        <div class="dynamic-desc">渴望破局与变化，燃烧本能极度亢奋总想冲锋，幕后解盘与增量消化能力严重不足。空有猛劲却没有开疆拓土的地图。行动力被困在存量空间里打转，火势极大却没有新的柴火可烧。</div>
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">萤火撼铁</span> 衰D🔥 克 旺O💎</div>
@@ -488,15 +477,15 @@
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">厚土埋金</span> 旺V⛰️ 生 衰O💎</div>
-                        <div class="dynamic-desc">外界反馈积累了深厚安全感，但结晶本能偏弱。明明有底气建立绝对掌控的SOP和明确边界，却任由运转松散。养分再足也没运去锻造收束的利刃，拥有了安稳后方却建不起一套自动防御的坚固闭环。</div>
+                        <div class="dynamic-desc">外界反馈积累了深厚安全感，但结晶本能偏弱。明明有底气建立绝对掌控的SOP and 明确边界，却任由运转松散。养分再足也没运去锻造收束的利刃，拥有了安稳后方却建不起一套自动防御的坚固闭环。</div>
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">铁牢死水</span> 旺O💎 生 衰E🌊</div>
-                        <div class="dynamic-desc">结晶本能打造了冷峻严密的完美闭环，本可支撑吞噬变量，但对外扩张渴望极低。坚固的管道已经铺好，源头却未曾开闸引水. 耗费心血建起高配的基础设施，却只能看着它在封闭中无效空转。</div>
+                        <div class="dynamic-desc">结晶本能打造了冷峻严密的完美闭环，本可支撑吞噬变量，但对外扩张渴望极低。坚固的管道已经铺好，源头却未曾开闸引水。耗费心血建起高配的基础设施，却只能看着它在封闭中无效空转。</div>
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">汪洋溺木</span> 旺E🌊 生 衰T🌲</div>
-                        <div class="dynamic-desc">狩猎本能不断嗅探吞噬新变量，但对新事物追问到底的冲动不足。海量信息与机会在版图漫延，每个都值得深挖却浅尝辄止。水浇在了树根上，树却没有往下长。收编着表象繁华，却无法提炼洞穿现实的底层真理。</div>
+                        <div class="dynamic-desc">狩猎本能不断嗅探吞噬新变量，关系并集膨胀，但对新事物追问到底的冲动不足。海量信息与机会在版图漫延，每个都值得深挖却浅尝辄止。水浇在了树根上，树却没有往下长。收编着表象繁华，却无法提炼底层真理。</div>
                     </div>
                 </div>
 
@@ -546,11 +535,11 @@
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">水火不容</span> 旺E🌊 克 旺D🔥</div>
-                        <div class="dynamic-desc">扩张野心极速膨胀，同时破局行动力极其旺盛。系统不断开启新方向，行动力在每个战场全力燃烧。扩张本能分流兵力，燃烧本能又渴求全线冲刺。盘子太大导致火力无法聚焦，多线作战中高速空转，热血被奔波耗干。</div>
+                        <div class="dynamic-desc">扩张野心极速膨胀，同时破局行动力极其旺盛. 系统不断开启新方向，行动力在每个战场全力燃烧。扩张本能分流兵力，燃烧本能又渴求全线冲刺。盘子太大导致火力无法聚焦，多线作战中高速空转，热血被奔波耗干。</div>
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">熔炉炼狱</span> 旺D🔥 克 旺O💎</div>
-                        <div class="dynamic-desc">破局冲动极度猛烈，幕后设置的秩序边界又极其严密。总想制造变化冲破现状，冲刺过后对失控的恐惧又逼迫立下更严苛的规矩。打破常规破坏秩序感，收紧规则压抑冲劲。在“掀桌冲锋”和“严防死守”间反复横跳精力磨碎。</div>
+                        <div class="dynamic-desc">破局冲冲极度猛烈，但内控设置的秩序边界又极其严密。总想制造变化冲破现状，冲刺过后对失控的恐惧又逼迫立下更严苛的规矩。打破常规破坏秩序感，收紧规则压抑冲劲。在“掀桌冲锋”和“严防死守”间反复横跳精力磨碎。</div>
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">铁甲绞木</span> 旺O💎 克 旺T🌲</div>
@@ -629,7 +618,7 @@
                     </div>
                     <div class="dynamic-item health">
                         <div class="dynamic-title"><span class="metaphor-badge">开疆固土</span> 旺D🔥 生 旺V⛰️</div>
-                        <div class="dynamic-desc">燃烧的破局成果被回声底盘稳稳接住，夯实为绝对的安全坐标。每一次冲破僵局拿下的增量反馈，都迅速沉淀为确信感。行动没有透支安全感，反而在攻克中砌起更厚护城河。破局与托底完美闭环，凌空发力稳踩实地。</div>
+                        <div class="dynamic-desc">燃烧的破局成果被回声底盘稳稳接住，夯实为绝对幕后安全坐标。每一次冲破僵局拿下的增量反馈，都迅速沉淀为确信感。行动没有透支安全感，反而在攻克中砌起更厚护城河。破局与托底完美闭环，凌空发力稳踩实地。</div>
                     </div>
                     <div class="dynamic-item health">
                         <div class="dynamic-title"><span class="metaphor-badge">浑然天成</span> 旺V⛰️ 生 旺O💎</div>
