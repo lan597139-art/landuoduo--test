@@ -1,17 +1,204 @@
-<div id="roles" class="anchor-offset" style="margin-top: 60px;">
-                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">🤝 组织契约、心腹角色与职业映射</h2>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组织与协作 - 动态沙盒探测系统</title>
+    <style>
+        /* ==========================================
+           1. 全局设计基准与变量
+           ========================================== */
+        :root {
+            --primary: #2563eb;
+            --bg-page: #fafaf8;
+            --bg-card: #ffffff;
+            --text-main: #2c2c2c;
+            --text-nav: #475569;
+            --border-color: #e8e8e2;
+            --border-dark: #1e293b;
+            --radius: 14px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif; 
+            background: var(--bg-page); 
+            color: var(--text-main); 
+            line-height: 1.8; 
+            padding-top: 120px; 
+        }
+        a { text-decoration: none; color: inherit; }
+
+        /* ==========================================
+           2. 顶部悬浮黑框导航栏
+           ========================================== */
+        .site-header { position: fixed; top: 0; width: 100%; background: rgba(250, 250, 248, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; padding: 24px 20px; }
+        .nav-container { display: flex; align-items: center; gap: 32px; padding: 12px 40px; border: 2px solid var(--border-dark); border-radius: 99px; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .nav-item { font-weight: 600; font-size: 0.95rem; color: #475569; position: relative; cursor: pointer; transition: color 0.2s; padding: 4px 0; }
+        .nav-item:hover, .nav-item.active { color: var(--primary); }
+        .dropdown { position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); opacity: 0; visibility: hidden; transition: all 0.2s ease; padding: 8px 0; }
+        .nav-item::after { content: ''; position: absolute; bottom: -15px; left: 0; width: 100%; height: 15px; }
+        .nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(5px); }
+        .dropdown-item { display: block; padding: 10px 20px; font-size: 0.85rem; color: #1e293b; transition: background 0.2s, color 0.2s; }
+        .dropdown-item:hover { background: #f1f5f9; color: var(--primary); font-weight: 600; }
+
+        /* ==========================================
+           3. 双栏弹性拓扑控制架构 (核心修复防挤压)
+           ========================================== */
+        .wiki-layout { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            display: flex; 
+            gap: 40px; 
+            padding: 40px 20px; 
+        }
+        
+        /* 左侧固定目录 */
+        .wiki-sidebar { 
+            width: 260px; 
+            flex-shrink: 0; 
+            position: sticky; 
+            top: 140px; 
+            height: fit-content; 
+            background: var(--bg-card); 
+            padding: 24px; 
+            border-radius: var(--radius); 
+            border: 1px solid var(--border-color); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02); 
+        }
+        .wiki-sidebar h3 { font-size: 1.1rem; color: var(--primary); margin-bottom: 16px; font-weight: 700; }
+        .sidebar-link { display: block; padding: 10px 0; font-size: 0.95rem; color: var(--text-nav); transition: all 0.2s; border-bottom: 1px dashed var(--border-color); }
+        .sidebar-link:last-child { border-bottom: none; }
+        .sidebar-link:hover { color: var(--primary); font-weight: 600; padding-left: 6px; }
+
+        /* 右侧核心内容容器 (锁死窄口限制) */
+        .wiki-content { 
+            flex-grow: 1; 
+            max-width: 860px; 
+            min-width: 0; 
+            width: 100%; 
+        }
+        
+        .page-title { font-size: 2.2rem; font-weight: 600; margin-bottom: 12px; color: var(--border-dark); }
+        .page-desc { font-size: 1.05rem; color: var(--text-nav); margin-bottom: 48px; }
+
+        /* ==========================================
+           4. 组件与卡片设计样式
+           ========================================== */
+        .theory-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 32px; margin-bottom: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
+        .card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; border-bottom: 2px solid #f3f3ee; padding-bottom: 16px; }
+        .card-icon { font-size: 1.8rem; }
+        .card-header h2 { font-size: 1.35rem; font-weight: 600; color: var(--border-dark); }
+        
+        .theory-section { margin-bottom: 28px; }
+        .theory-section h4 { font-size: 1.05rem; color: var(--primary); margin-bottom: 10px; font-weight: 600; }
+        .theory-section p { font-size: 0.95rem; color: #475569; }
+        
+        .quote-box { background: #f8fafc; font-style: italic; color: #475569; padding: 14px 18px; border-radius: 8px; margin: 12px 0; font-size: 0.95rem; border-left: 3px solid #cbd5e1; }
+        .anchor-offset { scroll-margin-top: 140px; }
+
+        /* 因果链自适应单元框 */
+        .dynamic-item { background: #ffffff; border: 1px solid var(--border-color); border-left: 4px solid #ef4444; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; }
+        .dynamic-item.health { border-left-color: #10b981; }
+        .dynamic-title { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--border-dark); margin-bottom: 12px; font-size: 0.98rem; }
+        .metaphor-badge { background: #f1f5f9; color: #334155; font-size: 0.82rem; padding: 3px 8px; border-radius: 5px; border: 1px solid #e2e8f0; font-weight: 600; }
+        .dynamic-item.health .metaphor-badge { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+        .dynamic-desc { font-size: 0.95rem; color: #475569; line-height: 1.6; }
+
+        @media (max-width: 900px) {
+            .wiki-layout { flex-direction: column; }
+            .wiki-sidebar { width: 100%; position: static; margin-bottom: 24px; }
+            body { padding-top: 100px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <nav class="nav-container">
+            <a href="./index.html" class="nav-item">沙盒探测</a>
+            
+            <div class="nav-item">动力学百科 ∨
+                <div class="dropdown">
+                    <a href="./encyclopedia.html#engines" class="dropdown-item">⚙️ 五大天赋能量引擎</a>
+                    <a href="./encyclopedia.html#sandboxes" class="dropdown-item">🧩 六大生存沙盒</a>
+                    <a href="./encyclopedia.html#metabolism" class="dropdown-item">🔋 跨膜代谢与极限抗压</a>
+                    <a href="./encyclopedia.html#telemetry" class="dropdown-item">📉 实时工况遥测四核</a>
+                </div>
+            </div>
+            
+            <div class="nav-item active">组织与协作 ∨
+                <div class="dropdown">
+                    <a href="./org.html#topology" class="dropdown-item">🧠 算力拓扑分层</a>
+                    <a href="./org.html#roles" class="dropdown-item">🤝 团队心腹与C授权</a>
+                    <a href="./org.html#dynamics" class="dropdown-item">⛓️ 极化生克与动态互锁</a>
+                </div>
+            </div>
+            
+            <div class="nav-item">洞察与生态 ∨
+                <div class="dropdown">
+                    <a href="./about.html#comparison" class="dropdown-item">📊 视界融合 (理论对比)</a>
+                    <a href="./about.html#audience" class="dropdown-item">👥 适用探索人群</a>
+                </div>
+            </div>
+            
+            <a href="./about.html#contact" class="nav-item">商业部署</a>
+        </nav>
+    </header>
+
+    <main class="wiki-layout">
+        
+        <aside class="wiki-sidebar">
+            <h3>📖 目录索引</h3>
+            <a href="#topology" class="sidebar-link">🧠 1. 算力拓扑分层</a>
+            <a href="#roles" class="sidebar-link">🤝 2. 心腹角色与职业矩阵</a>
+            <a href="#dynamics" class="sidebar-link">⛓️ 3. 极化生克与动态互锁</a>
+        </aside>
+
+        <div class="wiki-content">
+            <h1 class="page-title">组织与协作：生态位与动能博弈</h1>
+            <p class="page-desc">基于底层做功引擎与容纳沙盒的交叉并集，对并发处理算力、组织契约角色以及生克互耗密码实施刚性测绘，剥离非理性的管理内耗。</p>
+
+            <div id="topology" class="anchor-offset">
+                <div class="theory-card">
+                    <div class="card-header">
+                        <span class="card-icon">🧠</span>
+                        <h2>系统算力拓扑与复杂度分层</h2>
+                    </div>
+                    <div class="theory-section">
+                        <h4 style="color:var(--primary); font-weight:600; margin-bottom:6px;">深度穿透型（单点专才）</h4>
+                        <p>专注于单一维度的单线击穿，复杂度上限受限，但具备极强的抗干扰机能。犹如精准的手术刀，排斥细碎干预与流俗修饰，存在的确定性价值在于特定单点位置上的极致穿透与硬核深度。</p>
+                        
+                        <h4 style="margin-top: 24px; color:var(--primary); font-weight:600; margin-bottom:6px;">专项攻坚型（专项复合人才）</h4>
+                        <p>具备在单一垂直领域内调动、咬合多重逻辑的厚度，极度契合重型、高难度复杂项目的接盘。宛如重装全副武装的攻坚战车，能够吸收并钝化高压环境下的错综矛盾，将多重驱动力收束为击碎瓶颈的合力。</p>
+                        
+                        <h4 style="margin-top: 24px; color:var(--primary); font-weight:600; margin-bottom:6px;">跨界串联型（跨域管理者）</h4>
+                        <p>习惯运用单一底层逻辑高效打通多个现实物理场域，属于天然的中台调度体与跨域协调者。犹如流动的河水，能轻易渗透、穿透不同子领域的行政或壁垒限制，使孤立资源在特定逻辑链条下发生高效的化学反应。</p>
+                        
+                        <h4 style="margin-top: 24px; color:var(--primary); font-weight:600; margin-bottom:6px;">枢纽型架构师（枢纽算力）</h4>
+                        <p>具备同时调度、处理异构系统任务的高阶算力，整体调度机能极其强悍。相当于昼夜不停运转的高速枢纽网络，能在大规模事务并发中保持主线有条不紊。但必须严防由于极度耗能而引发系统性瘫痪。</p>
+                        
+                        <h4 style="margin-top: 24px; color:var(--primary); font-weight:600; margin-bottom:6px;">游离散弹型（潜能未定型）</h4>
+                        <p>心智系统尚未沉淀出稳定的功耗输出结构，缺乏现实承重能力与做功闭环。当前处于一种高能量、多维散乱的叠加态，具备爆发潜能但未收束。亟需在现实空间内寻找到坚固的锚点，完成从自由耗散到有效输出的相变。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="roles" class="anchor-offset" style="margin-top: 60px;">
+                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:var(--border-dark);">🤝 组织契约与联合判定角色矩阵</h2>
                 
                 <div class="theory-card">
                     <div class="card-header">
                         <span class="card-icon">🎯</span>
                         <h2>心智拓扑职业建议矩阵 (引擎 S × 沙盒 N)</h2>
                     </div>
-                    <p style="margin-bottom: 20px; color: #475569;">当做功引擎降落于不同的现实沙盒时，会演化出高度具象化的职业生态位。（表格可左右滑动查看）</p>
+                    <p style="margin-bottom: 20px; color: #475569; font-size: 0.9rem;">当做功引擎降落于不同的现实沙盒时，演化出高度具象化的职业生态位（可左右滑动查看）：</p>
                     
-                    <div style="overflow-x: auto; padding-bottom: 12px;">
-                        <table style="width: 100%; min-width: 1200px; border-collapse: collapse; text-align: left;">
+                    <div style="overflow-x: auto; padding-bottom: 12px; width: 100%;">
+                        <table style="width: 100%; min-width: 1200px; border-collapse: collapse; text-align: left; font-size: 0.88rem;">
                             <thead>
-                                <tr style="background: #f8fafc; color: #1e293b; border-bottom: 2px solid #cbd5e1;">
+                                <tr style="background: #f8fafc; color: var(--border-dark); border-bottom: 2px solid #cbd5e1;">
                                     <th style="padding: 16px; width: 10%;">驱动引擎</th>
                                     <th style="padding: 16px; width: 15%;">PN 物理底盘</th>
                                     <th style="padding: 16px; width: 15%;">AN 能力进化</th>
@@ -23,154 +210,49 @@
                             </thead>
                             <tbody>
                                 <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 700; font-size: 1.1rem;">O 结构</div>
-                                        <div style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">建立规则与闭环</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">资产与物理规整专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">资产管理、仓储/物流规划、行政合规</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">路径与技能规划专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">培训体系设计、职业规划师、教研管理</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">协作规则与分工架构师</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">HRBP、组织架构设计、工会/契约管理</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">准入与合规审查专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">风控合规、公关风纪、审核机制管理</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">价值观与战略拆解专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">企业文化落地、战略拆解、目标对齐管理</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">流程与机制系统专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">后端产品经理、SOP制定者、法务/财务架构师</div>
-                                    </td>
+                                    <td style="padding: 16px; font-weight: 700;">O 结构<br><span style="font-weight:normal; color:#64748b; font-size:0.8rem;">建立规则与闭环</span></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">资产与物理规整专家</span><p style="color:#475569; margin-top:4px;">资产管理、仓储物流、行政合规</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">路径与技能规划专家</span><p style="color:#475569; margin-top:4px;">培训体系设计、职业规划、教研管理</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">协作规则与分工架构师</span><p style="color:#475569; margin-top:4px;">HRBP、组织架构设计、分工管理</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">准入与合规审查专家</span><p style="color:#475569; margin-top:4px;">风控合规、公关风纪、审核机制</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">价值观与战略拆解专家</span><p style="color:#475569; margin-top:4px;">文化落地、战略拆解、目标对齐</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">流程与机制系统专家</span><p style="color:#475569; margin-top:4px;">后端产品经理、SOP制定、财务架构</p></td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid #e2e8f0; background: #fcfcfd;">
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 700; font-size: 1.1rem;">V 锚定</div>
-                                        <div style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">寻找底座与兜底</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">生活底盘与基础保障专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">后勤总管、基础运维、安保与供应链托底</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">历史经验与核心留存专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">知识库管理、老业务维护、档案文献管理</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">深度陪伴与信任维护专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">大客户维护(ToB)、心理咨询、深度客情</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">基本盘与圈层维稳专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">老客户维系、社区基本盘运营、核心会员管理</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">核心信念与愿景守护者</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">品牌基因守护者、传统文化传承、信仰维系</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">遗留系统与老旧机制兜底者</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">旧系统运维、兜底客服、历史遗留问题处理</div>
-                                    </td>
+                                    <td style="padding: 16px; font-weight: 700;">V 锚定<br><span style="font-weight:normal; color:#64748b; font-size:0.8rem;">寻找底座与兜底</span></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">生活底盘与保障专家</span><p style="color:#475569; margin-top:4px;">后勤总管、基础运维、供应链托底</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">历史经验与核心留存专家</span><p style="color:#475569; margin-top:4px;">知识库管理、老业务维护、档案管理</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">深度陪伴与信任维护专家</span><p style="color:#475569; margin-top:4px;">大客户维护(ToB)、心理咨询、深度客情</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">基本盘与圈层维稳专家</span><p style="color:#475569; margin-top:4px;">老客户维系、社群运营、核心会员管理</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">核心信念与愿景守护者</span><p style="color:#475569; margin-top:4px;">品牌基因守护、传统文化传承维系</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">遗留系统与老旧机制兜底者</span><p style="color:#475569; margin-top:4px;">旧系统运维、兜底客服、遗留处理</p></td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 700; font-size: 1.1rem;">D 动力</div>
-                                        <div style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">正面交锋与冲锋</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">重资产攻坚与物理阻力破局者</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">重型硬件交付、线下地推铁军、工程攻坚</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">成长突破与训练推进专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">攻坚教练、绩效冲刺主管、潜能激发者</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">僵局打破与冲突解决专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">危机谈判专家、劳资纠纷处理、破冰者</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">壁垒冲锋与新市场破局者</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">新市场拓荒、竞品攻坚、突击队队长</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">僵化理念打破与思想破局者</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">改革派幕僚、转型驱动者、批判性意见领袖</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">瘫痪机制重启与系统改革专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">组织重组操盘手、敏捷转型教练、烂摊子接盘</div>
-                                    </td>
+                                    <td style="padding: 16px; font-weight: 700;">D 动力<br><span style="font-weight:normal; color:#64748b; font-size:0.8rem;">正面交锋与冲锋</span></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">重资产攻坚与物理阻力破局者</span><p style="color:#475569; margin-top:4px;">重型硬件交付、线下地推铁军、工程攻坚</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">成长突破与训练推进专家</span><p style="color:#475569; margin-top:4px;">攻坚教练、绩效冲刺主管、潜能激发</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">僵局打破与冲突解决专家</span><p style="color:#475569; margin-top:4px;">危机谈判专家、劳资纠纷处理、破冰者</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">壁垒冲锋与新市场破局者</span><p style="color:#475569; margin-top:4px;">新市场拓荒、竞品攻坚、突击队队长</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">僵化理念打破与思想破局者</span><p style="color:#475569; margin-top:4px;">改革派幕僚、转型驱动、批判性领袖</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">瘫痪机制重启与系统改革专家</span><p style="color:#475569; margin-top:4px;">组织重组操盘、敏捷转型教练、接盘手</p></td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid #e2e8f0; background: #fcfcfd;">
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 700; font-size: 1.1rem;">E 扩张</div>
-                                        <div style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">打开空间与增量</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">资本与物理资源扩张专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">融资/投行、供应链寻源、重资产并购</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">机会嗅探与多栖发展专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">多业务线试错、创新业务孵化、斜杠探索者</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">人脉网络与协作生态做大专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">渠道拓展、生态合作BD、联盟构建者</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">资源/圈层/人脉拓展专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">PR公关、大客户销售、流量操盘、MCN推手</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">品牌叙事与影响力扩张专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">市场营销、布道师、媒体/病毒传播</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">商业模式复制与系统放大专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">招商加盟、规模化复制操盘手、增长黑客</div>
-                                    </td>
+                                    <td style="padding: 16px; font-weight: 700;">E 扩张<br><span style="font-weight:normal; color:#64748b; font-size:0.8rem;">打开空间与增量</span></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">资本与物理资源扩张专家</span><p style="color:#475569; margin-top:4px;">融资投行、供应链寻源、并购操盘</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">机会嗅探与多栖发展专家</span><p style="color:#475569; margin-top:4px;">多业务线试错、创新孵化、斜杠探索</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">人脉网络与协作生态做大专家</span><p style="color:#475569; margin-top:4px;">渠道拓展、生态合作BD、联盟构建</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">资源/圈层/人脉拓展专家</span><p style="color:#475569; margin-top:4px;">PR公关、大客户销售、流量/MCN操盘</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">品牌叙事与影响力扩张专家</span><p style="color:#475569; margin-top:4px;">市场营销、布道师、媒体媒体传播</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">商业模式复制与系统放大专家</span><p style="color:#475569; margin-top:4px;">招商加盟、规模化复制、增长黑客</p></td>
                                 </tr>
                                 <tr>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 700; font-size: 1.1rem;">T 超越</div>
-                                        <div style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">抽离现实与本质</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">物理规律与硬件底层重构专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">前沿硬科技研发、物理模型研究、材料科学</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">能力范式转换与底层学习专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">前沿方法论研究、顶尖智库、认知神经科学</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">关系本质与协作模型研究者</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">社会学研究、新型协作/分配模式设计</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">权力结构与社会网络洞察专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">宏观分析师、行业趋势智库、人类学洞察</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">意义/战略/思想模型专家</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">首席战略官、哲学/内容创作者、智库大脑</div>
-                                    </td>
-                                    <td style="padding: 16px;">
-                                        <div style="font-weight: 600; color: #2563eb; margin-bottom: 6px; font-size: 0.95rem;">抽象系统与第一性原理架构师</div>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">底层算法科学家、商业模式设计师、系统重构</div>
-                                    </td>
+                                    <td style="padding: 16px; font-weight: 700;">T 超越<br><span style="font-weight:normal; color:#64748b; font-size:0.8rem;">抽离现实与本质</span></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">物理规律与硬件底层重构专家</span><p style="color:#475569; margin-top:4px;">前沿硬科技研发、物理模型、材料科学</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">能力范式转换与底层学习专家</span><p style="color:#475569; margin-top:4px;">前沿方法论研究、顶尖智库、认知神经</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">关系本质与协作模型研究者</span><p style="color:#475569; margin-top:4px;">社会学研究、新型分配/契约模式设计</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">权力结构与社会网络洞察专家</span><p style="color:#475569; margin-top:4px;">宏观分析师、行业趋势智库、人类学洞察</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">意义/战略/思想模型专家</span><p style="color:#475569; margin-top:4px;">首席战略官、哲学/高端内容创作、智库</p></td>
+                                    <td style="padding: 16px;"><span style="font-weight:600; color:var(--primary);">抽象系统与第一性原理架构师</span><p style="color:#475569; margin-top:4px;">底层算法科学家、商业模式设计、系统重构</p></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -182,135 +264,136 @@
                         <span class="card-icon">👑</span>
                         <h2>组织契约与 13 型心腹角色图谱</h2>
                     </div>
-                    <p style="margin-bottom: 24px; color: #475569;">回退规则：若 S1+S2 组合不在表中，按 S1 单独查表。若 archetype 为高熵未定型，系统将判定为外围协作型或不宜入核心型。</p>
                     
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
                         
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
-                            <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">谋臣型心腹</h4>
-                            <div class="quote-box">“我的价值不在于执行，在于能看见别人看不到的东西”</div>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>对应组合：</strong>T, T+O, T+D, T+E, O+T, E+T</p>
-                            <p style="font-size: 0.9rem; color: #334155;">最核心的价值在于提供超越现状的判断力，系统应当授予其全局诊断与长期战略规划的重权。为了确保逻辑准确性，必须为其提供完整的信息透明度。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>禁止纯执行、强应酬、低信息透明、只背锅无决策权。需被谨慎的深用并制衡全责。
+                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+                            <h4 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 12px;">谋臣型心腹</h4>
+                            <div class="quote-box">“本系统的价值不在于执行，在于能看见别人看不到的东西”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>T, T+O, T+D, T+E, O+T, E+T</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">核心价值在于提供超越现状的独立判断力，组织应当授予其全局诊断与长期战略规划的权力。为保障算力纯粹，须提供高密度的信息透明度。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                🚫 C授权红线：禁止纯机械执行、应酬消耗、信息黑盒。需被高规格深用并进行权责全责制衡。
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
-                            <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">执行型心腹</h4>
-                            <div class="quote-box">“别跟我谈愿景，告诉我具体怎么做，我来搞定”</div>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>对应组合：</strong>O+D, D+O</p>
-                            <p style="font-size: 0.9rem; color: #334155;">确保目标从概念转化为现实的关键，应授权负责流程落地与交付闭环。为了发挥最高效率，系统必须搭配明确的目标指示与验收标准。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>禁止长期无目标、频繁改口、多头指挥、无反馈环境。需即插即用般深用。
+                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+                            <h4 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 12px;">执行型心腹</h4>
+                            <div class="quote-box">“无需描绘远景，输出具体的工序标准，系统即刻闭环落地”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>O+D, D+O</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">属于概念转化为现实的物理窄口，应全面授权负责全流程落地与高标准交付闭环。需要极度明确的目标对齐指示与硬性验收指标。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                🚫 C授权红线：禁止陷入高度无序的多头指挥。该个体适合作为模块化即插即用的承重骨干。
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
-                            <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">开疆型心腹</h4>
-                            <div class="quote-box">“存量没有意思，我要去打开那些还没有碰过的地方”</div>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>对应组合：</strong>D+T, 特定强突破生态</p>
-                            <p style="font-size: 0.9rem; color: #334155;">打破存量僵局的利刃，适合授权进行市场突破、资源置换与外部圈层扩张。因做功方式常具破坏性，系统需配套强力的风控审计工具作为支撑。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>不宜放置在需要长期精细化维稳的岗位，那会抑制其爆发力。会被半核心地位使用，接受强力监管。
+                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+                            <h4 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 12px;">开疆型心腹</h4>
+                            <div class="quote-box">“存量市场缺乏增量空间，系统旨在打破边界、夺取未知资源”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>D+T 偏向、特定高爆发突围体</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">打破僵局的绝对利刃，适合授权进行无人区攻坚、商业资源对赌置换与外部版图扩张。因其行为带有一套破局级破坏性，需搭配刚性的风控线。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                🚫 C授权红线：禁止强行置于高精细化维稳的岗位。需放在核心外围独立建制，接受重度对赌审计。
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
-                            <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">维稳型心腹</h4>
-                            <div class="quote-box">“你们往前冲，我在后面把一切稳住，不让系统散架”</div>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>对应组合：</strong>特定厚底盘稳定生态</p>
-                            <p style="font-size: 0.9rem; color: #334155;">系统抵御风险的防火墙，应授权负责底盘维护、人际关系调停与风险兜底。为了确保稳定性，系统必须给予足够的资源缓冲与心理余量。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>严禁要求发起具有高风险的破坏性创新，以免动摇防御核心。置于后方核心深用。
+                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+                            <h4 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 12px;">维稳型心腹</h4>
+                            <div class="quote-box">“主力前行攻坚，后方底盘交由系统锁死风险、维持闭环不散架”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>高承重、厚底盘维稳生态</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">组织抵御外部风险的物理防火墙，应全面授权负责资产保全、日常团队关系摩擦平衡及核心清算兜底。系统必须为其分配充足的心理和资源冗余。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                🚫 C授权红线：禁止要求其发起高风险、颠覆性的机制破坏创新。应当将其配置在总后方核心生态位。
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
+                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
                             <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">布道型心腹</h4>
-                            <div class="quote-box">“我需要让更多人理解这件事的意义，不然推不动”</div>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>对应组合：</strong>特定偏精神导航生态</p>
-                            <p style="font-size: 0.9rem; color: #334155;">组织共识与影响力的构建核心，适合授权负责文化建设、愿景解释与外部影响力构建。擅长赋予行动以意义感。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>禁止锁死在低维、机械重复的流水线作业中，是对认知带宽的极大浪费。需防范愿景构思与现实成本脱节。
+                            <div class="quote-box">“行动必须基于意义共识，若思想无法对齐，执行必将耗散”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>特定高分段意义导航核</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">群体共识与软性核心影响力的构建中枢，适合全面授权负责价值观编码、愿景解释、文化资产锚定及公共关系符号输出。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                <strong>🚫 C授权红线：</strong>禁止锁死在低维、机械重复的传统流水线岗位上。需防范精神叙事与财务账单现实脱节。
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
+                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
                             <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">守门型心腹</h4>
-                            <div class="quote-box">“扩张可以，但有些红线不能碰，我就是那条红线”</div>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>对应组合：</strong>O, O+V, O+E</p>
-                            <p style="font-size: 0.9rem; color: #334155;">系统规则与底线的最后屏障，适合授权负责风控审计、合规审查与边界管理。价值在于在扩张冲动中守住不可逾越的红线。系统需提供清晰的判罚标准。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>禁止灰区套利、高速扩张、规则模糊但要求背责。需给予独立裁决权。
+                            <div class="quote-box">“允许战略层面的扩张，但任何行动不得逼近底层红线”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>O, O+V, O+E</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">组织规则、流程底线与法务风控的最终硬性屏障。适合授权主导合规审查、账目风控与红线裁决，核心价值在于在非理性冲动中锁死风险死角。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                <strong>🚫 C授权红线：</strong>严禁将其置于灰色套利或边际规则模糊的高速狂飙岗位。须赋予其独立执法豁免权。
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
+                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
                             <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">破局型心腹</h4>
-                            <div class="quote-box">“系统快死了？让我来，我能在废墟上重新点火”</div>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>对应组合：</strong>D, D+V, D+T</p>
-                            <p style="font-size: 0.9rem; color: #334155;">系统陷入僵死状态时的强行重启键，适合授权负责危机处理、改革推进与竞争突破。价值在系统最需要位移的时刻达到巅峰，需接受破局中的短期混乱。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>长期低刺激维护、细水长流陪伴、纯规则文书岗。其燃料是突破而非守成。
+                            <div class="quote-box">“常规机制已陷入慢性僵死，系统将在混沌与废墟中强行二次重启”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>D, D+V, D+T</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">组织在遭遇生态位停滞、死局时的暴力重启键。适合在危机处理、机制改革推行、或者遭遇恶性竞品夹击时进行短周期的无限制破冰授权。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                <strong>🚫 C授权红线：</strong>禁止将其放置在需要常态化、细水长流、精细润滑的维护岗位。做功需要强阻力刺激。
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
+                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
                             <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">系统型心腹</h4>
-                            <div class="quote-box">“混乱是因为没有好结构，我来搭一个自己跑的框架”</div>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>对应组合：</strong>特定结构与基准组合</p>
-                            <p style="font-size: 0.9rem; color: #334155;">组织机制的底层设计者，适合授权负责流程架构、系统搭建与知识体系建设。价值在于将散乱的经验编码为可复用的机制，需提供足够的抽象空间。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>禁止纯人情场、短期杂活、无边界救火、无授权背锅，那将直接瓦解其结构化能力。
+                            <div class="quote-box">“散乱的经验没有繁衍价值，必须全量编码为自动运行的客观框架”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>高度契合高分段系统结构件</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">底层基础架构的顶层设计者。适合授权主导流程再造、数字化中台搭建、大规模协作习惯固化。致力于彻底免除“人治干扰”。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                <strong>🚫 C授权红线：</strong>严禁将其投掷于无授权背锅、无固定章法规则的短期琐碎应变杂活中。
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
+                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
                             <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">情感型心腹</h4>
-                            <div class="quote-box">“你们都在讲效率，但没人关心这里的人还好不好”</div>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>对应组合：</strong>V, V+O, V+D</p>
-                            <p style="font-size: 0.9rem; color: #334155;">组织温度与信任关系的维护者，适合授权负责员工关系、客户陪伴与社群运营。价值在于冷冰冰的系统运转中保留人的维度，需保护其不被过度索取情绪。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>禁止高权力决策、复杂利益分配、强对抗谈判、长期单向消耗。
+                            <div class="quote-box">“系统盲目追求效率指标时，必须留存个体体感与内部信任的基本边界”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>V, V+O, V+D</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">组织润滑度、归属粘性与情感账户的守护核心。适合授权主导员工长效连接运营、大客户信任资产的长线陪伴，属于冷冰冰齿轮中的生命张力区。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                <strong>🚫 C授权红线：</strong>严禁将其推向高度复杂的利益分配、冷酷的优胜劣汰博弈第一线。需防止情感带宽过载。
                             </div>
                         </div>
 
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
+                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
                             <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">镜子型心腹</h4>
-                            <div class="quote-box">“我来帮你看清你到底想要什么”</div>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>对应组合：</strong>T+V, V+T</p>
-                            <p style="font-size: 0.9rem; color: #334155;">价值罗盘的校准者，适合授权负责深度复盘、理念咨询与精神陪伴。价值在于系统迷失方向时提供不受利益污染的判断，需接受其低服从性和高独立需求。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>禁止要求无条件站队、纯情绪安抚、强服从体系的岗位。
+                            <div class="quote-box">“不提供外置的目标导航，只通过反射机制协助内核看清原始意图”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>T+V, V+T</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">组织核心操盘手的“中性平衡镜”。适合授权参与最高密度的深层经营复盘、底层大方向纠偏顾问、以及不受现实利益污染的理念梳理。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                <strong>🚫 C授权红线：</strong>禁止要求进行无条件派系站队或机械服从行政指挥。系统需要承认并保持其高度独立需求。
                             </div>
                         </div>
 
                         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;">
                             <h4 style="color: #2563eb; font-size: 1.15rem; margin-bottom: 12px;">资源型心腹</h4>
-                            <div class="quote-box">“你们缺的不是能力，是缺对的资源，我能找到”</div>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>对应组合：</strong>E, V+E, D+E, E+O, E+V, E+D</p>
-                            <p style="font-size: 0.9rem; color: #334155;">系统与外部世界的连接器，适合授权负责商务拓展、资源整合与市场增长。价值在于将外部增量源源不断注入系统，需配套清晰的风控边界。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>核心机密无制衡、高权限低监管、长期纯后台。
+                            <div class="quote-box">“系统缺陷不在于能力上限，在于外部核心增量要素的连接断线”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>对应主副组合：</strong>E, V+E, D+E, E+O, E+V, E+D</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">整个心智系统与外部广域网连接的降维级通道。适合全面授权其负责战略级大客户BD、商业生态兼并、大资本及生产资料的跨界调度导入。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                <strong>🚫 C授权红线：</strong>严禁任由其长期驻守在没有任何监督机制保护的纯后台、或者是拥有战略机密却缺乏防控制衡的位置。
                             </div>
                         </div>
 
-                        <div style="background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 24px;">
+                        <div style="background: #ffffff; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 24px;">
                             <h4 style="color: #64748b; font-size: 1.15rem; margin-bottom: 12px;">外围协作型</h4>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>触发条件：</strong>系统呈现高熵未定型，但部分具体沙盒功能明确。</p>
-                            <p style="font-size: 0.9rem; color: #334155;">功耗尚未形成收闭的独立系统，但在外围特定点位上具有协作价值。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>禁止触碰核心机密、赋予长期授权、危机托底及合伙人位置。
+                            <div class="quote-box">“核心算力尚未完成自给闭环，但具备局部功能模块的外向性协同功能”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>触发机制：</strong>系统测绘呈现高熵模糊偏好，但外围部分特定沙盒生存指标清晰。</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">这类系统在整体内部做功上处于多核散流状态，尚未咬合出具有深度承重性的闭循环主骨架。但其特定单项机能较为独立突出，可作为外部模块化供应方使用。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                <strong>🚫 C授权红线：</strong>系统防御机制。禁止触碰组织核心资产底层机密、严禁让渡长期高限额授权、或配置于危机托底岗位。
                             </div>
                         </div>
 
-                        <div style="background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 24px;">
+                        <div style="background: #ffffff; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 24px;">
                             <h4 style="color: #64748b; font-size: 1.15rem; margin-bottom: 12px;">不宜入核心型</h4>
-                            <p style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;"><strong>触发条件：</strong>系统呈现高熵未定型，且各大沙盒能量呈彻底游离状态。</p>
-                            <p style="font-size: 0.9rem; color: #334155;">当前系统处于严重失控与高耗散的叠加态，缺乏承重闭环，强行整合将引发组织内部巨大的管理摩擦成本。</p>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c;">
-                                <strong>🚫 C授权红线：</strong>禁止提拔为心腹、合伙人、核心财务、接触战略机密或进行长期亲密绑定。
+                            <div class="quote-box">“当前内部能量流发生大面积结构性崩溃耗散，系统缺乏最基本的物理承载力”</div>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 6px;"><strong>触发机制：</strong>多核高熵无序，且底层各大现实沙盒数据触发极端严重掩埋警报。</p>
+                            <p style="font-size: 0.9rem; color: #2c2c2c;">当前系统各引擎和沙盒陷入深度过载干扰或假死空转，认知带宽被极度压缩，伴随严重的内耗黑洞。在此工况下，强行拖入核心高压层协作会引发灾难性的决策摩擦成本。</p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">
+                                <strong>🚫 C授权红线：</strong>红区硬性红线。必须全面剥离核心决策链、合伙人席位、核心关键财务资产审核权限。禁止开展长周期的无对冲深度亲密绑定。
                             </div>
                         </div>
 
@@ -318,27 +401,17 @@
                 </div>
             </div>
 
-         <div id="dynamics" class="anchor-offset" style="margin-top: 60px; margin-bottom: 80px;">
-                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">⛓️ 极化生克与动态互锁（八大基础演化机制）</h2>
-                <p style="margin-bottom: 24px; color: #475569;">能量在系统内天然存在生克循环。后台提取极值判定强弱，形成 40 条极其客观的底层因果链。此机制解释了系统在特定场景中感受到无解内耗或爆发的根源。</p>
+            <div id="dynamics" class="anchor-offset" style="margin-top: 60px; margin-bottom: 80px;">
+                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:var(--border-dark);">⛓️ 极化生克与动态互锁（八大基础演化机制）</h2>
+                <p style="margin-bottom: 24px; color: #475569;">能量在系统内天然存在生克循环。后台提取极值判定强弱，形成 40 条客观的底层因果链。此机制解释了系统在特定场景中感受到无解内耗或爆发的根源。</p>
                 
                 <div style="background: #f8fafc; border-left: 4px solid #8b5cf6; padding: 20px; border-radius: 0 8px 8px 0; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
                     <h4 style="color: #6d28d9; margin-bottom: 8px; font-size: 1.05rem;">💡 系统声明：关于沙盒落地的解读说明</h4>
                     <p style="font-size: 0.95rem; color: #475569; line-height: 1.6;">
-                        这 40 条底层生克因果链，完全可以套用于你的六大生存沙盒（如：当你的“关系沙盒 RN”被“动力引擎 D”强行燃烧时会发生什么）。但在真实的现实生活中，个体由于中态分布的巨大差异，会演化出极其复杂的剧情。<br><br>
-                        因此，本系统拒绝算命式的主观定论，仅在此提供最纯粹的<strong>逻辑支点与能量方程</strong>。至于它具体解释了你生活中的哪个人、哪段职业经历或哪次心理创伤——请带着这份报告，自行在现实沙盒中对号入座，完成最终的觉察与顿悟。
+                        这 40 条底层生克因果链，完全可以套用于六大生存沙盒（如：当个体的“关系沙盒 RN”被“动力引擎 D”强行燃烧时会发生什么）。但在真实的现实生活中，不同系统由于中态分布的巨大差异，会演化出极其复杂的剧情。<br><br>
+                        因此，本系统拒绝主观的宿命判定，仅在此提供最纯粹的<strong>逻辑支点与能量方程</strong>。至于它具体解释了个体生活中的哪项阻力、哪段特定职业经历或哪次隐秘功耗损耗——请带着这份报告，自行在现实沙盒中对号入座，完成最终的理性觉察与修复。
                     </p>
                 </div>
-
-                <style>
-                    .dynamic-item { background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #ef4444; border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; transition: border-color 0.2s, box-shadow 0.2s; }
-                    .dynamic-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-                    .dynamic-item.health { border-left-color: #10b981; }
-                    .dynamic-title { display: flex; align-items: center; gap: 12px; font-weight: 700; color: #1e293b; margin-bottom: 12px; font-size: 1rem; }
-                    .metaphor-badge { background: #f1f5f9; color: #334155; font-size: 0.85rem; padding: 4px 8px; border-radius: 6px; border: 1px solid #e2e8f0; font-weight: 600; letter-spacing: 0.05em; }
-                    .dynamic-item.health .metaphor-badge { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
-                    .dynamic-desc { font-size: 0.95rem; color: #475569; line-height: 1.6; }
-                </style>
 
                 <div class="theory-card">
                     <div class="card-header">
@@ -353,7 +426,7 @@
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">堰塞死水</span> 旺V⛰️ 克 衰E🌊</div>
-                        <div class="dynamic-desc">极度渴求被看见与外部反馈，将他人的确认视为生存坐标。对“回声”的极度饥渴，彻底抽干了向外狩猎、建立绝对主权的动能。为换取外界认可，不断让渡自身领地的控制权，甘愿被评价体系收编，丧失反控制野心。</div>
+                        <div class="dynamic-desc">极度渴求被看见与外部反馈，将外界的确认视为生存坐标。对“回声”的极度饥渴，彻底抽干了向外狩猎、建立绝对主权的动能。为换取外界认可，不断让渡自身领地的控制权，甘愿被评价体系收编，丧失反控制野心。</div>
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">渊水灭火</span> 旺E🌊 克 衰D🔥</div>
@@ -407,7 +480,7 @@
                     
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">巨木压火</span> 旺T🌲 生 衰D🔥</div>
-                        <div class="dynamic-desc">认知系统拆解出无数破局洞察，催促行动。但执行动能极其微弱。思考越深，待办越多，系统根本消化不了庞大的方向感。成吨木材压在微弱火种上，火苗未被点燃反被沉重的思考彻底压熄。看透了一切却困在原地无法动弹。</div>
+                        <div class="dynamic-desc">认知系统拆解出无数破局洞察，催促行动。但执行动能极其微弱。思考越深，待办越多，系统根本消化不了庞大的方向感。成吨木材压在微弱火种上，火苗未被点燃反被沉重的思考彻底压熄。透彻看清了一切却困在原地无法动弹。</div>
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">焦土无依</span> 旺D🔥 生 衰V⛰️</div>
@@ -419,7 +492,7 @@
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">铁牢死水</span> 旺O💎 生 衰E🌊</div>
-                        <div class="dynamic-desc">结晶本能打造了冷峻严密的完美闭环，本可支撑吞噬变量，但对外扩张渴望极低。坚固的管道已经铺好，源头却未曾开闸引水。耗费心血建起高配的基础设施，却只能看着它在封闭中无效空转。</div>
+                        <div class="dynamic-desc">结晶本能打造了冷峻严密的完美闭环，本可支撑吞噬变量，但对外扩张渴望极低。坚固的管道已经铺好，源头却未曾开闸引水. 耗费心血建起高配的基础设施，却只能看着它在封闭中无效空转。</div>
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">汪洋溺木</span> 旺E🌊 生 衰T🌲</div>
@@ -477,7 +550,7 @@
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">熔炉炼狱</span> 旺D🔥 克 旺O💎</div>
-                        <div class="dynamic-desc">破局冲动极度猛烈，但自我设置的秩序边界又极其严密。总想制造变化冲破现状，冲刺过后对失控的恐惧又逼迫立下更严苛的规矩。打破常规破坏秩序感，收紧规则压抑冲劲。在“掀桌冲锋”和“严防死守”间反复横跳精力磨碎。</div>
+                        <div class="dynamic-desc">破局冲动极度猛烈，幕后设置的秩序边界又极其严密。总想制造变化冲破现状，冲刺过后对失控的恐惧又逼迫立下更严苛的规矩。打破常规破坏秩序感，收紧规则压抑冲劲。在“掀桌冲锋”和“严防死守”间反复横跳精力磨碎。</div>
                     </div>
                     <div class="dynamic-item">
                         <div class="dynamic-title"><span class="metaphor-badge">铁甲绞木</span> 旺O💎 克 旺T🌲</div>
@@ -535,7 +608,7 @@
                     </div>
                     <div class="dynamic-item health">
                         <div class="dynamic-title"><span class="metaphor-badge">烈火淬金</span> 旺D🔥 克 旺O💎</div>
-                        <div class="dynamic-desc">破局的燃烧之火没有熔毁框架，反而淬炼了结晶秩序。用行动的变量去撞击规则边界，实测SOP的极限张力。每次冲锋都在汰换僵死的条框，每次回撤都在重新凝结更具弹性的新规矩。破坏力变成秩序进化动力，跑道强韧。</div>
+                        <div class="dynamic-desc">破局的燃烧之火没有熔毁框架，反而淬炼了结晶秩序。用行动的变量去撞击规则边界，实测SOP的极限张力。每次冲锋都在汰换僵死条框，每次回撤都在重新凝结更具弹性的新规矩。破坏力变成秩序进化动力，跑道强韧。</div>
                     </div>
                     <div class="dynamic-item health">
                         <div class="dynamic-title"><span class="metaphor-badge">严霜修枝</span> 旺O💎 克 旺T🌲</div>
@@ -579,4 +652,3 @@
 
 </body>
 </html>
-               
