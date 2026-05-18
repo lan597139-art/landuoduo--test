@@ -1093,8 +1093,8 @@ if (savedAnswers) {
                             age: "未提交", motive: "未提交", channel: "未提交", comment: "仅打分未最终提交"
                         };
 
-                        fetch('/api/submit_psych', {
-                            method: 'POST',
+                      fetch('https://landuoduo-test.vercel.app/api/submit_psych', {
+    method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 recordId: typeof currentRecordId !== 'undefined' ? currentRecordId : '测试环境无ID',
