@@ -985,6 +985,34 @@ if (savedAnswers) {
                 .sv-label input { margin-top: 3px; accent-color: #1e4bd2; }
                 .sv-label:hover { color: #1e4bd2; }
             </style>
+            <div class="sv-group" style="padding: 20px; background: rgba(30, 75, 210, 0.05); border-radius: 12px; border: 1px dashed rgba(30, 75, 210, 0.2); margin-bottom: 24px;">
+            <div class="sv-title" style="text-align: center; font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; color: #1e3a8a;">
+                本次测试的综合穿透力与体验如何？
+            </div>
+            
+            <div id="star-rating" style="display: flex; justify-content: center; gap: 12px; font-size: 2.8rem; color: #cbd5e1; cursor: pointer; margin-bottom: 8px;">
+                <span class="star" data-val="1">★</span>
+                <span class="star" data-val="2">★</span>
+                <span class="star" data-val="3">★</span>
+                <span class="star" data-val="4">★</span>
+                <span class="star" data-val="5">★</span>
+            </div>
+
+            <div id="star-desc" style="text-align: center; font-size: 1.05rem; color: #1e4bd2; font-weight: 600; min-height: 28px; margin-bottom: 16px;">
+                请点击星标进行打分
+            </div>
+
+            <div style="font-size: 0.85rem; color: #5b6e8c; background: rgba(255,255,255,0.5); padding: 12px 16px; border-radius: 8px; line-height: 1.7;">
+                <div style="font-weight: 600; margin-bottom: 6px; color: #1e3a8a;">📋 打分参考依据：</div>
+                <div><strong style="color:#f59e0b">5星 (灵魂穿透)</strong>：很精准且沉浸，逼出了直觉反应，和传统测试不一样，想定期复测。</div>
+                <div><strong style="color:#f59e0b">4星 (专业烧脑)</strong>：较精准有专业度，但认知负荷大带来疲惫。</div>
+                <div><strong style="color:#f59e0b">3星 (常规体验)</strong>：大部分对应常规自我，无特殊交互感知。</div>
+                <div><strong style="color:#f59e0b">2星 (心流受阻)</strong>：存在偏颇，交互打断心流，有阻滞感。</div>
+                <div><strong style="color:#f59e0b">1星 (完全失真)</strong>：偏差极大，未测绘到真实的自我。</div>
+            </div>
+            
+            <input type="hidden" id="sv_star_score" value="0">
+        </div>
 
             <div class="sv-group">
                 <div class="sv-title">1. 您的当前年龄段为：</div>
@@ -1006,37 +1034,14 @@ if (savedAnswers) {
             </div>
 
             <div class="sv-group">
-                <div class="sv-title">3. 在作答过程中，您是否经常遇到“必须做出艰难抉择”的情况？</div>
-                <label class="sv-label"><input type="radio" name="sv_pressure" value="极少，很容易判断"> A. 极少，选项很容易做出判断</label>
-                <label class="sv-label"><input type="radio" name="sv_pressure" value="偶尔，能对应常规自我"> B. 偶尔，大部分情境能快速对应常规自我</label>
-                <label class="sv-label"><input type="radio" name="sv_pressure" value="经常，暴露直觉反应"> C. 经常，部分题目迫使我暴露了剥离社会身份后的直觉反应</label>
-                <label class="sv-label"><input type="radio" name="sv_pressure" value="极度痛苦，极限施压"> D. 极度痛苦，感觉选项在进行极限施压与撕裂</label>
-            </div>
-
-            <div class="sv-group">
-                <div class="sv-title">4. 报告对您内驱力与能耗的剖析，穿透力如何？</div>
-                <label class="sv-label"><input type="radio" name="sv_accuracy" value="极度精准"> A. 极度精准，精确扫描到了未曾表露的底层逻辑</label>
-                <label class="sv-label"><input type="radio" name="sv_accuracy" value="较精准"> B. 较精准，解答了现实中存在的部分长期的困惑</label>
-                <label class="sv-label"><input type="radio" name="sv_accuracy" value="一般，存在偏颇"> C. 一般，部分描述符合，但存在明显的偏颇与未对齐之处</label>
-                <label class="sv-label"><input type="radio" name="sv_accuracy" value="偏差较大"> D. 偏差较大，感觉系统未能测绘到真实的自我</label>
-            </div>
-
-            <div class="sv-group">
-                <div class="sv-title">5. 您会推荐给朋友体验吗？</div>
-                <label class="sv-label"><input type="radio" name="sv_nps" value="会，非常愿意"> A. 会，非常愿意分享</label>
-                <label class="sv-label"><input type="radio" name="sv_nps" value="看情况，推荐给特定人"> B. 看情况，可能会推荐给特定需要的人</label>
-                <label class="sv-label"><input type="radio" name="sv_nps" value="不会，比较私人"> C. 不会，感觉比较私人或帮助不大</label>
-            </div>
-
-            <div class="sv-group">
-                <div class="sv-title">6. 您会阶段性（如经历重大变化后）再来测试吗？</div>
-                <label class="sv-label"><input type="radio" name="sv_retention" value="会，观测状态变化"> A. 会，想观测自己的状态变化</label>
-                <label class="sv-label"><input type="radio" name="sv_retention" value="也许会，看心境"> B. 也许会，看当时的心境</label>
-                <label class="sv-label"><input type="radio" name="sv_retention" value="测一次就够了"> C. 测一次就够了</label>
+                <div class="sv-title">3. 您是从什么聚道过来的？</div>
+                <label class="sv-label"><input type="radio" name="sv_nps" value="小红书"> A. 小红书</label>
+                <label class="sv-label"><input type="radio" name="sv_nps" value="微信链接分享"> B. 微信链接分享</label>
+                <label class="sv-label"><input type="radio" name="sv_nps" value="B站"> C. B站</label>
             </div>
 
             <div style="margin-bottom:24px;">
-                <div class="sv-title">7. 您有什么话想对我们说？（选填，对某道题的感受、报告建议等）</div>
+                <div class="sv-title">4. 您有什么话想对我们说？（选填，对某道题的感受、报告建议等）</div>
                 <textarea id="sv_comment" rows="3" placeholder="写下你的真实体感..." style="width:100%; padding:12px; border-radius:12px; border:1px solid #cbd5e1; font-family:inherit; font-size:0.9rem; background:white; color:#0f172a; resize:vertical;"></textarea>
             </div>
 
