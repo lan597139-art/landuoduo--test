@@ -15,18 +15,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* 修改为顶部留白，避免被悬浮导航栏遮挡 */
             padding: 140px 2rem 4rem; 
         }
 
-        /* ==========================================
-           1. 顶部悬浮导航栏 (16P 风格黑框)
-           ========================================== */
+        /* 顶部悬浮导航栏 */
         .site-header {
             position: fixed; 
             top: 0; 
             width: 100%;
-            /* 配合原版背景色的毛玻璃效果 */
             background: rgba(250, 250, 248, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
@@ -41,7 +37,7 @@
             align-items: center; 
             gap: 32px;
             padding: 12px 40px;
-            border: 2px solid #1e293b; /* 核心标志：黑色实线框 */
+            border: 2px solid #1e293b; 
             border-radius: 99px;
             background: #ffffff;
             box-shadow: 0 4px 12px rgba(0,0,0,0.04);
@@ -60,7 +56,7 @@
         .nav-item:hover { color: #2563eb; }
         .nav-item.active { color: #2563eb; }
 
-        /* 下拉菜单样式 */
+        /* 下拉菜单 */
         .dropdown {
             position: absolute; 
             top: 100%; 
@@ -77,7 +73,6 @@
             padding: 8px 0; 
             text-align: left;
         }
-        /* 增加一个隐形的桥梁，防止鼠标移出 nav-item 时下拉框消失 */
         .nav-item::after {
             content: ''; position: absolute;
             bottom: -15px; left: 0; width: 100%; height: 15px;
@@ -102,9 +97,7 @@
             font-weight: 600; 
         }
 
-        /* ==========================================
-           2. 原版双入口卡片主视觉区
-           ========================================== */
+        /* 原版双入口卡片主视觉区 */
         .container { max-width: 680px; width: 100%; text-align: center; }
         .subtitle { font-size: 0.95rem; color: #7a7a6e; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
         h1 { font-size: 2rem; margin-bottom: 0.5rem; font-weight: 600; }
@@ -163,33 +156,33 @@
 
     <header class="site-header">
         <nav class="nav-container">
-            <a href="/" class="nav-item active">沙盒探测</a>
+            <a href="./index.html" class="nav-item active">沙盒探测</a>
             
             <div class="nav-item">动力学百科 ∨
                 <div class="dropdown">
-                    <a href="/theory/engines" class="dropdown-item">⚙️ 五大天赋能量引擎</a>
-                    <a href="/theory/sandboxes" class="dropdown-item">🧩 六大生存沙盒</a>
-                    <a href="/theory/metabolism" class="dropdown-item">🔋 跨膜代谢与极限抗压</a>
-                    <a href="/theory/telemetry" class="dropdown-item">📉 实时工况遥测四核</a>
+                    <a href="./encyclopedia.html#engines" class="dropdown-item">⚙️ 五大天赋能量引擎</a>
+                    <a href="./encyclopedia.html#sandboxes" class="dropdown-item">🧩 六大生存沙盒</a>
+                    <a href="./encyclopedia.html#metabolism" class="dropdown-item">🔋 跨膜代谢与极限抗压</a>
+                    <a href="./encyclopedia.html#telemetry" class="dropdown-item">📉 实时工况遥测四核</a>
                 </div>
             </div>
             
             <div class="nav-item">组织与协作 ∨
                 <div class="dropdown">
-                    <a href="/org/topology" class="dropdown-item">🧠 算力拓扑分层</a>
-                    <a href="/org/roles" class="dropdown-item">🤝 11型心腹与C授权</a>
-                    <a href="/org/dynamics" class="dropdown-item">⛓️ 极化生克与动态互锁</a>
+                    <a href="./org.html#topology" class="dropdown-item">🧠 算力拓扑分层 (筹备中)</a>
+                    <a href="./org.html#roles" class="dropdown-item">🤝 11型心腹与C授权 (筹备中)</a>
+                    <a href="./org.html#dynamics" class="dropdown-item">⛓️ 极化生克与动态互锁 (筹备中)</a>
                 </div>
             </div>
             
             <div class="nav-item">洞察与生态 ∨
                 <div class="dropdown">
-                    <a href="/about/comparison" class="dropdown-item">📊 视界融合 (理论对比)</a>
-                    <a href="/about/audience" class="dropdown-item">👥 适用探索人群</a>
+                    <a href="./about.html#comparison" class="dropdown-item">📊 视界融合 (理论对比)</a>
+                    <a href="./about.html#audience" class="dropdown-item">👥 适用探索人群</a>
                 </div>
             </div>
             
-            <a href="/contact" class="nav-item">商业部署</a>
+            <a href="./about.html#contact" class="nav-item">商业部署</a>
         </nav>
     </header>
 
@@ -199,7 +192,7 @@
         <p class="welcome">两套客观测绘工具，从职场生态位到底层能量流转，扫描你的心力分配网络。<br>请根据当前的系统耗损状态选择入口。</p>
         
         <div class="test-grid">
-            <a href="/career/" class="test-card">
+            <a href="./career/index.html" class="test-card">
                 <h2>🧭 职业性格测试 <span class="badge">免费</span></h2>
                 <div class="tags">
                     <span class="tag">引擎配置</span>
@@ -212,7 +205,7 @@
                 </div>
             </a>
 
-            <a href="/psychology/" class="test-card">
+            <a href="./psychology/index.html" class="test-card">
                 <h2>🔮 心灵地图探测</h2>
                 <div class="tags">
                     <span class="tag">断电节点探测</span>
@@ -226,7 +219,7 @@
             </a>
         </div>
 
-        <p class="footer-note">📖 <a href="/theory/engines">关于本测试 · 理论依据</a> &nbsp;|&nbsp; 建议优先完成【职业性格测试】建立基础坐标系</p>
+        <p class="footer-note">📖 <a href="./encyclopedia.html#engines">关于本测试 · 理论依据</a> &nbsp;|&nbsp; 建议优先完成【职业性格测试】建立基础坐标系</p>
     </div>
 
 </body>
