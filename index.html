@@ -104,13 +104,8 @@
         .welcome { font-size: 1rem; color: #555; margin-bottom: 2.5rem; line-height: 1.8; }
         .test-grid { display: flex; flex-direction: column; gap: 1.5rem; align-items: center; }
         
-        /* 核心修复：分离卡片外层与内部的 a 标签，防止嵌套非法 */
-        .test-card-wrapper {
-            width: 100%; max-width: 460px;
-            position: relative;
-        }
-        
         .test-card {
+            width: 100%; max-width: 460px;
             padding: 1.8rem 2rem;
             border-radius: 14px;
             text-decoration: none;
@@ -121,7 +116,6 @@
             transition: box-shadow 0.2s, transform 0.2s;
             text-align: left;
             display: block;
-            width: 100%;
         }
         .test-card:hover { 
             box-shadow: 0 6px 24px rgba(0,0,0,0.08); 
@@ -129,7 +123,7 @@
             border-color: #d1d1ca; 
         }
         
-        .test-card h2 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #1e293b; padding-right: 90px; }
+        .test-card h2 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #1e293b; }
         .test-card .tags { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
         .test-card .tag {
             font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 20px;
@@ -145,88 +139,68 @@
             border-left: 3px solid #cbd5e1;
             line-height: 1.5;
         }
+
+        /* ==========================================
+           【新增】底部高阶指南黑框 
+           ========================================== */
+        .advanced-guide-box {
+            width: 100%;
+            margin-top: 2.5rem;
+            border: 3px solid #1e293b; /* 醒目的黑色实线边框 */
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            text-align: left;
+            background: #ffffff;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+        }
+        .advanced-guide-box h3 {
+            font-size: 1.35rem;
+            color: #1e293b;
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+        }
+        .advanced-guide-box > p {
+            font-size: 0.95rem;
+            color: #475569;
+            margin-bottom: 0.8rem;
+            line-height: 1.7;
+        }
+        .guide-step {
+            background: #f8fafc;
+            border-left: 4px solid #2563eb;
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 1.5rem;
+        }
+        .guide-step h4 { color: #2563eb; margin-bottom: 8px; font-size: 1.05rem; }
+        .guide-step ul { margin-left: 20px; color: #475569; font-size: 0.95rem; line-height: 1.7; margin-bottom: 8px;}
+        .warning-box {
+            background: rgba(239, 68, 68, 0.05);
+            border-left: 3px solid #ef4444;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        .prompt-box {
+            background: #1e293b; color: #f8fafc; padding: 20px;
+            border-radius: 10px; margin-top: 1.5rem; font-size: 0.9rem;
+            line-height: 1.7; font-family: monospace;
+        }
+        .prompt-box span { color: #fef08a; font-weight: 600;} 
         
         .footer-note { margin-top: 3rem; font-size: 0.8rem; color: #94a3b8; }
         .footer-note a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
         .footer-note a:hover { color: #64748b; text-decoration: underline; }
         .badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 10px; background: #fef08a; color: #854d0e; margin-left: 0.4rem; vertical-align: middle; }
 
-        /* ==========================================
-           弹窗及触发按钮专属样式 
-           ========================================== */
-        
-        /* 绝对定位在右上角的黑框按钮，避开 <a> 标签嵌套问题 */
-        .guide-trigger-btn {
-            position: absolute;
-            top: 1.6rem;
-            right: 1.8rem;
-            background: #1e293b;
-            color: #ffffff;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
-            z-index: 10;
-        }
-        .guide-trigger-btn:hover { background: #334155; transform: translateY(-1px); }
-
-        /* 弹窗遮罩层 */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-            z-index: 2000;
-            display: flex; justify-content: center; align-items: center;
-            opacity: 0; visibility: hidden; transition: all 0.3s ease;
-        }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-
-        /* 弹窗核心内容框 */
-        .modal-content {
-            background: #ffffff; width: 90%; max-width: 680px; max-height: 85vh;
-            border-radius: 16px; padding: 40px; overflow-y: auto;
-            position: relative; transform: translateY(20px); transition: transform 0.3s ease;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: left;
-        }
-        .modal-overlay.active .modal-content { transform: translateY(0); }
-        
-        /* 关闭按钮 */
-        .close-btn {
-            position: absolute; top: 20px; right: 24px; font-size: 1.5rem;
-            color: #94a3b8; cursor: pointer; background: none; border: none; transition: color 0.2s;
-        }
-        .close-btn:hover { color: #1e293b; }
-
-        /* 弹窗内文本排版 */
-        .modal-content h3 { font-size: 1.35rem; color: #1e293b; margin-bottom: 16px; font-weight: 600; }
-        .modal-content p { font-size: 0.95rem; color: #475569; margin-bottom: 12px; line-height: 1.7; }
-        
-        /* 高阶玩法提示框 */
-        .modal-highlight-box {
-            background: #f8fafc; border-left: 4px solid #2563eb;
-            padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0;
-        }
-        .modal-highlight-box h4 { color: #2563eb; margin-bottom: 8px; font-size: 1.05rem; font-weight: 600; }
-        .modal-highlight-box ul { margin-left: 20px; color: #475569; font-size: 0.95rem; margin-bottom: 8px; line-height: 1.7;}
-
-        /* AI Prompt 黑框代码区 */
-        .prompt-box {
-            background: #1e293b; color: #f8fafc; padding: 24px;
-            border-radius: 12px; margin: 20px 0; font-size: 0.9rem;
-            line-height: 1.7; font-family: monospace;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .prompt-box strong { color: #fef08a; }
-        .prompt-box span { color: #fef08a; font-weight: 600;} 
-
         @media (max-width: 768px) {
             .nav-container { padding: 10px 20px; gap: 16px; }
             .nav-item { font-size: 0.85rem; }
             body { padding-top: 110px; }
-            .modal-content { padding: 32px 24px; }
+            .advanced-guide-box { padding: 2rem 1.5rem; }
         }
     </style>
 </head>
@@ -268,22 +242,18 @@
         <p class="welcome">两套客观测绘工具，从职场生态位到底层能量流转，扫描你的心力分配网络。<br>请根据当前的系统耗损状态选择入口。</p>
         
         <div class="test-grid">
-            
-            <div class="test-card-wrapper">
-                <a href="./career/index.html" class="test-card">
-                    <h2>🧭 职业性格测试 <span class="badge">免费</span></h2>
-                    <div class="tags">
-                        <span class="tag">引擎配置</span>
-                        <span class="tag">职业方向</span>
-                        <span class="tag">协作角色</span>
-                    </div>
-                    <p class="desc">71题 · 约18分钟 · 回答“你是谁”——获取你的核心驱动力、力量主战场，以及最适合的职业发展方向与团队定位。</p>
-                    <div class="target-audience">
-                        <strong>💡 适用场景：</strong>寻找就业方向的学生、职场迷茫期的人群、需要了解团队成员配置的HR与管理者。
-                    </div>
-                </a>
-                <button class="guide-trigger-btn" onclick="openModal(event)">💡 高阶指南</button>
-            </div>
+            <a href="./career/index.html" class="test-card">
+                <h2>🧭 职业性格测试 <span class="badge">免费</span></h2>
+                <div class="tags">
+                    <span class="tag">引擎配置</span>
+                    <span class="tag">职业方向</span>
+                    <span class="tag">协作角色</span>
+                </div>
+                <p class="desc">71题 · 约18分钟 · 回答“你是谁”——获取你的核心驱动力、力量主战场，以及最适合的职业发展方向与团队定位。</p>
+                <div class="target-audience">
+                    <strong>💡 适用场景：</strong>寻找就业方向的学生、职场迷茫期的人群、需要了解团队成员配置的HR与管理者。
+                </div>
+            </a>
 
             <a href="./psychology/index.html" class="test-card">
                 <h2>🔮 心灵地图探测</h2>
@@ -299,21 +269,15 @@
             </a>
         </div>
 
-        <p class="footer-note">📖 <a href="./encyclopedia.html#engines">关于本测试 · 理论依据</a> &nbsp;|&nbsp; 建议优先完成【职业性格测试】建立基础坐标系</p>
-    </div>
-
-    <div class="modal-overlay" id="guideModal" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="close-btn" onclick="closeModal()">×</button>
-            
+        <div class="advanced-guide-box">
             <h3>💡 高阶使用指南：如何获取你的专属“场景化”报告？</h3>
             <p>本系统的底层算法，测绘的是你最本质的<strong>“心智做功原件”</strong>与<strong>“能量代谢机制”</strong>。</p>
             <p>这意味着，这套系统不仅能用来测“职场与事业”，它同样可以无缝平移到<strong>校园升学、恋爱婚配、家庭关系、创业合伙</strong>等任何现实语境中。</p>
             <p>为了保持底层题库的纯粹与客观，我们没有在前端拆分出几十个不同版本的“专用问卷”。但这绝非限制，反而赋予了你极大的自由度——<strong>你可以自行决定这次测试的“降落沙盒”。</strong></p>
             
-            <p style="margin-top: 24px; font-weight: 600; color: #1e293b;">只需遵循以下三步，你就能获得任意语境下的精准二次报告：</p>
+            <p style="margin-top: 1.5rem; font-weight: 600; color: #1e293b;">只需遵循以下三步，你就能获得任意语境下的精准二次报告：</p>
 
-            <div class="modal-highlight-box">
+            <div class="guide-step">
                 <h4>🎯 第一步：答题前，锁定唯一“测试语境”</h4>
                 <p style="margin-bottom: 8px;">在点击开始答题前，请先在脑海中设定一个你当下最想看清的“具体场景”。</p>
                 <ul>
@@ -321,51 +285,19 @@
                     <li><strong>比如：</strong> 我这次只测我在“考研/校园生存”里的状态。</li>
                     <li><strong>比如：</strong> 我这次只测我在“创业合伙”里的状态。</li>
                 </ul>
-                <div style="background: rgba(239,68,68,0.05); padding: 12px 16px; border-left: 3px solid #ef4444; border-radius: 4px; margin-top: 12px;">
-                    <strong style="color: #b91c1c;">⚠️ 核心纪律：</strong> <span style="color: #1e293b;">在接下来的所有答题中，<strong>必须严格保持语境一致！</strong>绝不能这道题代入工作，下一道题代入恋爱。一旦代入场景发生跳跃，系统最终输出的图纸将会发生严重的“高熵错乱”。</span>
+                <div class="warning-box">
+                    <strong style="color: #b91c1c;">⚠️ 核心纪律：</strong> 在接下来的所有答题中，<strong>必须严格保持语境一致！</strong>绝不能这道题代入工作，下一道题代入恋爱。一旦代入场景发生跳跃，系统最终输出的图纸将会发生严重的“高熵错乱”。
                 </div>
             </div>
 
-            <div class="modal-highlight-box">
+            <div class="guide-step">
                 <h4>🧬 第二步：获取你的“客观原件图纸”</h4>
-                <p>按照锁定的单一语境完成测试，获取系统为你生成的硬核基准报告（包括你的主副引擎、极化生克链条、以及系统宕机的红线区）。这相当于你拿到了自己在这个特定场景下的“底层心智 CT 光片”。</p>
+                <p style="margin-bottom: 0;">按照锁定的单一语境完成测试，获取系统为你生成的硬核基准报告（包括你的主副引擎、极化生克链条、以及系统宕机的红线区）。这相当于你拿到了自己在这个特定场景下的“底层心智 CT 光片”。</p>
             </div>
 
-            <div class="modal-highlight-box">
+            <div class="guide-step" style="margin-bottom: 0;">
                 <h4>🤖 第三步：召唤 AI，生成“二次场景报告”</h4>
-                <p>拿着这份底层的客观图纸，直接交给任意一款你常用的 AI 大模型（如 ChatGPT、Kimi、豆包 等），让 AI 帮你完成最终的“语境化翻译”。你可以直接复制以下 Prompt（提示词模板） 投喂给 AI：</p>
+                <p style="margin-bottom: 0;">拿着这份底层的客观图纸，直接交给任意一款你常用的 AI 大模型（如 ChatGPT、Kimi、豆包 等），让 AI 帮你完成最终的“语境化翻译”。你可以直接复制以下 Prompt（提示词模板） 投喂给 AI：</p>
             </div>
 
-            <div class="prompt-box">
-                <strong>【一键复制以下模板投喂给 AI】</strong><br><br>
-                “我刚刚完成了一套极其硬核的心智动力学与沙盒测试。我在答题时，全程代入的唯一场景是：<span>【填入你的语境，如：恋爱婚配 / 校园生活 / 创业合伙 / 职场向上管理】</span>。<br><br>
-                以下是系统给我出具的底层客观报告：<br>
-                [ 在此处粘贴你的测试报告全文 ]<br><br>
-                请你扮演一位极其专业的<span>【填入对应角色，如：情感咨询师 / 学业规划师 / 商业OD专家】</span>，帮我把这份底层报告，翻译成完全贴合我当前语境的二次解读报告。请不要给我模糊的安慰，必须用大白话告诉我：<br><br>
-                1. 在这个具体场景下，我的核心优势是什么？最致命的内耗漏洞又在哪里？<br>
-                2. 报告里的“极化生克机制（引擎打架）”，在我这个场景里，具体会表现成什么日常行为和冲突？<br>
-                3. 报告里提到的“C 授权红线（绝对不能碰的事）”，在这个场景下意味着我绝对不能踩的雷区是什么？请给我 3 条最能落地的具体行为建议。”
-            </div>
-
-            <div style="border-top: 1px dashed #cbd5e1; margin-top: 32px; padding-top: 20px;">
-                <p style="font-weight: 600; color: #1e293b; margin-bottom: 4px;">兰哆哆寄语：</p>
-                <p style="font-style: italic; color: #64748b; font-size: 0.9rem;">把底层原件交给你，把场景翻译交给 AI。不要被固定的测试定义，你可以拿着这套系统，去测绘你人生中的每一个重要沙盒。</p>
-            </div>
-
-        </div>
-    </div>
-
-    <script>
-        function openModal(e) {
-            e.preventDefault(); 
-            document.getElementById('guideModal').classList.add('active');
-            document.body.style.overflow = 'hidden'; 
-        }
-
-        function closeModal(e) {
-            document.getElementById('guideModal').classList.remove('active');
-            document.body.style.overflow = 'auto'; 
-        }
-    </script>
-</body>
-</html>
+            <div
