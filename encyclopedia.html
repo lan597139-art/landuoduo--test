@@ -16,11 +16,12 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; } /* 开启平滑滚动 */
         body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg-page); color: var(--text-main); line-height: 1.8; padding-top: 100px; }
         a { text-decoration: none; color: inherit; }
 
         /* ==========================================
-           保留首页同款：顶部悬浮黑框导航栏
+           顶部悬浮黑框导航栏
            ========================================== */
         .site-header { position: fixed; top: 0; width: 100%; background: rgba(250, 250, 248, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; padding: 24px 20px; }
         .nav-container { display: flex; align-items: center; gap: 32px; padding: 12px 40px; border: 2px solid #1e293b; border-radius: 99px; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
@@ -86,7 +87,7 @@
         .theory-section h4 { font-size: 1rem; color: var(--primary); margin-bottom: 8px; font-weight: 600; }
         .theory-section p { font-size: 0.95rem; color: #334155; margin-bottom: 12px; }
         
-        /* 重点高亮框 (对应弹窗里的【】内容) */
+        /* 重点高亮框 */
         .highlight-box {
             background: rgba(37, 99, 235, 0.05);
             border-left: 4px solid var(--primary);
@@ -96,6 +97,21 @@
             color: #1e293b;
             font-weight: 500;
             margin-top: 16px;
+        }
+        .alert-box {
+            background: rgba(239, 68, 68, 0.05);
+            border-left: 4px solid #ef4444;
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            color: #1e293b;
+            font-weight: 500;
+            margin-top: 16px;
+        }
+
+        /* 锚点偏移量，防止吸顶导航遮挡标题 */
+        .anchor-offset {
+            scroll-margin-top: 130px;
         }
 
         @media (max-width: 900px) {
@@ -108,29 +124,33 @@
 
     <header class="site-header">
         <nav class="nav-container">
-            <a href="/" class="nav-item">沙盒探测</a>
+            <a href="/index.html" class="nav-item">沙盒探测</a>
+            
             <div class="nav-item active">动力学百科 ∨
                 <div class="dropdown">
-                    <a href="#engines" class="dropdown-item">⚙️ 五大天赋能量引擎</a>
-                    <a href="#sandboxes" class="dropdown-item">🧩 六大生存沙盒</a>
-                    <a href="#" class="dropdown-item">🔋 跨膜代谢与极限抗压</a>
-                    <a href="#" class="dropdown-item">📉 实时工况遥测四核</a>
+                    <a href="/encyclopedia.html#engines" class="dropdown-item">⚙️ 五大天赋能量引擎</a>
+                    <a href="/encyclopedia.html#sandboxes" class="dropdown-item">🧩 六大生存沙盒</a>
+                    <a href="/encyclopedia.html#metabolism" class="dropdown-item">🔋 跨膜代谢与极限抗压</a>
+                    <a href="/encyclopedia.html#telemetry" class="dropdown-item">📉 实时工况遥测四核</a>
                 </div>
             </div>
+            
             <div class="nav-item">组织与协作 ∨
                 <div class="dropdown">
-                    <a href="#" class="dropdown-item">🧠 算力拓扑分层</a>
-                    <a href="#" class="dropdown-item">🤝 11型心腹与C授权</a>
-                    <a href="#" class="dropdown-item">⛓️ 极化生克与动态互锁</a>
+                    <a href="/org.html#topology" class="dropdown-item">🧠 算力拓扑分层 (筹备中)</a>
+                    <a href="/org.html#roles" class="dropdown-item">🤝 11型心腹与C授权 (筹备中)</a>
+                    <a href="/org.html#dynamics" class="dropdown-item">⛓️ 极化生克与动态互锁 (筹备中)</a>
                 </div>
             </div>
+            
             <div class="nav-item">洞察与生态 ∨
                 <div class="dropdown">
-                    <a href="#" class="dropdown-item">📊 视界融合 (理论对比)</a>
-                    <a href="#" class="dropdown-item">👥 适用探索人群</a>
+                    <a href="/index.html#comparison" class="dropdown-item">📊 视界融合 (理论对比)</a>
+                    <a href="/index.html#audience" class="dropdown-item">👥 适用探索人群</a>
                 </div>
             </div>
-            <a href="#" class="nav-item">商业部署</a>
+            
+            <a href="/index.html#contact" class="nav-item">商业部署</a>
         </nav>
     </header>
 
@@ -140,15 +160,15 @@
             <h3>📖 目录索引</h3>
             <a href="#engines" class="sidebar-link">⚙️ 1. 五大天赋能量引擎</a>
             <a href="#sandboxes" class="sidebar-link">🧩 2. 六大生存容纳沙盒</a>
-            <a href="#" class="sidebar-link" style="color:#94a3b8;">🔋 3. 跨膜代谢与极限抗压 (待载入)</a>
-            <a href="#" class="sidebar-link" style="color:#94a3b8;">📉 4. 实时工况遥测四核 (待载入)</a>
+            <a href="#metabolism" class="sidebar-link">🔋 3. 跨膜代谢与防线账单</a>
+            <a href="#telemetry" class="sidebar-link">📉 4. 实时工况与四核遥测</a>
         </aside>
 
         <div class="wiki-content">
             <h1 class="page-title">动力学百科：心智的客观原件</h1>
-            <p class="page-desc">我们将人类复杂、流动的体感，拆解为物理学意义上的做功方式（引擎）与现实承载空间（沙盒）。这是系统运转的最底层代码。</p>
+            <p class="page-desc">我们将人类复杂、流动的体感，拆解为物理学意义上的做功方式（引擎）、现实承载空间（沙盒）以及能量代谢速率。这是系统运转的最底层代码。</p>
 
-            <div id="engines" style="margin-top: -100px; padding-top: 100px;">
+            <div id="engines" class="anchor-offset">
                 <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">⚙️ 五大天赋能量引擎（习惯怎么做功）</h2>
                 
                 <div class="theory-card">
@@ -227,7 +247,7 @@
                 </div>
             </div>
 
-            <div id="sandboxes" style="margin-top: 40px; padding-top: 100px;">
+            <div id="sandboxes" class="anchor-offset" style="margin-top: 60px;">
                 <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">🧩 六大生存沙盒（电量用在了哪里）</h2>
                 
                 <div class="theory-card">
@@ -238,7 +258,7 @@
                     <div class="theory-section">
                         <p>这是你作为生物体存在的物质基础。包括你的作息、饮食、睡眠、居所、金钱、现金流和所有看得见摸得着的资源。它回答“我有没有足够的东西活下去，并且活得踏实”。你的身体记忆、避险本能、对地盘和资源的守护意识，都在这里扎根。</p>
                     </div>
-                    <div class="highlight-box" style="border-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
+                    <div class="alert-box">
                         ⚠️ 崩溃预警：当它出问题时，你会感到持续的疲惫、身体报警、资源紧张，或者生活空间失控。你会变得敏感、易怒，对任何额外消耗都会本能地抗拒，因为底盘已经兜不住了。
                     </div>
                 </div>
@@ -251,7 +271,7 @@
                     <div class="theory-section">
                         <p>这是你个人能力的沉淀层。它记录了你学过什么、做成过什么、有哪些项目和履历，以及你对自己“能不能搞定”的底气和边界感。当你脱去所有外部标签，这些经验、方法论和持续成长的惯性，就是你独立生存的确定性。</p>
                     </div>
-                    <div class="highlight-box" style="border-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
+                    <div class="alert-box">
                         ⚠️ 崩溃预警：当它出问题时，你会感到能力焦虑、履历断层，或者怀疑自己“其实什么都不会”。长期没有正反馈时，你会陷入自我否定，甚至开始逃避任何需要证明自己的场合。
                     </div>
                 </div>
@@ -264,7 +284,7 @@
                     <div class="theory-section">
                         <p>这是你与他人之间的深度信任网络。包括伴侣、密友、长期合伙人等那些你愿意托付后背的人。它通过陪伴、共情和双向承诺来维系，回答“在这世界上，谁真正理解我，谁不会轻易离开”。</p>
                     </div>
-                    <div class="highlight-box" style="border-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
+                    <div class="alert-box">
                         ⚠️ 崩溃预警：当它出问题时，你会感到孤独、被误解，或者被困在一段消耗型关系里。你可能会过度付出却得不到回应，或者在冲突中选择沉默，因为害怕关系破裂。
                     </div>
                 </div>
@@ -277,7 +297,7 @@
                     <div class="theory-section">
                         <p>这是你在群体中的坐标和影响力。包括你的身份标签、话语权、人脉圈层和公众评价。它回答“我在人群里站在哪，别人怎么看我”。你对等级、位置和舆论的敏感度，都在这个场域里运作。</p>
                     </div>
-                    <div class="highlight-box" style="border-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
+                    <div class="alert-box">
                         ⚠️ 崩溃预警：当它出问题时，你会感到被边缘化、被贴错标签，或者被舆论裹挟。你可能会过度在意别人的评价，或者反过来——因为受过伤而完全拒绝融入任何群体。
                     </div>
                 </div>
@@ -290,7 +310,7 @@
                     <div class="theory-section">
                         <p>这是你精神世界的顶层设计。包括你最看重的价值观、人生的终极目标、什么值得做、什么不能妥协。它在你最苦的时候提供“为什么还要撑下去”的理由，是你对抗日常消耗的精神止痛药。</p>
                     </div>
-                    <div class="highlight-box" style="border-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
+                    <div class="alert-box">
                         ⚠️ 崩溃预警：当它出问题时，你会感到空虚、迷茫，或者发现自己一直在追逐的东西其实毫无意义。空窗期会非常难熬，你可能会抓住任何能暂时填满空洞的东西，哪怕你知道它不对。
                     </div>
                 </div>
@@ -303,12 +323,97 @@
                     <div class="theory-section">
                         <p>这是你建立起来的规则和流程。包括工作方法、协作机制、商业模式、日常习惯等一旦建好就能自动运行的结构。它回答“怎样做才不会乱，怎样做才能让结果稳定产出”。</p>
                     </div>
-                    <div class="highlight-box" style="border-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
+                    <div class="alert-box">
                         ⚠️ 崩溃预警：当它出问题时，你会感到混乱、低效，或者被自己建立的规则反困住。旧机制失效时，你可能明知该改却迟迟动不了，因为重建的成本和不确定性让你犹豫。
                     </div>
                 </div>
-
             </div>
+
+            <div id="metabolism" class="anchor-offset" style="margin-top: 60px;">
+                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">🔋 跨膜代谢与相变防线（你的系统底线）</h2>
+                
+                <div class="theory-card">
+                    <div class="card-header">
+                        <span class="card-icon">🛡️</span>
+                        <h2>跨膜代谢机制 (W vs N)</h2>
+                    </div>
+                    <div class="theory-section">
+                        <p>系统在边界处对外部信号的转译与代谢速率。它决定了系统对外部正向反馈的吸收率，以及对外部负向压强的阻抗系数。根据内外源占比，分化为以下四种经典防御模式：</p>
+                        
+                        <h4>强内源型 (N > W)：自带干粮</h4>
+                        <p>内核极其刚性，稳定性全靠内心的坐标。<strong>【面对压力】</strong> 分化为“刚直城堡型”（毫不犹豫正面迎击以明晰边界）或“偏执封闭型”（极端认知闭合，退入盲目堡垒）。<strong>【面对机会】</strong> 分化为“清醒克制型”（面对大饼保持警觉，死守底盘）或“自大排他型”（迷信自身标准，错失真实红利）。</p>
+                        
+                        <h4 style="margin-top: 16px;">强外源型 (W > N)：标准外置</h4>
+                        <p>系统边界通透度极高，必须向外部规则、反馈寻求庇护。<strong>【面对压力】</strong> 分化为“反馈依赖型”（委曲求全以换取安全感）或“条文教条型”（死抠既定程序以推卸现实摩擦，沦为冷酷机器）。<strong>【面对机会】</strong> 通常表现为“全量追随型”，机械套用外界模板，易致主线散乱。</p>
+
+                        <h4 style="margin-top: 16px;">高阻抗灰度型 (W ≈ N)：超级转化炉</h4>
+                        <p>极聪明的能量转译系统，不盲刚也不盲从。<strong>【面对压力】</strong> 分化为“建设性转化型”（表面合规交差，暗中修补核心）或“精明推诿型”（满脸堆笑全盘承接，暗中将风险与黑锅转嫁集体）。<strong>【面对机会】</strong> 分化为“稳健沉淀型”（拆解风控，将运气转化为资产）或“投机收割型”（专挑最安全的肥肉，绝不承担长期共苦责任）。</p>
+
+                        <h4 style="margin-top: 16px;">高损耗空转型 (Displacement 极高)：能量漏斗</h4>
+                        <p>跨膜代谢机制部分失效。<strong>【面对压力】</strong> 分化为“瘫痪僵死型”（对外界彻底脱机麻木）或“超频盲动型”（引擎灾难性加速，疯狂救火却不产生任何现实位移）。<strong>【面对机会】</strong> 分化为“麻木错失型”（带宽锁死无力承接）或“野心空转型”（沉迷宏大叙事却无底层闭环执行）。</p>
+                    </div>
+                </div>
+
+                <div class="theory-card">
+                    <div class="card-header">
+                        <span class="card-icon">⚡</span>
+                        <h2>极限压力相变 (σ 防线账单)</h2>
+                    </div>
+                    <div class="theory-section">
+                        <p>当外界压强逼近系统临界承载力时，内部结构将发生不可逆的刚性断裂或相变防御。这直接决定了你在利益面前是选择断尾求生，还是被彻底融化。</p>
+                        
+                        <h4>σ1（高弹性转译型）：变色龙与弹力带</h4>
+                        <p>拥有极强的韧性。就算遇到再大的冲击，也能一边护住核心底盘，一边灵活退让次要利益换取生存。适合处理高度模糊与和光同尘的高难度任务。</p>
+                        
+                        <h4>σ0（原教旨刚性型）：硬骨头与陶瓷</h4>
+                        <p>在原则问题上宁折不弯，完全不接受“灰色地带”。宁可硬扛损失甚至掀桌子，也不在规则上退后半步。极易在“没人管、来钱快”的诱惑面前发生结构失守。</p>
+
+                        <h4>σ2_switch（现实割肉重组型）：壁虎断尾</h4>
+                        <p>纯粹的生存主义者。不在乎面子或传统，只要能换取活命，随时可以像切手指一样把原有的系统和伙伴甩掉，在废墟上换个活法。极易发生为了攀爬而切断所有旧感情的“锚定失守”。</p>
+
+                        <h4>σ2_collapse（无序溃散型）：系统宕机</h4>
+                        <p>心理防线薄弱，一旦压力过载，原有的底线就会像雪一样融化。很难在冲突中保持清醒，容易被环境彻底带偏，最终陷入随波逐流的流放状态。极易陷入系统烧穿的“动力罢工”。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="telemetry" class="anchor-offset" style="margin-top: 60px; margin-bottom: 80px;">
+                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">📉 实时工况遥测 (ε 电量与四核脆弱漏斗)</h2>
+                
+                <div class="theory-card">
+                    <div class="card-header">
+                        <span class="card-icon">📊</span>
+                        <h2>ε 五区动态电量监控</h2>
+                    </div>
+                    <div class="theory-section">
+                        <p>对个体当前运行时算力带宽的即时远程遥测。不同电量区间直接决定了当前系统可开放的授权等级。</p>
+                        <ul style="margin-top: 16px; margin-left: 20px;">
+                            <li style="margin-bottom: 12px;"><strong>🔴 红区 (宕机濒危态)：</strong> 电量仅剩1%。物理机能和心理承压在崩溃边缘。高级处理能力强制下线，只能应付单线任务。需立刻物理隔离。</li>
+                            <li style="margin-bottom: 12px;"><strong>🟠 橙区 (低带宽高耗态)：</strong> 省电模式。勉强维持基本运转，对外界信号极度缺乏耐心。千万别碰复杂沟通或高难度多线挑战。</li>
+                            <li style="margin-bottom: 12px;"><strong>🟢 绿区 (基准稳态)：</strong> 收支平衡。不亢奋也不抗拒，能稳定推进已有事项，但不适合安排超出职权的模糊重担。</li>
+                            <li style="margin-bottom: 12px;"><strong>🔵 蓝区 (高能推进态)：</strong> 电量满格。运行极其丝滑，有余力帮人兜底风险。最适合处理突发危机与带领新项目破局。</li>
+                            <li style="margin-bottom: 12px;"><strong>🟣 紫区 (狂热扩张态)：</strong> 超载狂热。极度渴望打破旧规矩，但这属于大脑透支，随时会遭遇“断崖式断电”直接虚脱回红区。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="theory-card">
+                    <div class="card-header">
+                        <span class="card-icon">🕳️</span>
+                        <h2>四核脆弱窄口 (Critical Drain)</h2>
+                    </div>
+                    <div class="theory-section">
+                        <p>算法通过精准比对以下四核余量，揪出拖垮你状态的罪魁祸首，在木桶彻底锁死前，定位反本能的最小修复动作。</p>
+                        <div class="alert-box" style="margin-top: 16px;">
+                            <strong>💪 Load (物理承载) 见底：</strong>身体已经开始报警，体力严重跟不上算力。需立刻降低任务密度，保证高质量睡眠。<br><br>
+                            <strong>🧠 Stress (心理承压) 见底：</strong>神经绷得很紧，任何计划外的变故或不确定性都会让你瞬间爆炸。需设置强力的“信息屏蔽时段”。<br><br>
+                            <strong>🗣️ Emotion (情绪极性) 见底：</strong>没有任何情绪余额分给别人，关系互动在剧烈消耗你。必须暂时停止人事管理或高频对外联络。<br><br>
+                            <strong>🔥 Motive (动机烈度) 见底：</strong>心里觉得干什么都没劲，意义断线导致行动枯竭。这种“心累”比体力消耗更折磨你，需重新审视核心目标。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
