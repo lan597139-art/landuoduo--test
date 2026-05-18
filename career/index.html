@@ -1087,23 +1087,29 @@ if (answeredCount < total) {
 report = '<button id="btnDownloadReport" class="btn" style="margin-bottom:20px;">📥 保存报告（打印为PDF）</button>' + report;
 
 let feedbackHtml = `
-<div id="feedbackBox" style="margin-top:48px; padding:24px; background:rgba(37,99,235,0.04); border-radius:20px; border:2.5px dashed #2563eb; text-align: left;">
-    <h3 style="color:#2563eb; margin-bottom:14px; font-size:1.15rem; font-weight:600;">🧭 测后反馈：协助系统校准你的职业沙盘</h3>
-    <p style="font-size:0.85rem; color:#475569; margin-bottom:24px; line-height:1.6;">为了提升沙盘引擎的职业发展测绘精度，我们需要回收一些真实的体感数据。您的反馈将被完全匿名加密处理。</p>
+<div id="feedbackBox" style="margin-top:48px; padding:24px; background:rgba(37,99,235,0.04); border-radius:20px; border:2.5px dashed #3b82f6; text-align: left;">
+    <h3 style="color:#3b82f6; margin-bottom:14px; font-size:1.15rem; font-weight:600;">🧭 测后反馈：协助系统校准你的职业沙盘</h3>
+    <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:24px; line-height:1.6;">为了提升沙盘引擎的职业发展测绘精度，我们需要回收一些真实的体感数据。您的反馈将被完全匿名加密处理。</p>
     
     <style>
-        .sv-group { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px dashed #e2e8f0; }
-        .sv-title { font-weight: 600; color: #2563eb; margin-bottom: 12px; font-size: 0.95rem; }
-        .sv-label { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; font-size: 0.9rem; color: #1e293b; cursor: pointer; line-height: 1.4; text-align: left; }
-        .sv-label input { margin-top: 3px; accent-color: #2563eb; flex-shrink: 0; }
-        .sv-label:hover { color: #2563eb; }
+        .sv-group { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px dashed #333336; }
+        .sv-title { font-weight: 600; color: #3b82f6; margin-bottom: 12px; font-size: 0.95rem; }
+        .sv-label { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; font-size: 0.9rem; color: #cbd5e1; cursor: pointer; line-height: 1.4; text-align: left; }
+        .sv-label input { margin-top: 3px; accent-color: #3b82f6; flex-shrink: 0; }
+        .sv-label:hover { color: #3b82f6; }
+        
+        /* 标签墙样式 */
+        .tag-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+        .identity-tag { display: none; }
+        .tag-label { display: inline-block; padding: 6px 14px; background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 20px; color: #cbd5e1; font-size: 0.85rem; cursor: pointer; user-select: none; transition: 0.15s; }
+        .identity-tag:checked + .tag-label { background: rgba(59, 130, 246, 0.2) !important; border-color: #3b82f6 !important; color: #ffffff !important; font-weight: 600; }
+        .tag-label:hover { border-color: #3b82f6; color: #ffffff; }
     </style>
 
-    <div class="sv-group" style="padding: 20px; background: rgba(37, 99, 235, 0.05); border-radius: 12px; border: 1px dashed rgba(37, 99, 235, 0.2); margin-bottom: 24px;">
-        <div class="sv-title" style="text-align: center; font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; color: #2563eb;">
+    <div class="sv-group" style="padding: 20px; background: rgba(59, 130, 246, 0.05); border-radius: 12px; border: 1px dashed rgba(59, 130, 246, 0.2); margin-bottom: 24px;">
+        <div class="sv-title" style="text-align: center; font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; color: #3b82f6;">
             本次测试的综合穿透力与体验如何？
         </div>
-        
         <div id="star-rating" style="display: flex; justify-content: center; gap: 12px; font-size: 2.8rem; color: #cbd5e1; cursor: pointer; margin-bottom: 8px;">
             <span class="star" data-val="1">★</span>
             <span class="star" data-val="2">★</span>
@@ -1111,20 +1117,17 @@ let feedbackHtml = `
             <span class="star" data-val="4">★</span>
             <span class="star" data-val="5">★</span>
         </div>
-
-        <div id="star-desc" style="text-align: center; font-size: 1.05rem; color: #2563eb; font-weight: 600; min-height: 28px; margin-bottom: 16px;">
+        <div id="star-desc" style="text-align: center; font-size: 1.05rem; color: #3b82f6; font-weight: 600; min-height: 28px; margin-bottom: 16px;">
             请点击星标进行打分
         </div>
-
-        <div style="font-size: 0.85rem; color: #475569; background: rgba(255,255,255,0.5); padding: 12px 16px; border-radius: 8px; line-height: 1.7;">
-            <div style="font-weight: 600; margin-bottom: 6px; color: #1e293b;">📋 打分参考依据：</div>
+        <div style="font-size: 0.85rem; color: #94a3b8; background: rgba(255,255,255,0.02); padding: 12px 16px; border-radius: 8px; line-height: 1.7; border: 1px dashed #333336;">
+            <div style="font-weight: 600; margin-bottom: 6px; color: #f8fafc;">📋 打分参考依据：</div>
             <div><strong style="color:#f59e0b">5星 (灵魂穿透)</strong>：很精准且沉浸，逼出了直觉反应，想定期复测。</div>
             <div><strong style="color:#f59e0b">4星 (专业烧脑)</strong>：较精准有专业度，但认知负荷大带来疲惫。</div>
             <div><strong style="color:#f59e0b">3星 (常规体验)</strong>：大部分对应常规自我，无特殊交互感知。</div>
             <div><strong style="color:#f59e0b">2星 (心流受阻)</strong>：存在偏颇，交互打断心流，有阻滞感。</div>
             <div><strong style="color:#f59e0b">1星 (完全失真)</strong>：偏差极大，未测绘到真实的自我。</div>
         </div>
-        
         <input type="hidden" id="sv_star_score" value="0">
     </div>
 
@@ -1137,51 +1140,51 @@ let feedbackHtml = `
         <label class="sv-label"><input type="radio" name="sv_age" value="36岁及以上"> E. 36岁及以上</label>
     </div>
 
-<div class="sv-group">
-    <div class="sv-title">4. 请选择最符合您的真实身份标签（可多选）：</div>
-    <div class="tag-container">
-        <input type="checkbox" id="tag_mbti" name="sv_identity" value="资深MBTI玩家" class="identity-tag"><label for="tag_mbti" class="tag-label">🔮 资深MBTI玩家</label>
-        <input type="checkbox" id="tag_inf_int" name="sv_identity" value="INXX星人" class="identity-tag"><label for="tag_inf_int" class="tag-label">🌌 INXX高敏感星人</label>
-        <input type="checkbox" id="tag_psy_fan" name="sv_identity" value="心理学爱好者" class="identity-tag"><label for="tag_psy_fan" class="tag-label">🧠 心理学爱好者</label>
-        <input type="checkbox" id="tag_psy_consult" name="sv_identity" value="心理咨询师" class="identity-tag"><label for="tag_psy_consult" class="tag-label">❤️ 心理咨询师</label>
-        <input type="checkbox" id="tag_mystic" name="sv_identity" value="玄学/星盘/塔罗玩家" class="identity-tag"><label for="tag_mystic" class="tag-label">🃏 玄学/星盘/塔罗玩家</label>
-        <input type="checkbox" id="tag_hr" name="sv_identity" value="HR/猎头/组织发展" class="identity-tag"><label for="tag_hr" class="tag-label">💼 HR/猎头/组织发展</label>
-        <input type="checkbox" id="tag_boss" name="sv_identity" value="团队Leader/老板" class="identity-tag"><label for="tag_boss" class="tag-label">👑 团队Leader/老板</label>
-        <input type="checkbox" id="tag_entre" name="sv_identity" value="创业者/自由职业" class="identity-tag"><label for="tag_entre" class="tag-label">🚀 创业者/自由职业</label>
-        <input type="checkbox" id="tag_media" name="sv_identity" value="自媒体人/IP操盘手" class="identity-tag"><label for="tag_media" class="tag-label">📣 自媒体人/IP操盘手</label>
-        <input type="checkbox" id="tag_big_co" name="sv_identity" value="大厂打工人" class="identity-tag"><label for="tag_big_co" class="tag-label">🔩 大厂打工人/精算螺丝钉</label>
-        <input type="checkbox" id="tag_gov" name="sv_identity" value="体制内/上岸人" class="identity-tag"><label for="tag_gov" class="tag-label">🏛️ 体制内/上岸人</label>
-        <input type="checkbox" id="tag_developer" name="sv_identity" value="app开发者/技术极客" class="identity-tag"><label for="tag_developer" class="tag-label">📱 开发者/技术极客</label>
-        <input type="checkbox" id="tag_science" name="sv_identity" value="理科生" class="identity-tag"><label for="tag_science" class="tag-label">🧪 理科生/逻辑流</label>
-        <input type="checkbox" id="tag_arts" name="sv_identity" value="文科生" class="identity-tag"><label for="tag_arts" class="tag-label">✍️ 文科生/文本创作者</label>
-        <input type="checkbox" id="tag_design" name="sv_identity" value="设计师/美学极客" class="identity-tag"><label for="tag_design" class="tag-label">🎨 设计师/美学极客</label>
-        <input type="checkbox" id="tag_student" name="sv_identity" value="在读学生" class="identity-tag"><label for="tag_student" class="tag-label">📝 在读学生</label>
-        <input type="checkbox" id="tag_teacher" name="sv_identity" value="教师/培训师" class="identity-tag"><label for="tag_teacher" class="tag-label">🧑‍🏫 教师/培训师</label>
-        <input type="checkbox" id="tag_parents" name="sv_identity" value="父母" class="identity-tag"><label for="tag_parents" class="tag-label">👪 父母/家长</label>
-        <input type="checkbox" id="tag_acg" name="sv_identity" value="二次元/ACG同好" class="identity-tag"><label for="tag_acg" class="tag-label">🎮 二次元/ACG同好</label>
-        <input type="checkbox" id="tag_wanderer" name="sv_identity" value="边缘游荡者" class="identity-tag"><label for="tag_wanderer" class="tag-label">🍃 无法被定义的边缘游荡者</label>
+    <div class="sv-group">
+        <div class="sv-title">2. 请选择最符合您的真实身份标签（可多选）：</div>
+        <div class="tag-container">
+            <input type="checkbox" id="tag_mbti" name="sv_identity" value="资深MBTI玩家" class="identity-tag"><label for="tag_mbti" class="tag-label">🔮 资深MBTI玩家</label>
+            <input type="checkbox" id="tag_inf_int" name="sv_identity" value="INXX星人" class="identity-tag"><label for="tag_inf_int" class="tag-label">🌌 INXX高敏感星人</label>
+            <input type="checkbox" id="tag_psy_fan" name="sv_identity" value="心理学爱好者" class="identity-tag"><label for="tag_psy_fan" class="tag-label">🧠 心理学爱好者</label>
+            <input type="checkbox" id="tag_psy_consult" name="sv_identity" value="心理咨询师" class="identity-tag"><label for="tag_psy_consult" class="tag-label">❤️ 心理咨询师</label>
+            <input type="checkbox" id="tag_mystic" name="sv_identity" value="玄学/星盘/塔罗玩家" class="identity-tag"><label for="tag_mystic" class="tag-label">🃏 玄学/星盘/塔罗玩家</label>
+            <input type="checkbox" id="tag_teacher" name="sv_identity" value="教师" class="identity-tag"><label for="tag_teacher" class="tag-label">🧑‍🏫 教师/培训师</label>
+            <input type="checkbox" id="tag_developer" name="sv_identity" value="app开发者" class="identity-tag"><label for="tag_developer" class="tag-label">📱 app开发者/技术极客</label>
+            <input type="checkbox" id="tag_parents" name="sv_identity" value="家长" class="identity-tag"><label for="tag_parents" class="tag-label">👪 父母/家长</label>
+            <input type="checkbox" id="tag_hr" name="sv_identity" value="HR/猎头/组织发展" class="identity-tag"><label for="tag_hr" class="tag-label">💼 HR/猎头/组织发展</label>
+            <input type="checkbox" id="tag_boss" name="sv_identity" value="团队Leader/老板" class="identity-tag"><label for="tag_boss" class="tag-label">👑 团队Leader/老板</label>
+            <input type="checkbox" id="tag_media" name="sv_identity" value="自媒体人/IP操盘手" class="identity-tag"><label for="tag_media" class="tag-label">📣 自媒体人/IP操盘手</label>
+            <input type="checkbox" id="tag_big_co" name="sv_identity" value="大厂打工人" class="identity-tag"><label for="tag_big_co" class="tag-label">🔩 大厂打工人/精算螺丝钉</label>
+            <input type="checkbox" id="tag_gov" name="sv_identity" value="体制内/上岸人" class="identity-tag"><label for="tag_gov" class="tag-label">🏛️ 体制内/上岸人</label>
+            <input type="checkbox" id="tag_science" name="sv_identity" value="理科生" class="identity-tag"><label for="tag_science" class="tag-label">🧪 理科生/逻辑流</label>
+            <input type="checkbox" id="tag_arts" name="sv_identity" value="文科生" class="identity-tag"><label for="tag_arts" class="tag-label">✍️ 文科生/文本创作者</label>
+            <input type="checkbox" id="tag_design" name="sv_identity" value="设计师/美学极客" class="identity-tag"><label for="tag_design" class="tag-label">🎨 设计师/美学极客</label>
+            <input type="checkbox" id="tag_student" name="sv_identity" value="在读学生" class="identity-tag"><label for="tag_student" class="tag-label">📝 在读学生</label>
+            <input type="checkbox" id="tag_acg" name="sv_identity" value="二次元/ACG同好" class="identity-tag"><label for="tag_acg" class="tag-label">🎮 二次元/ACG同同好</label>
+            <input type="checkbox" id="tag_entre" name="sv_identity" value="创业者/自由职业" class="identity-tag"><label for="tag_entre" class="tag-label">🚀 创业者/自由职业</label>
+            <input type="checkbox" id="tag_wanderer" name="sv_identity" value="边缘游荡者" class="identity-tag"><label for="tag_wanderer" class="tag-label">🍃 无法被定义的边缘游荡者</label>
+        </div>
     </div>
-</div>
 
     <div class="sv-group">
         <div class="sv-title">3. 触发您本次参与测试的原因是什么？</div>
         <label class="sv-label"><input type="radio" name="sv_motive" value="面临选专业/求职定位"> A. 面临选专业、分班或求职，急需定位</label>
-        <label class="sv-label"><input type="radio" name="sv_motive" value="内耗严重/寻找破局转行"> B. 当前内耗严重或缺乏成就感，寻找破局</label>
+        <label class="sv-label"><input type="radio" name="sv_motive" value="内耗严重/寻找破局转行"> B. 当前内耗严重或缺乏成就感，寻找破局方向</label>
         <label class="sv-label"><input type="radio" name="sv_motive" value="深度向内探索"> C. 纯粹渴望深度向内探索</label>
         <label class="sv-label"><input type="radio" name="sv_motive" value="洞察他人/优化团队协作"> D. 需洞察他人特质，优化组织协作</label>
         <label class="sv-label"><input type="radio" name="sv_motive" value="转折点/评估抗压阈值"> E. 处于生活重大转折点，评估抗压阈值</label>
     </div>
 
     <div class="sv-group">
-        <div class="sv-title">4. 您是从什么聚道来的吗？</div>
+        <div class="sv-title">4. 您是从什么渠道过来的吗？</div>
         <label class="sv-label"><input type="radio" name="sv_nps" value="从小红薯"> A. 从小红薯</label>
         <label class="sv-label"><input type="radio" name="sv_nps" value="好友分享"> B. 好友分享</label>
         <label class="sv-label"><input type="radio" name="sv_nps" value="bilibili"> C. bilibili</label>
     </div>
 
     <div style="margin-bottom:24px;">
-        <div class="sv-title" style="color: #2563eb;">5. 您有什么话想对我们说？（选填，对某道题的感受、建议等）</div>
-        <textarea id="sv_comment" rows="3" placeholder="写下你的真实体感..." style="width:100%; padding:12px; border-radius:12px; border:1px solid #cbd5e1; font-family:inherit; font-size:0.9rem; background:var(--bg-card); color:var(--text-main); resize:vertical;"></textarea>
+        <div class="sv-title" style="color: #3b82f6;">5. 您有什么话想对我们说？（选填，对某道题的感受、建议等）</div>
+        <textarea id="sv_comment" rows="3" placeholder="写下你的真实体感..." style="width:100%; padding:12px; border-radius:12px; border:1px solid #cbd5e1; font-family:inherit; font-size:0.9rem; background:#1c1c1e; color:#f8fafc; resize:vertical;"></textarea>
     </div>
 
     <div style="display:flex; justify-content:flex-end;">
@@ -1230,10 +1233,10 @@ let feedbackHtml = `
                         }
                     });
 
-                    // 🚀 核心：职业测试的静默发射 (绝对路径)
+                    // 职业测试的静默发射 (无视格式，安全保存)
                     var autoSaveData = {
                         star_score: val + "星",
-                        age: "未提交", motive: "未提交", channel: "未提交", comment: "仅打分未最终提交"
+                        age: "未提交", motive: "未提交", channel: "未提交", user_identity: [], comment: "仅打分未最终提交"
                     };
 
                     fetch('https://landuoduo-test.vercel.app/api/submit', { 
@@ -1250,7 +1253,6 @@ let feedbackHtml = `
         }
     }, 100);
 
-
     // ── 异步发射主数据到云端黑盒接口 ──
     var cleanAnswers = {};
     for (var qid in userAnswers) { cleanAnswers[qid] = userAnswers[qid]; }
@@ -1259,7 +1261,6 @@ let feedbackHtml = `
     fetch('https://landuoduo-test.vercel.app/api/submit', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // 🎯 修复点：职业测试天然只有单层对象，直接传 cleanAnswers 即可
         body: JSON.stringify({ userId: null, userAnswers: cleanAnswers }) 
     })
     .then(function(res) { return res.json(); })
@@ -1273,7 +1274,7 @@ let feedbackHtml = `
         
         var finalStarScore = document.getElementById('sv_star_score').value;
 
-        // 1. 强制要求必须点星星
+        // 强制要求必须点星星
         if (finalStarScore === "0") {
             alert("请先在顶部点击星标，为本次测试体验打分！");
             return; 
@@ -1284,12 +1285,22 @@ let feedbackHtml = `
             return checked ? checked.value : '未作答';
         };
         
-        // 2. 组装精简后的数据包
+        // 🚀 多选题标签抓取逻辑
+        var getCheckedTags = function() {
+            var checkedTags = [];
+            document.querySelectorAll('input[name="sv_identity"]:checked').forEach(function(el) {
+                checkedTags.push(el.value);
+            });
+            return checkedTags.length > 0 ? checkedTags : ['未选择身份标签'];
+        };
+        
+        // 组装最终提交的数据包
         var surveyData = {
             star_score: finalStarScore + "星",
             age: getRadioValue('sv_age'),
             motive: getRadioValue('sv_motive'),
             channel: getRadioValue('sv_nps'),
+            user_identity: getCheckedTags(), 
             comment: document.getElementById('sv_comment').value.trim()
         };
 
@@ -1297,7 +1308,7 @@ let feedbackHtml = `
         feedbackBtn.innerText = '问卷同步中...';
         feedbackBtn.disabled = true;
 
-        // 3. 终极发射 (绝对路径兜底)
+        // 终极数据同步发射
         fetch('https://landuoduo-test.vercel.app/api/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1319,6 +1330,7 @@ let feedbackHtml = `
             document.getElementById('feedbackMsg').innerHTML = `✓ 问卷已在前端完成记录`;
         });
     };
+}; // <─── ✨ 核心修复点：这里完美合拢了 btnSubmit.onclick 闭环！
       renderQuestions();
 })();
 </script>
