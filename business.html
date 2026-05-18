@@ -38,6 +38,8 @@
             background: rgba(250, 250, 248, 0.85); 
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); 
             z-index: 1000; display: flex; justify-content: center; padding: 24px 20px; 
+            /* 添加过渡效果，为滑动隐藏做准备 */
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
         }
         .nav-container { 
             display: flex; align-items: center; gap: 32px; padding: 12px 40px; 
@@ -64,27 +66,228 @@
         .page-desc { font-size: 1.05rem; color: var(--text-nav); margin-bottom: 48px; text-align: center; }
 
         /* ==========================================
-           4. 业务模块卡片
+           4. 【克制卡片设计】内容白板区与分割线排版
            ========================================== */
-        .biz-card { 
-            background: var(--bg-card); 
-            border: 1px solid var(--border-color); 
-            border-radius: var(--radius); 
-            padding: 36px 40px; 
-            margin-bottom: 24px; 
-            box-shadow: 0 2px 12px rgba(0,0,0,0.03); 
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            gap: 24px;
+        .content-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.02);
         }
-        .biz-card:hover {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-            transform: translateY(-2px);
-            border-color: #cbd5e1;
+
+        .biz-item { display: flex; gap: 24px; padding: 32px 0; }
+        .biz-item:first-child { padding-top: 0; }
+        .biz-item:last-child { padding-bottom: 0; }
+        
+        .divider { border: none; border-bottom: 1px dashed #cbd5e1; margin: 0; }
+
+        .biz-icon { font-size: 2.5rem; flex-shrink: 0; margin-top: 4px; }
+        .biz-content h2 { font-size: 1.35rem; font-weight: 600; color: var(--border-dark); margin-bottom: 12px; }
+        .biz-content p { font-size: 0.95rem; color: #475569; line-height: 1.7; margin-bottom: 16px; }
+        .biz-tag { display: inline-block; background: #f1f5f9; color: var(--primary); font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; margin-bottom: 12px;}
+
+        /* 联系方式深色硬核框 */
+        .contact-box {
+            background: #1e293b;
+            color: #f8fafc;
+            border-radius: var(--radius);
+            padding: 40px;
+            margin-top: 48px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        .biz-icon {
-            font-size: 2.5rem;
-            flex-shrink: 0;
-            margin-top: 4px;
+        .contact-box h2 { font-size: 1.5rem; color: #ffffff; margin-bottom: 24px; font-weight: 600; display: flex; align-items: center; gap: 12px;}
+        .contact-row { display: flex; align-items: center; margin-bottom: 16px; font-size: 1.05rem; }
+        .contact-row span { color: #94a3b8; width: 100px; flex-shrink: 0; }
+        .contact-row strong { color: #fef08a; font-family: monospace; font-size: 1.15rem; letter-spacing: 0.5px;}
+        .contact-note { border-top: 1px dashed #475569; margin-top: 24px; padding-top: 20px; font-size: 0.9rem; color: #94a3b8; line-height: 1.6; }
+
+        /* ====================================================
+           5. 【手机端终极适配】极致紧凑、防拥挤、释放空间
+           ==================================================== */
+        @media (max-width: 768px) {
+            /* 压缩黑框，减小高度占用 */
+            .site-header { padding: 8px 10px; }
+            .nav-container { 
+                padding: 6px 12px; 
+                gap: 4px 12px; 
+                flex-wrap: wrap; 
+                justify-content: center;
+                border-radius: 16px; 
+            }
+            .nav-item { font-size: 0.8rem; padding: 4px 0; }
+            
+            /* 释放屏幕两侧空间：减小 body 留白 */
+            body { padding-top: 100px; } 
+            .business-layout { padding: 16px 12px 60px; }
+            
+            /* 压缩内容区块的内边距，把宽度还给文字 */
+            .content-block { padding: 24px 20px; }
+            .biz-item { flex-direction: column; gap: 12px; padding: 24px 0; }
+            .contact-box { padding: 24px 20px; }
+            .contact-row { flex-direction: column; align-items: flex-start; gap: 4px;}
+            
+            /* 移动端下拉菜单防长按逻辑样式 */
+            .dropdown { width: 160px; }
+            .dropdown-item { padding: 10px 14px; font-size: 0.8rem; }
+            .nav-item:hover .dropdown { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px); }
+            .nav-item.mobile-open .dropdown { 
+                opacity: 1; 
+                visibility: visible; 
+                transform: translateX(-50%) translateY(5px); 
+            }
         }
-        .biz-content h2 { font-size: 1.35rem; font-weight: 600; color: var(--border-dark);
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <nav class="nav-container">
+            <a href="./index.html" class="nav-item">沙盒探测</a>
+            
+            <div class="nav-item">动力学百科 ∨
+                <div class="dropdown">
+                    <a href="./encyclopedia.html#engines" class="dropdown-item">⚙️ 五大天赋能量引擎</a>
+                    <a href="./encyclopedia.html#sandboxes" class="dropdown-item">🧩 六大生存沙盒</a>
+                    <a href="./encyclopedia.html#metabolism" class="dropdown-item">🔋 跨膜代谢与极限抗压</a>
+                    <a href="./encyclopedia.html#telemetry" class="dropdown-item">📉 实时工况遥测四核</a>
+                </div>
+            </div>
+            
+            <div class="nav-item">组织与协作 ∨
+                <div class="dropdown">
+                    <a href="./org.html#topology" class="dropdown-item">🧠 算力拓扑分层</a>
+                    <a href="./org.html#roles" class="dropdown-item">🤝 13型心腹与C授权</a>
+                    <a href="./org.html#dynamics" class="dropdown-item">⛓️ 极化生克与动态互锁</a>
+                </div>
+            </div>
+            
+            <div class="nav-item">洞察与生态 ∨
+                <div class="dropdown">
+                    <a href="./about.html#comparison" class="dropdown-item">📊 视界融合 (理论对比)</a>
+                    <a href="./about.html#audience" class="dropdown-item">👥 适用探索人群</a>
+                </div>
+            </div>
+            
+            <a href="./business.html" class="nav-item active">商业部署</a>
+        </nav>
+    </header>
+
+    <main class="business-layout">
+        
+        <h1 class="page-title">商业部署与生态接入</h1>
+        <p class="page-desc">将底层的动态沙盒探测技术，接入组织治理、高管诊断与商业应用矩阵。</p>
+
+        <div class="content-block">
+            
+            <div class="biz-item">
+                <div class="biz-icon">🏢</div>
+                <div class="biz-content">
+                    <span class="biz-tag">ToB 组织服务</span>
+                    <h2>团队工况盘点与 C 授权测绘</h2>
+                    <p>跳出传统的静态绩效考评与形式化性格测试。针对企业级客户，系统提供独立的批量测绘入口，精确扫描团队成员当前的实时功耗、引擎摩擦节点与底层沙盒资源掩埋状态。</p>
+                    <p style="margin-bottom: 0;"><strong>交付成果：</strong>团队整体算力拓扑图、核心成员 13 型心腹生态位落盘、以及极其刚性的组织内部 C 授权控制红线（何种岗位必须规避何种特质）。</p>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="biz-item">
+                <div class="biz-icon">♟️</div>
+                <div class="biz-content">
+                    <span class="biz-tag">深度咨询架构</span>
+                    <h2>OD 治理与合伙人底层诊断</h2>
+                    <p>针对核心决策层（合伙人团队、创始人、核心高管）进行极高密度的“心智 CT”级诊断。剥离表面的人际摩擦，直击引擎互克引发的决策性干烧与战略沙盒断层。</p>
+                    <p style="margin-bottom: 0;"><strong>交付成果：</strong>提供不受现实利益污染的第三方中立判决，重构高管团队的利益边界、信任结构与物理防御机制，化解灾难性的内部博弈耗散。</p>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="biz-item">
+                <div class="biz-icon">🔗</div>
+                <div class="biz-content">
+                    <span class="biz-tag">API 与理论生态</span>
+                    <h2>算法接入与垂直语境共创</h2>
+                    <p>支持底层动力学算分逻辑的模块化输出。若你拥有特定的垂类语境（如情感婚恋、校园升学、大客户销售网络），需要一套剥离玄学的硬件判定标准，我们提供后端“做功原件”的算力与接口支持。</p>
+                    <p style="margin-bottom: 0;"><strong>交付成果：</strong>标准化算法能力输出，协助垂类产品完成测试题库改造与情境化报告生成闭环。</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="contact-box">
+            <h2><span style="font-size: 1.8rem;">✉️</span> 启动系统对接</h2>
+            
+            <div class="contact-row">
+                <span>官方邮箱</span>
+                <strong>partner@landuoduo-test.vercel.app</strong>
+            </div>
+            
+            <div class="contact-row">
+                <span>小红书主理</span>
+                <strong>兰哆哆 (ID: 374739115)</strong>
+            </div>
+
+            <div class="contact-note">
+                <strong>对接须知：</strong><br>
+                为确保沟通链路的高效闭环，请在发送邮件时，于标题明确标注您的对接诉求：<strong>[团队盘点]</strong>、<strong>[高管诊断]</strong> 或 <strong>[生态接入]</strong>，并附上您的组织身份与当前遭遇的管理/测试窄口。我们将于 24 个工作小时内完成响应与资源调度。
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // ==================================================
+            // 1. 下拉菜单轻触即开 (告别长按)
+            // ==================================================
+            const navItems = document.querySelectorAll('.nav-item');
+            document.body.addEventListener('touchstart', function() {}, {passive: true});
+
+            navItems.forEach(item => {
+                if (item.querySelector('.dropdown')) {
+                    item.addEventListener('click', (e) => {
+                        if (window.innerWidth <= 768) {
+                            if (e.target.classList.contains('dropdown-item')) return;
+                            e.preventDefault();
+                            navItems.forEach(other => {
+                                if (other !== item) other.classList.remove('mobile-open');
+                            });
+                            item.classList.toggle('mobile-open');
+                        }
+                    });
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && !e.target.closest('.nav-item')) {
+                    navItems.forEach(item => item.classList.remove('mobile-open'));
+                }
+            });
+
+            // ==================================================
+            // 2. 导航栏滑动显隐 (下滑藏起，上滑呼出)
+            // ==================================================
+            const header = document.querySelector('.site-header');
+            let lastScrollY = window.scrollY;
+
+            window.addEventListener('scroll', () => {
+                const currentScrollY = window.scrollY;
+                
+                if (currentScrollY > lastScrollY && currentScrollY > 80) {
+                    // 向下滚动：隐藏导航栏
+                    header.style.transform = 'translateY(-100%)';
+                    // 顺便关掉可能开着的菜单
+                    navItems.forEach(item => item.classList.remove('mobile-open'));
+                } else if (currentScrollY < lastScrollY) {
+                    // 向上滚动：显示导航栏
+                    header.style.transform = 'translateY(0)';
+                }
+                
+                lastScrollY = currentScrollY;
+            }, { passive: true });
+        });
+    </script>
+</body>
+</html>
