@@ -30,6 +30,8 @@
             display: flex; 
             justify-content: center;
             padding: 24px 20px;
+            /* 增加过渡动画，适配上下滑动显隐 */
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-container {
@@ -140,56 +142,68 @@
             line-height: 1.5;
         }
 
-        /* 底部高阶指南黑框 */
-        .advanced-guide-box {
+        /* ==========================================
+           【全新极简版】底部高阶指南：仅用分割线
+           ========================================== */
+        .advanced-guide-wrapper {
             width: 100%;
-            margin-top: 2.5rem;
-            border: 3px solid #1e293b; 
-            border-radius: 16px;
-            padding: 2.5rem 2rem;
+            margin-top: 4rem;
+            padding-top: 3rem;
+            border-top: 1px solid #cbd5e1; /* 极简分割线 */
             text-align: left;
-            background: #ffffff;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
         }
-        .advanced-guide-box h3 {
-            font-size: 1.35rem;
+        .advanced-guide-wrapper h3 {
+            font-size: 1.25rem;
             color: #1e293b;
             margin-bottom: 1.2rem;
-            font-weight: 700;
+            font-weight: 600;
         }
-        .advanced-guide-box > p {
+        .advanced-guide-wrapper > p {
             font-size: 0.95rem;
             color: #475569;
             margin-bottom: 0.8rem;
             line-height: 1.7;
         }
-        .guide-step {
-            background: #f8fafc;
-            border-left: 4px solid #2563eb;
-            padding: 16px 20px;
-            border-radius: 0 8px 8px 0;
+        
+        /* 剥离了所有粗边框和背景的条目 */
+        .guide-step-clean {
             margin-top: 1.5rem;
         }
-        .guide-step h4 { color: #2563eb; margin-bottom: 8px; font-size: 1.05rem; }
-        .guide-step ul { margin-left: 20px; color: #475569; font-size: 0.95rem; line-height: 1.7; margin-bottom: 8px;}
-        .warning-box {
-            background: rgba(239, 68, 68, 0.05);
-            border-left: 3px solid #ef4444;
-            padding: 12px 16px;
-            border-radius: 4px;
-            margin-top: 12px;
+        .guide-step-clean h4 { 
+            color: #1e293b; 
+            margin-bottom: 8px; 
+            font-size: 1rem; 
+            font-weight: 600;
+        }
+        .guide-step-clean ul { 
+            margin-left: 20px; 
+            color: #475569; 
+            font-size: 0.95rem; 
+            line-height: 1.7; 
+            margin-bottom: 8px;
+        }
+        
+        .warning-text {
+            margin-top: 8px;
             font-size: 0.9rem;
-            color: #1e293b;
+            color: #b91c1c;
             line-height: 1.6;
         }
-        .prompt-box {
-            background: #1e293b; color: #f8fafc; padding: 20px;
-            border-radius: 10px; margin-top: 1.5rem; font-size: 0.9rem;
-            line-height: 1.7; font-family: monospace;
-        }
-        .prompt-box span { color: #fef08a; font-weight: 600;} 
         
-        .footer-note { margin-top: 3rem; font-size: 0.8rem; color: #94a3b8; }
+        /* 柔和的浅灰背景代码框，不再刺眼 */
+        .prompt-box-clean {
+            background: #f8fafc; 
+            color: #334155; 
+            padding: 20px;
+            border-radius: 8px; 
+            margin-top: 1.5rem; 
+            font-size: 0.9rem;
+            line-height: 1.7; 
+            border: 1px dashed #cbd5e1;
+        }
+        .prompt-box-clean span { color: #2563eb; font-weight: 600;} 
+        
+        .footer-note { margin-top: 3rem; font-size: 0.8rem; color: #94a3b8; text-align: center; }
         .footer-note a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
         .footer-note a:hover { color: #64748b; text-decoration: underline; }
         .badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 10px; background: #fef08a; color: #854d0e; margin-left: 0.4rem; vertical-align: middle; }
@@ -208,7 +222,6 @@
             }
             .nav-item { font-size: 0.85rem; padding: 2px 0; }
             body { padding-top: 120px; } 
-            .advanced-guide-box { padding: 2rem 1.5rem; } 
             
             .dropdown { width: 180px; }
             .dropdown-item { padding: 10px 16px; font-size: 0.8rem; }
@@ -290,7 +303,7 @@
             </a>
         </div>
 
-        <div class="advanced-guide-box">
+        <div class="advanced-guide-wrapper">
             <h3>💡 高阶使用指南：如何获取你的专属“场景化”报告？</h3>
             <p>本系统的底层算法，测绘的是你最本质的<strong>“心智做功原件”</strong>与<strong>“能量代谢机制”</strong>。</p>
             <p>这意味着，这套系统不仅能用来测“职场与事业”，它同样可以无缝平移到<strong>校园升学、恋爱婚配、家庭关系、创业合伙</strong>等任何现实语境中。</p>
@@ -298,7 +311,7 @@
             
             <p style="margin-top: 1.5rem; font-weight: 600; color: #1e293b;">只需遵循以下三步，你就能获得任意语境下的精准二次报告：</p>
 
-            <div class="guide-step">
+            <div class="guide-step-clean">
                 <h4>🎯 第一步：答题前，锁定唯一“测试语境”</h4>
                 <p style="margin-bottom: 8px;">在点击开始答题前，请先在脑海中设定一个你当下最想看清的“具体场景”。</p>
                 <ul>
@@ -306,23 +319,23 @@
                     <li><strong>比如：</strong> 我这次只测我在“考研/校园生存”里的状态。</li>
                     <li><strong>比如：</strong> 我这次只测我在“创业合伙”里的状态。</li>
                 </ul>
-                <div class="warning-box">
-                    <strong style="color: #b91c1c;">⚠️ 核心纪律：</strong> 在接下来的所有答题中，<strong>必须严格保持语境一致！</strong>绝不能这道题代入工作，下一道题代入恋爱。一旦代入场景发生跳跃，系统最终输出的图纸将会发生严重的“高熵错乱”。
+                <div class="warning-text">
+                    <strong>⚠️ 核心纪律：</strong> 在接下来的所有答题中，<strong>必须严格保持语境一致！</strong>绝不能这道题代入工作，下一道题代入恋爱。一旦代入场景发生跳跃，系统最终输出的图纸将会发生严重的“高熵错乱”。
                 </div>
             </div>
 
-            <div class="guide-step">
+            <div class="guide-step-clean">
                 <h4>🧬 第二步：获取你的“客观原件图纸”</h4>
                 <p style="margin-bottom: 0;">按照锁定的单一语境完成测试，获取系统为你生成的硬核基准报告（包括你的主副引擎、极化生克链条、以及系统宕机的红线区）。这相当于你拿到了自己在这个特定场景下的“底层心智 CT 光片”。</p>
             </div>
 
-            <div class="guide-step" style="margin-bottom: 0;">
+            <div class="guide-step-clean" style="margin-bottom: 0;">
                 <h4>🤖 第三步：召唤 AI，生成“二次场景报告”</h4>
                 <p style="margin-bottom: 0;">拿着这份底层的客观图纸，直接交给任意一款你常用的 AI 大模型（如 ChatGPT、Kimi、豆包 等），让 AI 帮你完成最终的“语境化翻译”。你可以直接复制以下 Prompt（提示词模板） 投喂给 AI：</p>
             </div>
 
-            <div class="prompt-box">
-                <strong style="color: #fef08a;">【一键复制以下模板投喂给 AI】</strong><br><br>
+            <div class="prompt-box-clean">
+                <strong>【一键复制以下模板投喂给 AI】</strong><br><br>
                 “我刚刚完成了一套极其硬核的心智动力学与沙盒测试。我在答题时，全程代入的唯一场景是：<span>【填入你的语境，如：恋爱婚配 / 校园生活 / 创业合伙 / 职场向上管理】</span>。<br><br>
                 以下是系统给我出具的底层客观报告：<br>
                 [ 在此处粘贴你的测试报告全文 ]<br><br>
@@ -332,7 +345,7 @@
                 3. 报告里提到的“C 授权红线（绝对不能碰的事）”，在这个场景下意味着我绝对不能踩的雷区是什么？请给我 3 条最能落地 的具体行为建议。”
             </div>
 
-            <div style="border-top: 1px dashed #cbd5e1; margin-top: 2rem; padding-top: 1.2rem;">
+            <div style="margin-top: 2rem; padding-top: 1.2rem;">
                 <p style="font-weight: 600; color: #1e293b; margin-bottom: 4px;">兰哆哆寄语：</p>
                 <p style="font-style: italic; color: #64748b; font-size: 0.9rem;">把底层原件交给你，把场景翻译交给 AI。不要被固定的测试定义，你可以拿着这套系统，去测绘你人生中的每一个重要沙盒。</p>
             </div>
@@ -343,6 +356,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // 1. 移动端防长按点击菜单
             const navItems = document.querySelectorAll('.nav-item');
             document.body.addEventListener('touchstart', function() {}, {passive: true});
 
@@ -366,6 +380,25 @@
                     navItems.forEach(item => item.classList.remove('mobile-open'));
                 }
             });
+
+            // 2. 导航栏向下滚动隐藏，向上滚动显示
+            const header = document.querySelector('.site-header');
+            let lastScrollY = window.scrollY;
+
+            window.addEventListener('scroll', () => {
+                const currentScrollY = window.scrollY;
+                // 向下滚动，隐藏导航栏
+                if (currentScrollY > lastScrollY && currentScrollY > 80) {
+                    header.style.transform = 'translateY(-100%)';
+                    // 滚动时收起手机端展开的菜单
+                    navItems.forEach(item => item.classList.remove('mobile-open'));
+                } 
+                // 向上滚动，显示导航栏
+                else if (currentScrollY < lastScrollY) {
+                    header.style.transform = 'translateY(0)';
+                }
+                lastScrollY = currentScrollY;
+            }, { passive: true });
         });
     </script>
 </body>
