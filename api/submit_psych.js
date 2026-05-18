@@ -206,9 +206,9 @@ export default async function handler(req, res) {
         await supabase.from('profiles').upsert([{ id: targetUserId }]);
 
         const { data, error: insertError } = await supabase
-            .from('test_records')
-            .insert([{ user_id: targetUserId, raw_answers: answers, ovtde_scores: { engineScores }, is_paid: false }])
-            .select();
+    .from('test_records')
+    .insert([{ user_id: targetUserId, raw_answers: answers, ovtde_scores: { verdict, engineScores }, is_paid: false }])
+    .select();
 
         if (insertError) throw insertError;
 
