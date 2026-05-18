@@ -104,8 +104,13 @@
         .welcome { font-size: 1rem; color: #555; margin-bottom: 2.5rem; line-height: 1.8; }
         .test-grid { display: flex; flex-direction: column; gap: 1.5rem; align-items: center; }
         
-        .test-card {
+        /* 核心修复：分离卡片外层与内部的 a 标签，防止嵌套非法 */
+        .test-card-wrapper {
             width: 100%; max-width: 460px;
+            position: relative;
+        }
+        
+        .test-card {
             padding: 1.8rem 2rem;
             border-radius: 14px;
             text-decoration: none;
@@ -116,7 +121,7 @@
             transition: box-shadow 0.2s, transform 0.2s;
             text-align: left;
             display: block;
-            position: relative; /* 为触发按钮定位准备 */
+            width: 100%;
         }
         .test-card:hover { 
             box-shadow: 0 6px 24px rgba(0,0,0,0.08); 
@@ -124,7 +129,7 @@
             border-color: #d1d1ca; 
         }
         
-        .test-card h2 { font-size: 1.25rem; color: #1e293b; margin: 0; }
+        .test-card h2 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #1e293b; padding-right: 90px; }
         .test-card .tags { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
         .test-card .tag {
             font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 20px;
@@ -147,11 +152,14 @@
         .badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 10px; background: #fef08a; color: #854d0e; margin-left: 0.4rem; vertical-align: middle; }
 
         /* ==========================================
-           【新增】弹窗及触发按钮专属样式 
+           弹窗及触发按钮专属样式 
            ========================================== */
         
-        /* 卡片内右上角的黑框按钮 */
+        /* 绝对定位在右上角的黑框按钮，避开 <a> 标签嵌套问题 */
         .guide-trigger-btn {
+            position: absolute;
+            top: 1.6rem;
+            right: 1.8rem;
             background: #1e293b;
             color: #ffffff;
             border: none;
@@ -161,9 +169,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s, transform 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+            z-index: 10;
         }
         .guide-trigger-btn:hover { background: #334155; transform: translateY(-1px); }
 
@@ -213,8 +219,8 @@
             line-height: 1.7; font-family: monospace;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
         }
-        .prompt-box strong { color: #f8fafc; }
-        .prompt-box span { color: #fef08a; font-weight: 600;} /* 高亮填空变量 */
+        .prompt-box strong { color: #fef08a; }
+        .prompt-box span { color: #fef08a; font-weight: 600;} 
 
         @media (max-width: 768px) {
             .nav-container { padding: 10px 20px; gap: 16px; }
@@ -241,9 +247,9 @@
             
             <div class="nav-item">组织与协作 ∨
                 <div class="dropdown">
-                    <a href="./org.html#topology" class="dropdown-item">🧠 算力拓扑分层 (筹备中)</a>
-                    <a href="./org.html#roles" class="dropdown-item">🤝 11型心腹与C授权 (筹备中)</a>
-                    <a href="./org.html#dynamics" class="dropdown-item">⛓️ 极化生克与动态互锁 (筹备中)</a>
+                    <a href="./org.html#topology" class="dropdown-item">🧠 算力拓扑分层</a>
+                    <a href="./org.html#roles" class="dropdown-item">🤝 13型心腹与C授权</a>
+                    <a href="./org.html#dynamics" class="dropdown-item">⛓️ 极化生克与动态互锁</a>
                 </div>
             </div>
             
@@ -253,8 +259,6 @@
                     <a href="./about.html#audience" class="dropdown-item">👥 适用探索人群</a>
                 </div>
             </div>
-            
-            <a href="./about.html#contact" class="nav-item">商业部署</a>
         </nav>
     </header>
 
@@ -264,23 +268,22 @@
         <p class="welcome">两套客观测绘工具，从职场生态位到底层能量流转，扫描你的心力分配网络。<br>请根据当前的系统耗损状态选择入口。</p>
         
         <div class="test-grid">
-            <a href="./career/index.html" class="test-card">
-                
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+            
+            <div class="test-card-wrapper">
+                <a href="./career/index.html" class="test-card">
                     <h2>🧭 职业性格测试 <span class="badge">免费</span></h2>
-                    <button class="guide-trigger-btn" onclick="openModal(event)">💡 高阶指南</button>
-                </div>
-
-                <div class="tags">
-                    <span class="tag">引擎配置</span>
-                    <span class="tag">职业方向</span>
-                    <span class="tag">协作角色</span>
-                </div>
-                <p class="desc">71题 · 约18分钟 · 回答“你是谁”——获取你的核心驱动力、力量主战场，以及最适合的职业发展方向与团队定位。</p>
-                <div class="target-audience">
-                    <strong>💡 适用场景：</strong>寻找就业方向的学生、职场迷茫期的人群、需要了解团队成员配置的HR与管理者。
-                </div>
-            </a>
+                    <div class="tags">
+                        <span class="tag">引擎配置</span>
+                        <span class="tag">职业方向</span>
+                        <span class="tag">协作角色</span>
+                    </div>
+                    <p class="desc">71题 · 约18分钟 · 回答“你是谁”——获取你的核心驱动力、力量主战场，以及最适合的职业发展方向与团队定位。</p>
+                    <div class="target-audience">
+                        <strong>💡 适用场景：</strong>寻找就业方向的学生、职场迷茫期的人群、需要了解团队成员配置的HR与管理者。
+                    </div>
+                </a>
+                <button class="guide-trigger-btn" onclick="openModal(event)">💡 高阶指南</button>
+            </div>
 
             <a href="./psychology/index.html" class="test-card">
                 <h2>🔮 心灵地图探测</h2>
@@ -354,16 +357,13 @@
 
     <script>
         function openModal(e) {
-            // 核心：阻止 <a> 标签的默认跳转行为
             e.preventDefault(); 
             document.getElementById('guideModal').classList.add('active');
-            // 防止背景层滚动
             document.body.style.overflow = 'hidden'; 
         }
 
         function closeModal(e) {
             document.getElementById('guideModal').classList.remove('active');
-            // 恢复背景层滚动
             document.body.style.overflow = 'auto'; 
         }
     </script>
