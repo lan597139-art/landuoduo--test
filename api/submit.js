@@ -39,17 +39,25 @@ export default async function handler(req, res) {
         }
 
         // ==========================================
-        // 初始答题数据落盘
+        // 初始答题数据落盘（核心改造区）
         // ==========================================
         const body = req.body || {};
         const userAnswers = body.userAnswers || {};
+        // 🎯 修复点 1：精准接住前端发送过来的极简画像卡片标签
+        const reportTags = body.reportTags || null; 
         const targetUserId = body.userId || '00000000-0000-0000-0000-000000000000';
 
         await supabase.from('profiles').upsert([{ id: targetUserId }]);
         
         const { data, error: insertError } = await supabase
             .from('test_records')
-            .insert([{ user_id: targetUserId, raw_answers: userAnswers, is_paid: false }])
+            .insert([{ 
+                user_id: targetUserId, 
+                raw_answers: userAnswers, 
+                // 🎯 修复点 2：将卡片数据直接填入 ovtde_scores 列，洗掉 NULL
+                ovtde_scores: reportTags, 
+                is_paid: false 
+            }])
             .select();
 
         if (insertError) throw insertError;
