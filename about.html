@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>洞察与生态 - 动态沙盒探测系统</title>
+    <style>
+        /* ==========================================
+           1. 全局样式与视界变量 (与总框架完美对齐)
+           ========================================== */
+        :root {
+            --primary: #2563eb;
+            --bg-page: #fafaf8;
+            --bg-card: #ffffff;
+            --text-main: #2c2c2c;
+            --text-nav: #475569;
+            --border-color: #e8e8e2;
+            --border-dark: #1e293b;
+            --radius: 14px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif; 
+            background: var(--bg-page); 
+            color: var(--text-main); 
+            line-height: 1.8; 
+            padding-top: 140px; 
+        }
+        a { text-decoration: none; color: inherit; }
+
+        /* ==========================================
+           2. 顶部悬浮黑框导航栏 (16P同款黑框)
+           ========================================== */
+        .site-header { 
+            position: fixed; top: 0; width: 100%; 
+            background: rgba(250, 250, 248, 0.85); 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); 
+            z-index: 1000; display: flex; justify-content: center; padding: 24px 20px; 
+        }
+        .nav-container { 
+            display: flex; align-items: center; gap: 32px; padding: 12px 40px; 
+            border: 2px solid var(--border-dark); border-radius: 99px; 
+            background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+        }
+        .nav-item { font-weight: 600; font-size: 0.95rem; color: #475569; position: relative; cursor: pointer; transition: color 0.2s; padding: 4px 0; }
+        .nav-item:hover, .nav-item.active { color: var(--primary); }
+        .dropdown { position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); opacity: 0; visibility: hidden; transition: all 0.2s ease; padding: 8px 0; }
+        .nav-item::after { content: ''; position: absolute; bottom: -15px; left: 0; width: 100%; height: 15px; }
+        .nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(5px); }
+        .dropdown-item { display: block; padding: 10px 20px; font-size: 0.85rem; color: #1e293b; transition: background 0.2s, color 0.2s; }
+        .dropdown-item:hover { background: #f1f5f9; color: var(--primary); font-weight: 600; }
+
+        /* ==========================================
+           3. 双栏自适应联动弹性布局
+           ========================================== */
+        .wiki-layout { max-width: 1200px; margin: 0 auto; display: flex; gap: 40px; padding: 40px 20px; }
+        
+        .wiki-sidebar { 
+            width: 260px; flex-shrink: 0; position: sticky; top: 140px; height: fit-content; 
+            background: var(--bg-card); padding: 24px; border-radius: var(--radius); 
+            border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.02); 
+        }
+        .wiki-sidebar h3 { font-size: 1.1rem; color: var(--primary); margin-bottom: 16px; font-weight: 700; }
+        .sidebar-link { display: block; padding: 10px 0; font-size: 0.95rem; color: var(--text-nav); transition: all 0.2s; border-bottom: 1px dashed var(--border-color); }
+        .sidebar-link:last-child { border-bottom: none; }
+        .sidebar-link:hover { color: var(--primary); font-weight: 600; padding-left: 6px; }
+
+        .wiki-content { flex-grow: 1; max-width: 860px; min-width: 0; width: 100%; }
+        
+        .page-title { font-size: 2.2rem; font-weight: 600; margin-bottom: 12px; color: var(--border-dark); }
+        .page-desc { font-size: 1.05rem; color: var(--text-nav); margin-bottom: 48px; }
+
+        /* ==========================================
+           4. 组件化核心展示卡片
+           ========================================== */
+        .theory-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 32px; margin-bottom: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
+        .card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; border-bottom: 2px solid #f3f3ee; padding-bottom: 16px; }
+        .card-icon { font-size: 1.8rem; }
+        .card-header h2 { font-size: 1.35rem; font-weight: 600; color: var(--border-dark); }
+        
+        .anchor-offset { scroll-margin-top: 140px; }
+
+        /* 大众化精修对比表格 */
+        .compare-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem; }
+        .compare-table th, .compare-table td { padding: 18px 20px; border: 1px solid var(--border-color); vertical-align: top; }
+        .compare-table th { background: #f8fafc; font-weight: 600; color: var(--border-dark); }
+        .col-highlight { background: rgba(37, 99, 235, 0.02); font-weight: 600; color: var(--primary); }
+        .col-highlight p { color: var(--text-main); font-weight: 400; margin-top: 6px; line-height: 1.6; }
+
+        /* 精细化卡片列表 */
+        .audience-item { background: #ffffff; border: 1px solid var(--border-color); border-left: 4px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 16px; transition: border-left-color 0.2s; }
+        .audience-item:hover { border-left-color: var(--primary); }
+        .audience-title { font-weight: 700; color: var(--border-dark); margin-bottom: 6px; font-size: 1.05rem; }
+        .audience-desc { font-size: 0.95rem; color: #475569; line-height: 1.6; }
+
+        @media (max-width: 900px) {
+            .wiki-layout { flex-direction: column; }
+            .wiki-sidebar { width: 100%; position: static; margin-bottom: 24px; }
+            body { padding-top: 100px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <nav class="nav-container">
+            <a href="./index.html" class="nav-item">沙盒探测</a>
+            
+            <div class="nav-item">动力学百科 ∨
+                <div class="dropdown">
+                    <a href="./encyclopedia.html#engines" class="dropdown-item">⚙️ 五大天赋能量引擎</a>
+                    <a href="./encyclopedia.html#sandboxes" class="dropdown-item">🧩 六大生存沙盒</a>
+                    <a href="./encyclopedia.html#metabolism" class="dropdown-item">🔋 跨膜代谢与极限抗压</a>
+                    <a href="./encyclopedia.html#telemetry" class="dropdown-item">📉 实时工况遥测四核</a>
+                </div>
+            </div>
+            
+            <div class="nav-item">组织与协作 ∨
+                <div class="dropdown">
+                    <a href="./org.html#topology" class="dropdown-item">🧠 算力拓扑分层</a>
+                    <a href="./org.html#roles" class="dropdown-item">🤝 团队心腹与C授权</a>
+                    <a href="./org.html#dynamics" class="dropdown-item">⛓️ 极化生克与动态互锁</a>
+                </div>
+            </div>
+            
+            <div class="nav-item active">洞察与生态 ∨
+                <div class="dropdown">
+                    <a href="./about.html#comparison" class="dropdown-item">📊 视界融合 (理论对比)</a>
+                    <a href="./about.html#audience" class="dropdown-item">👥 适用探索人群</a>
+                </div>
+            </div>
+            
+            <a href="./about.html#contact" class="nav-item">商业部署</a>
+        </nav>
+    </header>
+
+    <main class="wiki-layout">
+        
+        <aside class="wiki-sidebar">
+            <h3>📖 目录索引</h3>
+            <a href="#comparison" class="sidebar-link">📊 3. 为什么我们不一样</a>
+            <a href="#audience" class="sidebar-link">👥 4. 适用探测人群</a>
+        </aside>
+
+        <div class="wiki-content">
+            <h1 class="page-title">视界融合：大合流与应用场景</h1>
+            <p class="page-desc">本系统并非孤立、割裂的凭空发明，而是建立在经典行为科学的地基之上。致力于解关心智如何做功，将理论转化为能够直接重组现实的支点。</p>
+
+            <div id="comparison" class="anchor-offset">
+                <div class="theory-card">
+                    <div class="card-header">
+                        <span class="card-icon">📊</span>
+                        <h2>与其他心理学测评的本质区别</h2>
+                    </div>
+                    <p style="margin-bottom: 24px; color: #475569;">心理学体系万物相通。本模型试图将荣格八维（认知注意代谢）、九型人格（底层核心动机）、大五特质与四种气质（神经生理底盘）进行多维合流，向更具指导意义的流动现实空间延伸。</p>
+                    
+                    <table class="compare-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">对比维度</th>
+                                <th style="width: 42%;">经典心理测评视界 (八维/九型/大五/气质)</th>
+                                <th style="width: 43%; color: var(--primary);">动态沙盒探测系统</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight: 600;">它在测什么</td>
+                                <td style="color: #475569;">
+                                    <strong>测量天生的性格分类与偏好倾向</strong>
+                                    <p style="margin-top:6px; font-size: 0.88rem; color:#64748b;">八维透视注意力代谢朝向，九型捕捉核心恐惧，大五数理化统计行为概率。属于相对静态的“心智切片偏好测绘”。</p>
+                                </td>
+                                <td class="col-highlight">
+                                    测量内在能量在现实生存空间中的实际做功工况
+                                    <p>将个体的认知、动机与眼前的物理状态完全融为一体。天赋引擎（五行动能）锁头发力形式，六大沙盒盛装电量投向。</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 600;">状态变不变</td>
+                                <td style="color: #475569;">
+                                    <strong>预设心智人格框架是一成不变的</strong>
+                                    <p style="margin-top:6px; font-size: 0.88rem; color:#64748b;">倾向于在无严重外部干预、相对中性平和的环境基准线上，探测高频习惯，协助个体完成初始身份角色定位。</p>
+                                </td>
+                                <td class="col-highlight">
+                                    认知到个体的身心体感与能量负载是流动变化的
+                                    <p>在确立中性平衡态（默认出厂配置）的基础上，重点推导系统在遭遇环境高压、变量截断时的非线性变形与极化变异。</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 600;">拿到什么结果</td>
+                                <td style="color: #475569;">
+                                    <strong>获得一个相对固化的身份类型标签</strong>
+                                    <p style="margin-top:6px; font-size: 0.88rem; color:#64748b;">输出扁平的四字母或数字标签（如INTJ、4号型），容易引发对号入座的角色认同，但同时也容易让人产生固化认知。 </p>
+                                </td>
+                                <td class="col-highlight">
+                                    看清硬件驱动在具体现实场景下的互耗损耗因果链
+                                    <p>不贴死标签，直观呈现哪个领域过载了、哪个系统正在干烧，并据此直接输出组织治理层面的刚性C授权红线。</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 600;">怎么改变现实</td>
+                                <td style="color: #475569;">
+                                    <strong>提供“接纳自身局限性”的框架叙事</strong>
+                                    <p style="margin-top:6px; font-size: 0.88rem; color:#64748b;">偏向于提供大段的情绪价值与清谈，帮助个体达成与局限性的和解，但往往缺乏指向行为改变的刚性干预动作。</p>
+                                </td>
+                                <td class="col-highlight">
+                                    强行输出具备高可执行性的物理位移解药
+                                    <p>强行剥离形式主义的“假装努力”，精准定位拖垮整体状态的致命消耗窄口，提供一组反本能、见效快的最小具体动作。</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="audience" class="anchor-offset" style="margin-top: 60px;">
+                <div class="theory-card">
+                    <div class="card-header">
+                        <span class="card-icon">👥</span>
+                        <h2>适用探测人群说明</h2>
+                    </div>
+                    <p style="margin-bottom: 24px; color: #475569;">本系统拒绝宽泛模糊的心理安抚，专为在真实世界里高频承重、跨膜代谢的深度探索者进行硬件对齐：</p>
+                    
+                    <div class="audience-item">
+                        <div class="audience-title">深度 MBTI 与荣格八维玩家</div>
+                        <div class="audience-desc">厌倦了流于表面、千篇一律的娱乐化性格分类，渴望打通认知朝向、底层恐惧与行为表现的交叉脉络，看清心智系统内部驱动引擎自我打架与生克互耗的深层密码。</div>
+                    </div>
+
+                    <div class="audience-item">
+                        <div class="audience-title">处于内耗卡死与职业瓶颈期的职场个体</div>
+                        <div class="audience-desc">陷入形式上“假装努力”、实质上陷入空转或干烧的低效耗散状态。系统能协助精准判定究竟是物理底盘资源过载、还是顶层意义导航断线，强行砌出一条摆脱瘫痪的最小现实位移路径。</div>
+                    </div>
+
+                    <div class="audience-item">
+                        <div class="audience-title">团队管理者、HR 与 组织发展 (OD) 专家</div>
+                        <div class="audience-desc">需要跳出传统的低维绩效考评，寻求能排除人治干扰、科学对齐的“核心心腹角色判定”及“刚性C授权控制边界”，实现团队人力资本的精准卡位与组织防御余量的合理配置。</div>
+                    </div>
+
+                    <div class="audience-item">
+                        <div class="audience-title">创业者、IP操盘手与技术极客</div>
+                        <div class="audience-desc">长期暴露于多线事务并发、高压生存周期中，面临方向选择或生产资料重组的关口。系统能实时监测当前的四核电量工况余量，提前评估极限压力下的结构性防线账单。</div>
+                    </div>
+
+                    <div class="audience-item">
+                        <div class="audience-title">拒绝被世俗叙事圈养的边缘游荡者</div>
+                        <div class="audience-desc">不愿在主流评价体系里削足适履，渴望通过这套兼顾微观物理底盘、现实做功形态与宏大叙事层面的多维沙盒，重新校准高度自洽的精神范式。</div>
+                    </div>
+                </div>
+            </div>
+    </main>
+
+</body>
+</html>
