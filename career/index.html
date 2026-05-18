@@ -1099,6 +1099,35 @@ let feedbackHtml = `
         .sv-label:hover { color: #2563eb; }
     </style>
 
+    <div class="sv-group" style="padding: 20px; background: rgba(37, 99, 235, 0.05); border-radius: 12px; border: 1px dashed rgba(37, 99, 235, 0.2); margin-bottom: 24px;">
+        <div class="sv-title" style="text-align: center; font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; color: #2563eb;">
+            本次测试的综合穿透力与体验如何？
+        </div>
+        
+        <div id="star-rating" style="display: flex; justify-content: center; gap: 12px; font-size: 2.8rem; color: #cbd5e1; cursor: pointer; margin-bottom: 8px;">
+            <span class="star" data-val="1">★</span>
+            <span class="star" data-val="2">★</span>
+            <span class="star" data-val="3">★</span>
+            <span class="star" data-val="4">★</span>
+            <span class="star" data-val="5">★</span>
+        </div>
+
+        <div id="star-desc" style="text-align: center; font-size: 1.05rem; color: #2563eb; font-weight: 600; min-height: 28px; margin-bottom: 16px;">
+            请点击星标进行打分
+        </div>
+
+        <div style="font-size: 0.85rem; color: #475569; background: rgba(255,255,255,0.5); padding: 12px 16px; border-radius: 8px; line-height: 1.7;">
+            <div style="font-weight: 600; margin-bottom: 6px; color: #1e293b;">📋 打分参考依据：</div>
+            <div><strong style="color:#f59e0b">5星 (灵魂穿透)</strong>：很精准且沉浸，逼出了直觉反应，想定期复测。</div>
+            <div><strong style="color:#f59e0b">4星 (专业烧脑)</strong>：较精准有专业度，但认知负荷大带来疲惫。</div>
+            <div><strong style="color:#f59e0b">3星 (常规体验)</strong>：大部分对应常规自我，无特殊交互感知。</div>
+            <div><strong style="color:#f59e0b">2星 (心流受阻)</strong>：存在偏颇，交互打断心流，有阻滞感。</div>
+            <div><strong style="color:#f59e0b">1星 (完全失真)</strong>：偏差极大，未测绘到真实的自我。</div>
+        </div>
+        
+        <input type="hidden" id="sv_star_score" value="0">
+    </div>
+
     <div class="sv-group">
         <div class="sv-title">1. 您的当前年龄段为：</div>
         <label class="sv-label"><input type="radio" name="sv_age" value="18岁及以下"> A. 18岁及以下</label>
@@ -1108,48 +1137,41 @@ let feedbackHtml = `
         <label class="sv-label"><input type="radio" name="sv_age" value="36岁及以上"> E. 36岁及以上</label>
     </div>
 
+   <div class="sv-group">
+        <div class="sv-title">4. 请选择最符合您的真实身份标签（可多选）：</div>
+        <div class="tag-container">
+            <input type="checkbox" id="tag_mbti" name="sv_identity" value="资深MBTI玩家" class="identity-tag"><label for="tag_mbti" class="tag-label">🔮 资深MBTI玩家</label>
+          <input type="checkbox" id="tag_psy_fan" name="sv_identity" value="心理咨询师" class="identity-tag"><label for="tag_psy_fan" class="tag-label">❤️心理咨询师</label>
+            <input type="checkbox" id="tag_psy_fan" name="sv_identity" value="心理学爱好者" class="identity-tag"><label for="tag_psy_fan" class="tag-label">🧠 心理学爱好者</label>
+            <input type="checkbox" id="tag_psy_major" name="sv_identity" value="教师" class="identity-tag"><label for="tag_psy_major" class="tag-label">🧑‍🏫教师</label>
+            <input type="checkbox" id="tag_psy_major" name="sv_identity" value="家长" class="identity-tag"><label for="tag_psy_major" class="tag-label">父母</label>
+            <input type="checkbox" id="tag_hr" name="sv_identity" value="HR/猎头/组织发展" class="identity-tag"><label for="tag_hr" class="tag-label">💼 HR/猎头/组织发展</label>
+            <input type="checkbox" id="tag_student" name="sv_identity" value="在读学生" class="identity-tag"><label for="tag_student" class="tag-label">📝 在读学生</label>
+            <input type="checkbox" id="tag_science" name="sv_identity" value="理科生/技术极客" class="identity-tag"><label for="tag_science" class="tag-label">🧪 理科生/技术极客</label>
+            <input type="checkbox" id="tag_arts" name="sv_identity" value="文科生/内容创作者" class="identity-tag"><label for="tag_arts" class="tag-label">✍️ 文科生/内容创作者</label>
+            <input type="checkbox" id="tag_acg" name="sv_identity" value="二次元/ACG同好" class="identity-tag"><label for="tag_acg" class="tag-label">🎮 二次元/ACG同好</label>
+            <input type="checkbox" id="tag_entre" name="sv_identity" value="创业者/自由职业" class="identity-tag"><label for="tag_entre" class="tag-label">🚀 创业者/自由职业</label>
+        </div>
+    </div>
+
     <div class="sv-group">
-        <div class="sv-title">2. 触发您本次参与测试的原因是什么？</div>
-        <label class="sv-label"><input type="radio" name="sv_motive" value="面临选专业/求职定位"> A. 面临选专业、分班或求职，急需确立初始的人生发展定位</label>
-        <label class="sv-label"><input type="radio" name="sv_motive" value="内耗严重/寻找破局转行"> B. 当前内耗严重或缺乏成就感，寻找破局与转行方向</label>
+        <div class="sv-title">3. 触发您本次参与测试的原因是什么？</div>
+        <label class="sv-label"><input type="radio" name="sv_motive" value="面临选专业/求职定位"> A. 面临选专业、分班或求职，急需定位</label>
+        <label class="sv-label"><input type="radio" name="sv_motive" value="内耗严重/寻找破局转行"> B. 当前内耗严重或缺乏成就感，寻找破局</label>
         <label class="sv-label"><input type="radio" name="sv_motive" value="深度向内探索"> C. 纯粹渴望深度向内探索</label>
-        <label class="sv-label"><input type="radio" name="sv_motive" value="洞察他人/优化团队协作"> D. 需洞察他人特质，优化团队人际协作与组织资源配置</label>
-        <label class="sv-label"><input type="radio" name="sv_motive" value="转折点/评估抗压阈值"> E. 处于生活重大转折点，需重新评估自身的系统稳定性与抗压阈值</label>
-        <label class="sv-label"><input type="radio" name="sv_motive" value="消解关系困惑"> F. 想了解身边的关系，消解关系里的困惑</label>
+        <label class="sv-label"><input type="radio" name="sv_motive" value="洞察他人/优化团队协作"> D. 需洞察他人特质，优化组织协作</label>
+        <label class="sv-label"><input type="radio" name="sv_motive" value="转折点/评估抗压阈值"> E. 处于生活重大转折点，评估抗压阈值</label>
     </div>
 
     <div class="sv-group">
-        <div class="sv-title">3. 在作答过程中，您是否经常遇到“必须做出艰难抉择”的情况？</div>
-        <label class="sv-label"><input type="radio" name="sv_pressure" value="极少，很容易判断"> A. 极少，选项很容易做出判断</label>
-        <label class="sv-label"><input type="radio" name="sv_pressure" value="偶尔，能对应常规自我"> B. 偶尔，大部分情境能快速对应常规自我</label>
-        <label class="sv-label"><input type="radio" name="sv_pressure" value="经常，暴露直觉反应"> C. 经常，部分题目迫使我暴露了剥离社会身份后的直觉反应</label>
-        <label class="sv-label"><input type="radio" name="sv_pressure" value="极度痛苦，极限施压"> D. 极度痛苦，感觉选项在进行极限施压与撕裂</label>
-    </div>
-
-    <div class="sv-group">
-        <div class="sv-title">4. 报告对您内驱力与能耗的剖析，穿透力如何？</div>
-        <label class="sv-label"><input type="radio" name="sv_accuracy" value="极度精准"> A. 极度精准，精确扫描到了未曾表露的底层逻辑</label>
-        <label class="sv-label"><input type="radio" name="sv_accuracy" value="较精准"> B. 较精准，解答了现实中存在的部分长期的困惑</label>
-        <label class="sv-label"><input type="radio" name="sv_accuracy" value="一般，存在偏颇"> C. 一般，部分描述符合，但存在明显的偏颇与未对齐之处</label>
-        <label class="sv-label"><input type="radio" name="sv_accuracy" value="偏差较大"> D. 偏差较大，感觉系统未能测绘到真实的自我</label>
-    </div>
-
-    <div class="sv-group">
-        <div class="sv-title">5. 您是从什么聚道来的吗？</div>
+        <div class="sv-title">4. 您是从什么聚道来的吗？</div>
         <label class="sv-label"><input type="radio" name="sv_nps" value="从小红薯"> A. 从小红薯</label>
         <label class="sv-label"><input type="radio" name="sv_nps" value="好友分享"> B. 好友分享</label>
         <label class="sv-label"><input type="radio" name="sv_nps" value="bilibili"> C. bilibili</label>
     </div>
 
-    <div class="sv-group">
-        <div class="sv-title">6. 您会阶段性（如经历重大变化后）再来测试吗？</div>
-        <label class="sv-label"><input type="radio" name="sv_retention" value="会，观测状态变化"> A. 会，想观测自己的状态变化</label>
-        <label class="sv-label"><input type="radio" name="sv_retention" value="也许会，看心境"> B. 也许会，看当时的心境</label>
-        <label class="sv-label"><input type="radio" name="sv_retention" value="测一次就够了"> C. 测一次就够了</label>
-    </div>
-
     <div style="margin-bottom:24px;">
-        <div class="sv-title" style="color: #2563eb;">7. 您有什么话想对我们说？（选填，对某道题的感受、报告建议等）</div>
+        <div class="sv-title" style="color: #2563eb;">5. 您有什么话想对我们说？（选填，对某道题的感受、建议等）</div>
         <textarea id="sv_comment" rows="3" placeholder="写下你的真实体感..." style="width:100%; padding:12px; border-radius:12px; border:1px solid #cbd5e1; font-family:inherit; font-size:0.9rem; background:var(--bg-card); color:var(--text-main); resize:vertical;"></textarea>
     </div>
 
@@ -1172,15 +1194,64 @@ let feedbackHtml = `
         };
     }
 
-    // ── 异步发射数据到云端黑盒接口 ──
+    // ==========================================
+    // 🌟 星级交互与静默打分逻辑 (防流失装甲)
+    // ==========================================
+    setTimeout(function() {
+        var stars = document.querySelectorAll('#star-rating .star');
+        var starDesc = document.getElementById('star-desc');
+        var starInput = document.getElementById('sv_star_score');
+
+        var simpleTexts = {
+            1: "1星：完全失真", 2: "2星：心流受阻", 3: "3星：常规体验", 4: "4星：专业烧脑", 5: "5星：灵魂穿透"
+        };
+
+        if (stars.length > 0) {
+            stars.forEach(function(star) {
+                star.addEventListener('click', function() {
+                    var val = parseInt(this.getAttribute('data-val'));
+                    starInput.value = val;
+                    starDesc.innerText = "已选择：" + simpleTexts[val];
+                    
+                    stars.forEach(function(s) {
+                        if (parseInt(s.getAttribute('data-val')) <= val) {
+                            s.style.color = '#f59e0b'; 
+                        } else {
+                            s.style.color = '#cbd5e1'; 
+                        }
+                    });
+
+                    // 🚀 核心：职业测试的静默发射 (绝对路径)
+                    var autoSaveData = {
+                        star_score: val + "星",
+                        age: "未提交", motive: "未提交", channel: "未提交", comment: "仅打分未最终提交"
+                    };
+
+                    fetch('https://landuoduo-test.vercel.app/api/submit', { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            recordId: typeof careerRecordId !== 'undefined' && careerRecordId ? careerRecordId : '测试环境无ID',
+                            isFeedbackUpdate: true,
+                            feedbackComment: JSON.stringify(autoSaveData)
+                        })
+                    }).catch(function(e) { console.log("静默落盘失败", e); });
+                });
+            });
+        }
+    }, 100);
+
+
+    // ── 异步发射主数据到云端黑盒接口 ──
     var cleanAnswers = {};
     for (var qid in userAnswers) { cleanAnswers[qid] = userAnswers[qid]; }
 
     var careerRecordId = null;
-    fetch('https://landuoduo-test.vercel.app/api/submit', { // 对应职业测试的提交黑盒路径
+    fetch('https://landuoduo-test.vercel.app/api/submit', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: null, userAnswers: cleanAnswers })
+        // 🎯 修复点：职业测试天然只有单层对象，直接传 cleanAnswers 即可
+        body: JSON.stringify({ userId: null, userAnswers: cleanAnswers }) 
     })
     .then(function(res) { return res.json(); })
     .then(function(resData) {
@@ -1188,34 +1259,37 @@ let feedbackHtml = `
     })
     .catch(function(err) { console.error("黑盒通讯静默异常:", err); });
 
-    // 绑定新版问卷的按钮提交动作
+    // 绑定新版问卷的最终提交动作
     document.getElementById('btnSubmitFeedback').onclick = function() {
+        
+        var finalStarScore = document.getElementById('sv_star_score').value;
+
+        // 1. 强制要求必须点星星
+        if (finalStarScore === "0") {
+            alert("请先在顶部点击星标，为本次测试体验打分！");
+            return; 
+        }
+
         var getRadioValue = function(name) {
             var checked = document.querySelector('input[name="' + name + '"]:checked');
             return checked ? checked.value : '未作答';
         };
         
+        // 2. 组装精简后的数据包
         var surveyData = {
+            star_score: finalStarScore + "星",
             age: getRadioValue('sv_age'),
             motive: getRadioValue('sv_motive'),
-            pressure: getRadioValue('sv_pressure'),
-            accuracy: getRadioValue('sv_accuracy'),
-            nps: getRadioValue('sv_nps'),
-            retention: getRadioValue('sv_retention'),
+            channel: getRadioValue('sv_nps'),
             comment: document.getElementById('sv_comment').value.trim()
         };
-        
-        if (surveyData.age === '未作答' && surveyData.motive === '未作答' && surveyData.comment === '') {
-            alert('请至少选择几个选项或留下一句话吧！');
-            return;
-        }
 
         var feedbackBtn = this;
         feedbackBtn.innerText = '问卷同步中...';
         feedbackBtn.disabled = true;
 
-        // 平滑打包塞入原有 comment 字段，无损兼容原有 Supabase 数据库结构
-        fetch('/api/submit', {
+        // 3. 终极发射 (绝对路径兜底)
+        fetch('https://landuoduo-test.vercel.app/api/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -1236,7 +1310,6 @@ let feedbackHtml = `
             document.getElementById('feedbackMsg').innerHTML = `✓ 问卷已在前端完成记录`;
         });
     };
-};
       renderQuestions();
 })();
 </script>
