@@ -1060,6 +1060,53 @@ if (savedAnswers) {
         btn.innerText = originalText;
         btn.disabled = false;
 
+        // ==========================================
+        // 🌟 星级交互与静默打分逻辑 (紧跟在 innerHTML 渲染之后)
+        // ==========================================
+        setTimeout(() => {
+            const stars = document.querySelectorAll('#star-rating .star');
+            const starDesc = document.getElementById('star-desc');
+            const starInput = document.getElementById('sv_star_score');
+
+            const simpleTexts = {
+                1: "1星：完全失真", 2: "2星：心流受阻", 3: "3星：常规体验", 4: "4星：专业烧脑", 5: "5星：灵魂穿透"
+            };
+
+            if (stars.length > 0) {
+                stars.forEach(star => {
+                    star.addEventListener('click', function() {
+                        const val = parseInt(this.getAttribute('data-val'));
+                        starInput.value = val;
+                        starDesc.innerText = "已选择：" + simpleTexts[val];
+                        
+                        stars.forEach(s => {
+                            if (parseInt(s.getAttribute('data-val')) <= val) {
+                                s.style.color = '#f59e0b'; 
+                            } else {
+                                s.style.color = '#cbd5e1'; 
+                            }
+                        });
+
+                        // 静默发射数据
+                        let autoSaveData = {
+                            star_score: val + "星",
+                            age: "未提交", motive: "未提交", channel: "未提交", comment: "仅打分未最终提交"
+                        };
+
+                        fetch('/api/submit_psych', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                recordId: typeof currentRecordId !== 'undefined' ? currentRecordId : '测试环境无ID',
+                                isFeedbackUpdate: true,
+                                feedbackComment: JSON.stringify(autoSaveData)
+                            })
+                        }).catch(e => console.log("静默落盘失败", e));
+                    });
+                });
+            }
+        }, 100);
+
         // 6. 激活【保存报告】的下载打印功能
         let downloadBtn = document.getElementById('btnDownloadReport');
         if (downloadBtn) {
@@ -1068,27 +1115,37 @@ if (savedAnswers) {
             };
         }
 
-     // 7. 绑定新版问卷的提交动作（清洗冲突逻辑，精准对齐心理测试后端路由）
+    // 7. 绑定新版问卷的提交动作 (清洗冲突逻辑，精准对齐心理测试后端路由)
+        // ⚠️ 下面这行 document.getElementById...onclick 绝对不能漏！
         document.getElementById('btnSubmitFeedback').onclick = function() {
-            let getRadioValue = (name) => document.querySelector(`input[name="${name}"]:checked`)?.value || '未作答';
             
+            let finalStarScore = document.getElementById('sv_star_score').value;
+
+            // 1. 强制要求必须点星星，否则拦截提交
+            if (finalStarScore === "0") {
+                alert("请先在顶部点击星标，为本次测试体验打分！");
+                return; 
+            }
+
+            // 2. 抓取其他选项（如果没选，自动填入“未填写”）
+            let getRadioValue = (name) => {
+                let el = document.querySelector(`input[name="${name}"]:checked`);
+                return el ? el.value : '未填写';
+            };
+
             let surveyData = {
+                star_score: finalStarScore + "星",
                 age: getRadioValue('sv_age'),
                 motive: getRadioValue('sv_motive'),
-                pressure: getRadioValue('sv_pressure'),
-                accuracy: getRadioValue('sv_accuracy'),
-                nps: getRadioValue('sv_nps'),
-                retention: getRadioValue('sv_retention'),
+                channel: getRadioValue('sv_nps'),
                 comment: document.getElementById('sv_comment').value.trim()
             };
-            
-            if (surveyData.age === '未作答' && surveyData.motive === '未作答' && surveyData.comment === '') {
-                alert('请至少选择几个选项或留下一句话吧！');
-                return;
-            }
 
             this.innerText = '问卷同步中...';
             this.disabled = true;
+
+            // 下面是你原本写好的 fetch('https://landuoduo-test.vercel.app/api/submit_psych'... 
+            // 保持原样不用动！
 
             // 🎯 修复点：改用绝对路径跨境发射数据
             fetch('https://landuoduo-test.vercel.app/api/submit_psych', {
