@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组织与协作 - 动态沙盒探测系统</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-nav: #475569;
+            --border-color: #e2e8f0;
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg-page); color: var(--text-main); line-height: 1.8; padding-top: 100px; }
+        a { text-decoration: none; color: inherit; }
+
+        /* 顶部导航 */
+        .site-header { position: fixed; top: 0; width: 100%; background: rgba(250, 250, 248, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; padding: 24px 20px; }
+        .nav-container { display: flex; align-items: center; gap: 32px; padding: 12px 40px; border: 2px solid #1e293b; border-radius: 99px; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .nav-item { font-weight: 600; font-size: 0.95rem; color: #475569; position: relative; cursor: pointer; transition: color 0.2s; padding: 4px 0; }
+        .nav-item:hover, .nav-item.active { color: #2563eb; }
+        .dropdown { position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); opacity: 0; visibility: hidden; transition: all 0.2s ease; padding: 8px 0; }
+        .nav-item::after { content: ''; position: absolute; bottom: -15px; left: 0; width: 100%; height: 15px; }
+        .nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(5px); }
+        .dropdown-item { display: block; padding: 10px 20px; font-size: 0.85rem; color: #1e293b; transition: background 0.2s, color 0.2s; }
+        .dropdown-item:hover { background: #f1f5f9; color: #2563eb; font-weight: 600; }
+
+        /* 布局 */
+        .wiki-layout { max-width: 1200px; margin: 0 auto; display: flex; gap: 40px; padding: 40px 20px; }
+        .wiki-sidebar { width: 260px; flex-shrink: 0; position: sticky; top: 120px; height: fit-content; background: var(--bg-card); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .wiki-sidebar h3 { font-size: 1.1rem; color: var(--primary); margin-bottom: 16px; font-weight: 700; }
+        .sidebar-link { display: block; padding: 8px 0; font-size: 0.95rem; color: var(--text-nav); transition: color 0.2s; border-bottom: 1px dashed var(--border-color); }
+        .sidebar-link:last-child { border-bottom: none; }
+        .sidebar-link:hover { color: var(--primary); font-weight: 600; padding-left: 5px; }
+
+        .wiki-content { flex-grow: 1; max-width: 800px; }
+        .page-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 16px; color: var(--text-main); }
+        .page-desc { font-size: 1.1rem; color: var(--text-nav); margin-bottom: 48px; line-height: 1.8; }
+
+        /* 卡片与文本框 */
+        .theory-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 32px; margin-bottom: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 16px; }
+        .card-icon { font-size: 2rem; }
+        .card-header h2 { font-size: 1.4rem; font-weight: 700; color: var(--text-main); }
+        
+        .theory-section { margin-bottom: 32px; }
+        .theory-section h4 { font-size: 1.1rem; color: var(--primary); margin-bottom: 12px; font-weight: 700; border-left: 4px solid var(--primary); padding-left: 12px;}
+        .theory-section p { font-size: 0.95rem; color: #334155; margin-bottom: 12px; }
+        
+        /* 语录框 (用于心腹角色的台词) */
+        .quote-box { background: #f8fafc; font-style: italic; color: #475569; padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; font-size: 0.95rem; border-left: 3px solid #cbd5e1; }
+
+        /* 健康态与过载态框 */
+        .success-box { background: rgba(16, 185, 129, 0.05); border-left: 4px solid #10b981; padding: 16px 20px; border-radius: 0 8px 8px 0; font-size: 0.95rem; color: #1e293b; margin-top: 12px; }
+        .success-box strong { color: #047857; display: block; margin-bottom: 6px; }
+        .alert-box { background: rgba(239, 68, 68, 0.05); border-left: 4px solid #ef4444; padding: 16px 20px; border-radius: 0 8px 8px 0; font-size: 0.95rem; color: #1e293b; margin-top: 12px; }
+        .alert-box strong { color: #b91c1c; display: block; margin-bottom: 6px; }
+
+        .anchor-offset { scroll-margin-top: 130px; }
+
+        @media (max-width: 900px) { .wiki-layout { flex-direction: column; } .wiki-sidebar { width: 100%; position: static; margin-bottom: 24px; } }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <nav class="nav-container">
+            <a href="./index.html" class="nav-item">沙盒探测</a>
+            
+            <div class="nav-item">动力学百科 ∨
+                <div class="dropdown">
+                    <a href="./encyclopedia.html#engines" class="dropdown-item">⚙️ 五大天赋能量引擎</a>
+                    <a href="./encyclopedia.html#sandboxes" class="dropdown-item">🧩 六大生存沙盒</a>
+                    <a href="./encyclopedia.html#metabolism" class="dropdown-item">🔋 跨膜代谢与极限抗压</a>
+                    <a href="./encyclopedia.html#telemetry" class="dropdown-item">📉 实时工况遥测四核</a>
+                </div>
+            </div>
+            
+            <div class="nav-item active">组织与协作 ∨
+                <div class="dropdown">
+                    <a href="./org.html#topology" class="dropdown-item">🧠 算力拓扑分层</a>
+                    <a href="./org.html#roles" class="dropdown-item">🤝 团队心腹与C授权</a>
+                    <a href="./org.html#dynamics" class="dropdown-item">⛓️ 极化生克与动态互锁</a>
+                </div>
+            </div>
+            
+            <div class="nav-item">洞察与生态 ∨
+                <div class="dropdown">
+                    <a href="./about.html#comparison" class="dropdown-item">📊 视界融合 (理论对比)</a>
+                    <a href="./about.html#audience" class="dropdown-item">👥 适用探索人群</a>
+                </div>
+            </div>
+            
+            <a href="./index.html#contact" class="nav-item">商业部署</a>
+        </nav>
+    </header>
+
+    <main class="wiki-layout">
+        
+        <aside class="wiki-sidebar">
+            <h3>📖 目录索引</h3>
+            <a href="#topology" class="sidebar-link">🧠 1. 算力拓扑复杂度分层</a>
+            <a href="#roles" class="sidebar-link">🤝 2. 组织契约与心腹角色</a>
+            <a href="#dynamics" class="sidebar-link">⛓️ 3. 极化生克与动态互锁</a>
+        </aside>
+
+        <div class="wiki-content">
+            <h1 class="page-title">组织与协作：生态位与动能博弈</h1>
+            <p class="page-desc">根据你的引擎与沙盒的并集，系统会直接判定你的并发处理算力以及在组织中的核心生态位。它不给虚无的性格描述，直接输出刚性的“C授权标签”和底层互耗密码。</p>
+
+            <div id="topology" class="anchor-offset">
+                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">🧠 算力拓扑与复杂度分层</h2>
+                
+                <div class="theory-card">
+                    <div class="card-header">
+                        <span class="card-icon">📐</span>
+                        <h2>你的思维处理结构</h2>
+                    </div>
+                    <div class="theory-section">
+                        <h4>深度穿透型（单点专才）</h4>
+                        <p>专注于单一维度的单线击穿，复杂度上限虽然受限，但抗干扰能力极强。你像一柄精准的手术刀，拒绝一切细碎的干扰与无谓的修饰，存在的唯一目的就是在选定的单点上实现极致的穿透与深度。</p>
+                        
+                        <h4 style="margin-top: 24px;">专项攻坚型（专项复合人才）</h4>
+                        <p>具备在单一领域内调动多重逻辑的厚度，极其适合处理那些重型、高难度的复杂项目。你像一台全副武装的攻坚战车，能够吸收高压环境下的复杂矛盾，并将多重驱动力转化为击碎瓶颈的合力，实现专项领域的深度破局。</p>
+                        
+                        <h4 style="margin-top: 24px;">跨界串联型（跨域管理者）</h4>
+                        <p>习惯用一套底层逻辑打通多个现实场域，是天生的中台调度者与跨部门协调者。你像一条流动的河流，能轻易穿透不同领域的行政与规则壁垒，让看似孤立的资源在你的逻辑链条下产生化学反应，实现高效的跨界输出。</p>
+                        
+                        <h4 style="margin-top: 24px;">枢纽型架构师（枢纽算力）</h4>
+                        <p>具备同时处理异构任务的高阶算力，系统调度能力极其强悍。你像一座昼夜不停的高速运转枢纽，能在大规模的并发需求中保持主线不乱，通过复杂的逻辑网络实现多维覆盖，但必须警惕由于极度耗能而引发的系统性宕机。</p>
+                        
+                        <h4 style="margin-top: 24px;">游离散弹型（潜能未定型）</h4>
+                        <p>目前的系统尚未形成稳定的功耗结构，仍缺乏承重能力与持续做功的闭合机制。你正处于一种高能但散乱的叠加态，拥有巨大的潜能却尚未收束，急需在现实中寻找到一个坚固的锚点，来实现从自由游离到有效输出的质变。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="roles" class="anchor-offset" style="margin-top: 60px;">
+                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">🤝 组织契约与联合判定角色</h2>
+                
+                <div class="theory-card">
+                    <div class="card-header">
+                        <span class="card-icon">🛡️</span>
+                        <h2>你最适合当哪种“心腹”</h2>
+                    </div>
+                    <div class="theory-section">
+                        
+                        <h4>谋臣型心腹</h4>
+                        <div class="quote-box">“我的价值不在于执行，在于能看见别人看不到的东西。”</div>
+                        <p>你最核心的价值在于提供超越现状的判断力，系统应当授予你全局诊断与长期战略规划的重权。为了确保逻辑的准确性，必须为你提供完整的信息透明度。<strong>应避免将你置于追求极速变现或高压社交应酬的环境中。你会被谨慎的深用，并制衡全责。</strong></p>
+                        
+                        <h4 style="margin-top: 32px;">执行型心腹</h4>
+                        <div class="quote-box">“别跟我谈愿景，告诉我具体怎么做，我来搞定。”</div>
+                        <p>你是确保目标从概念转化为现实的关键，应授权你负责流程落地与交付闭环。为了发挥你的最高效率，系统必须搭配明确的目标指示与验收标准。<strong>禁止将你置于高度无序的环境中，你需要清晰的规则边界来完成高标准的交付。</strong></p>
+
+                        <h4 style="margin-top: 32px;">开疆型心腹</h4>
+                        <div class="quote-box">“存量没有意思，我要去打开那些还没有碰过的地方。”</div>
+                        <p>你是打破存量僵局的利刃，适合授权你进行市场突破、资源置换与外部圈层扩张。由于你的做功方式通常具有破坏性，系统需配套强力的风控审计工具作为支撑。<strong>不宜将你放置在需要长期精细化维稳的岗位。</strong></p>
+
+                        <h4 style="margin-top: 32px;">维稳型心腹</h4>
+                        <div class="quote-box">“你们往前冲，我在后面把一切稳住，不让系统散架。”</div>
+                        <p>你是系统抵御风险的防火墙，应授权你负责底盘维护、人际关系调停与风险兜底。为了确保你的稳定性，系统必须给予你足够的资源缓冲与心理余量。<strong>严禁要求你发起具有高风险的破坏性创新，以免动摇你的防御核心。</strong></p>
+
+                        <h4 style="margin-top: 32px;">布道型心腹</h4>
+                        <div class="quote-box">“我需要让更多人理解这件事的意义，不然推不动。”</div>
+                        <p>你是组织共识与影响力的构建核心，适合授权你负责文化建设、愿景解释与外部影响力构建。你擅长赋予行动以意义感，但系统需同步防范你的愿景构思与现实成本脱节。<strong>禁止将你锁死在低维、机械重复的流水线作业中。</strong></p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="dynamics" class="anchor-offset" style="margin-top: 60px; margin-bottom: 80px;">
+                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">⛓️ 极化生克与动态互锁</h2>
+                <p style="margin-bottom: 24px; color: #475569;">能量在系统内天然存在生、克两条循环线。当遭遇高压环境或处于极端分数时，会根据引擎的旺衰对比，演化出以下底层互耗气象：</p>
+                
+                <div class="theory-card">
+                    <div class="card-header">
+                        <span class="card-icon">⚡</span>
+                        <h2>双强引擎互锁（旺与旺的生克变异）</h2>
+                    </div>
+                    <p style="margin-bottom: 20px; color: #334155;">当你的系统中同时出现两个能量极度高涨的驱动力时，它们之间的碰撞绝非简单的相加，而是会根据心智的“健康校验”发生相变分化：</p>
+                    
+                    <div class="theory-section">
+                        <h4>旺克旺的较量（例：火旺 克 金旺）</h4>
+                        <div class="success-box">
+                            <strong>🟢 健康态：修剪蜕变（行动淬炼秩序）</strong>
+                            破局的火焰没有烧毁框架，反而淬炼了规则。你用主动突围的变量去撞击常规流程，高效更新落后的条框。你冲得出去也收得回来，规则不再是囚笼，而是被行动持续校准的强韧跑道。
+                        </div>
+                        <div class="alert-box">
+                            <strong>🔴 过载态：互耗磨损（掀桌冲锋 vs 死守闭环）</strong>
+                            此时你内心同时踩下了油门和刹车。你总想制造变化去冲破现状（火旺），但对失控的恐惧又逼你立下更严苛的死规矩（金旺）。烈火与铁律在内部互不相让，在自我拉扯中把精力磨得粉碎。
+                        </div>
+                    </div>
+
+                    <div class="theory-section" style="margin-top: 32px;">
+                        <h4>旺生旺的传导（例：木旺 生 火旺）</h4>
+                        <div class="success-box">
+                            <strong>🟢 健康态：转化攀升（深度认知引燃突围）</strong>
+                            能量极其顺畅的丝滑传导。你看透了本质的底层逻辑（木旺），这股认知势能迅速转化为破局的动能（火旺）。想与做之间毫无阻抗，真理指导行动，行动反哺认知，实现极致的舒展。
+                        </div>
+                        <div class="alert-box">
+                            <strong>🔴 过载态：催熟超压（无限追问引爆狂飙）</strong>
+                            能量传导过快导致系统无法消化。理性的穿透与行动的狂飙死死互锁，你陷入了一轮轮“看透又立刻推翻”的无限空转。意识被无限拉高，却彻底丧失了真实生活的重量，在极致抽离中超载悬空。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="theory-card">
+                    <div class="card-header">
+                        <span class="card-icon">📉</span>
+                        <h2>强势倾轧与弱势反噬（不平衡极化）</h2>
+                    </div>
+                    <p style="margin-bottom: 20px; color: #334155;">当系统内的能量分布出现巨大的凹凸（一强一弱）时，能量流动就会失控，形成对薄弱沙盒的物理碾压或逆向反噬：</p>
+                    
+                    <div class="theory-section">
+                        <h4>旺克衰：强势穿透（例：木旺 克 土衰）</h4>
+                        <div class="alert-box">
+                            <strong>利刃斩断根须</strong>
+                            强势驱动力过度发育，本能地将弱势沙盒当成燃料彻底剪灭。你本能地追逐永恒的本质真相，但用来思考的刀太快，赖以生存的现实生活底盘（土）又太薄。你看得越来越清、越来越超脱，在现实中却越来越无处安放、难以落脚。
+                        </div>
+
+                        <h4 style="margin-top: 24px;">衰克旺：弱势反弹（例：土旺 克 木衰）</h4>
+                        <div class="alert-box">
+                            <strong>高墙碾碎探针</strong>
+                            弱势引擎试图约束强势引擎，结果平衡未达成，冲动反被碾碎。你极度依赖确定的安全感与外界反馈（土旺），偶尔你想跳出表象、追问本质（木衰），但对失去现状的巨大恐惧瞬间弹开所有探针。你试图用流程框住真理，结果只能在自我束缚中继续窒息。
+                        </div>
+
+                        <h4 style="margin-top: 24px;">旺生衰：超压压熄（例：木旺 生 火衰）</h4>
+                        <div class="alert-box">
+                            <strong>成吨木材压熄火种</strong>
+                            生源能量过大，输入远超弱势引擎的消化上限，导致结构窒息。你的认知系统推导出了海量的破局洞察，每一个想法都在催促你行动。但你的执行动能（火衰）极其微弱，思考越深，待办越多。成吨的柴火直接压熄了火苗，你看透了一切，却困在原地无法动弹。
+                        </div>
+
+                        <h4 style="margin-top: 24px;">衰生旺：枯竭反噬（例：木衰 生 火旺）</h4>
+                        <div class="alert-box">
+                            <strong>无源干烧的盲动</strong>
+                            弱势引擎强行去喂养一个贪婪的强势引擎，生源被瞬间抽干。你极度渴求变化与冲锋，行动力（火旺）完全停不下来。但这股烈火需要本质的深度洞察（木衰）来提供导航，你平时缺少深度思考，导致火在猛烧，柴却跟不上，陷入了没有方向、榨不出增量的现实干烧。
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
