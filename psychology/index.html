@@ -947,16 +947,14 @@ if (savedAnswers) {
         btn.innerText = "⚡ 正在生成心灵地图并加密存档...";
         btn.disabled = true;
 
-        // 1. 组装纯净答案包
-        const combinedAnswers = {};
-        for (const [k, v] of Object.entries(answers.freq)) { combinedAnswers[k] = v; }
-        for (const [k, v] of Object.entries(answers.forced)) { combinedAnswers[k] = v; }
-
+      // 1. 直接使用原生 answers，它的格式天然匹配后端的 .freq 和 .forced 校验！
+        
         // 2. 背景双轨制：跨境直连 Vercel 云端黑盒算分落盘
-    fetch('https://landuoduo-test.vercel.app/api/submit_psych', {
+        fetch('https://landuoduo-test.vercel.app/api/submit_psych', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: null, userAnswers: combinedAnswers })
+            // 🎯 致命修复点：直接传 answers，不要传 combinedAnswers！
+            body: JSON.stringify({ userId: null, userAnswers: answers }) 
         })
         .then(res => res.json())
         .then(resData => {
@@ -1143,9 +1141,6 @@ if (savedAnswers) {
 
             this.innerText = '问卷同步中...';
             this.disabled = true;
-
-            // 下面是你原本写好的 fetch('https://landuoduo-test.vercel.app/api/submit_psych'... 
-            // 保持原样不用动！
 
             // 🎯 修复点：改用绝对路径跨境发射数据
             fetch('https://landuoduo-test.vercel.app/api/submit_psych', {
