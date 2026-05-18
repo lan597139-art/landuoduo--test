@@ -3,155 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>动态沙盒探测系统 - 测绘你的内在能量地图</title>
+    <title>心力架构测试平台</title>
     <style>
-        /* ==========================================
-           全局变量与基础重置
-           ========================================== */
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --accent: #8b5cf6;
-            --bg-page: #f8fafc;
-            --bg-card: #ffffff;
-            --text-main: #1e293b;
-            --text-nav: #475569;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --border-dark: #1e293b;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
-            --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
-            --radius: 12px;
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
-            background: var(--bg-page);
-            color: var(--text-main);
-            line-height: 1.7;
-            overflow-x: hidden;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #fafaf8;
+            color: #2c2c2c;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 修改为顶部留白，避免被悬浮导航栏遮挡 */
+            padding: 140px 2rem 4rem; 
         }
-        a { text-decoration: none; color: inherit; }
-        ul { list-style: none; }
 
         /* ==========================================
            1. 顶部悬浮导航栏 (16P 风格黑框)
            ========================================== */
         .site-header {
-            position: fixed; top: 0; width: 100%;
-            background: rgba(248, 250, 252, 0.85);
+            position: fixed; 
+            top: 0; 
+            width: 100%;
+            /* 配合原版背景色的毛玻璃效果 */
+            background: rgba(250, 250, 248, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             z-index: 1000;
-            display: flex; justify-content: center;
-            padding: 16px 20px;
+            display: flex; 
+            justify-content: center;
+            padding: 24px 20px;
         }
-        .nav-container {
-            display: flex; align-items: center; gap: 32px;
-            padding: 12px 40px;
-            border: 2px solid var(--border-dark);
-            border-radius: 99px;
-            background: var(--bg-card);
-            box-shadow: var(--shadow-sm);
-        }
-        .nav-item {
-            font-weight: 600; font-size: 0.95rem; color: var(--text-nav);
-            position: relative; cursor: pointer; transition: color 0.2s;
-            padding: 4px 0;
-        }
-        .nav-item:hover { color: var(--primary); }
-        .nav-item.active { color: var(--primary); }
 
-        /* 下拉菜单 */
-        .dropdown {
-            position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px);
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 8px; width: 220px; box-shadow: var(--shadow-md);
-            opacity: 0; visibility: hidden; transition: all 0.2s ease;
-            padding: 8px 0; text-align: left;
+        .nav-container {
+            display: flex; 
+            align-items: center; 
+            gap: 32px;
+            padding: 12px 40px;
+            border: 2px solid #1e293b; /* 核心标志：黑色实线框 */
+            border-radius: 99px;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
         }
-        .nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(5px); }
+
+        .nav-item {
+            font-weight: 600; 
+            font-size: 0.95rem; 
+            color: #475569;
+            position: relative; 
+            cursor: pointer; 
+            transition: color 0.2s;
+            padding: 4px 0;
+            text-decoration: none;
+        }
+        .nav-item:hover { color: #2563eb; }
+        .nav-item.active { color: #2563eb; }
+
+        /* 下拉菜单样式 */
+        .dropdown {
+            position: absolute; 
+            top: 100%; 
+            left: 50%; 
+            transform: translateX(-50%) translateY(10px);
+            background: #ffffff; 
+            border: 1px solid #e2e8f0;
+            border-radius: 12px; 
+            width: 220px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            opacity: 0; 
+            visibility: hidden; 
+            transition: all 0.2s ease;
+            padding: 8px 0; 
+            text-align: left;
+        }
+        /* 增加一个隐形的桥梁，防止鼠标移出 nav-item 时下拉框消失 */
+        .nav-item::after {
+            content: ''; position: absolute;
+            bottom: -15px; left: 0; width: 100%; height: 15px;
+        }
+        .nav-item:hover .dropdown { 
+            opacity: 1; 
+            visibility: visible; 
+            transform: translateX(-50%) translateY(5px); 
+        }
+        
         .dropdown-item {
-            display: block; padding: 10px 20px; font-size: 0.85rem; color: var(--text-main);
+            display: block; 
+            padding: 10px 20px; 
+            font-size: 0.85rem; 
+            color: #1e293b;
+            text-decoration: none;
             transition: background 0.2s, color 0.2s;
         }
-        .dropdown-item:hover { background: #f1f5f9; color: var(--primary); font-weight: 600; }
-
-        /* ==========================================
-           2. 英雄视觉区 (Hero Section)
-           ========================================== */
-        .section-hero {
-            padding: 160px 20px 80px;
-            text-align: center; max-width: 900px; margin: 0 auto;
+        .dropdown-item:hover { 
+            background: #f1f5f9; 
+            color: #2563eb; 
+            font-weight: 600; 
         }
-        .hero-title { font-size: 3rem; font-weight: 800; color: var(--text-main); margin-bottom: 24px; line-height: 1.2; letter-spacing: -0.02em; }
-        .hero-title span { color: var(--primary); }
-        .hero-desc { font-size: 1.15rem; color: var(--text-nav); margin-bottom: 40px; line-height: 1.8; }
-        .btn-start {
-            display: inline-block; background: var(--primary); color: #fff;
-            font-size: 1.1rem; font-weight: 600; padding: 16px 48px;
-            border-radius: 99px; transition: all 0.3s;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+
+        /* ==========================================
+           2. 原版双入口卡片主视觉区
+           ========================================== */
+        .container { max-width: 680px; width: 100%; text-align: center; }
+        .subtitle { font-size: 0.95rem; color: #7a7a6e; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+        h1 { font-size: 2rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .welcome { font-size: 1rem; color: #555; margin-bottom: 2.5rem; line-height: 1.8; }
+        .test-grid { display: flex; flex-direction: column; gap: 1.5rem; align-items: center; }
+        
+        .test-card {
+            width: 100%; max-width: 460px;
+            padding: 1.8rem 2rem;
+            border-radius: 14px;
+            text-decoration: none;
+            color: inherit;
+            background: #ffffff;
+            border: 1px solid #e8e8e2;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            transition: box-shadow 0.2s, transform 0.2s;
+            text-align: left;
+            display: block;
         }
-        .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4); background: var(--primary-hover); }
-
-        /* ==========================================
-           3. 通用区块 & 卡片布局
-           ========================================== */
-        .section { padding: 80px 20px; }
-        .section-alt { background: #ffffff; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
-        .container { max-width: 1080px; margin: 0 auto; }
-        .section-title { text-align: center; font-size: 2rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); }
-        .section-subtitle { text-align: center; font-size: 1rem; color: var(--text-muted); margin-bottom: 48px; max-width: 700px; margin-left: auto; margin-right: auto; }
-
-        /* 引擎与沙盒网格 */
-        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-        .card {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: var(--radius); padding: 32px 24px;
-            box-shadow: var(--shadow-sm); transition: transform 0.2s, border-color 0.2s;
+        .test-card:hover { 
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08); 
+            transform: translateY(-2px); 
+            border-color: #d1d1ca; 
         }
-        .card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: var(--shadow-md); }
-        .card-icon { font-size: 2.5rem; margin-bottom: 16px; }
-        .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; color: var(--text-main); }
-        .card-text { font-size: 0.95rem; color: var(--text-nav); }
-
-        /* ==========================================
-           4. 数据对比表格
-           ========================================== */
-        .table-wrapper { overflow-x: auto; background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
-        .compare-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .compare-table th, .compare-table td { padding: 20px 24px; border-bottom: 1px solid var(--border-color); }
-        .compare-table th { background: #f8fafc; font-weight: 600; font-size: 1rem; color: var(--text-main); }
-        .compare-table td { font-size: 0.95rem; vertical-align: top; }
-        .compare-table tr:last-child td { border-bottom: none; }
-        .col-highlight { background: rgba(37, 99, 235, 0.03); color: var(--primary); font-weight: 600; }
-        .col-highlight p { color: var(--text-main); font-weight: 400; margin-top: 8px; }
-
-        /* ==========================================
-           5. 适用人群列表
-           ========================================== */
-        .audience-list { display: flex; flex-direction: column; gap: 16px; }
-        .audience-item { display: flex; gap: 16px; padding: 24px; background: #f8fafc; border-radius: var(--radius); border-left: 4px solid var(--border-color); transition: border-color 0.2s; }
-        .audience-item:hover { border-left-color: var(--primary); background: #ffffff; box-shadow: var(--shadow-sm); }
-        .audience-content h4 { font-size: 1.1rem; margin-bottom: 8px; color: var(--text-main); }
-        .audience-content p { font-size: 0.95rem; color: var(--text-nav); }
-
-        /* ==========================================
-           6. 底部 Footer (联系与版权)
-           ========================================== */
-        .site-footer { background: var(--border-dark); color: #cbd5e1; padding: 60px 20px 40px; text-align: center; }
-        .footer-grid { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px; }
-        .footer-col h3 { color: #ffffff; font-size: 1.2rem; margin-bottom: 20px; }
-        .footer-col p { font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6; }
-        .footer-bottom { border-top: 1px solid #334155; padding-top: 24px; font-size: 0.85rem; color: #94a3b8; }
+        
+        .test-card h2 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #1e293b; }
+        .test-card .tags { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
+        .test-card .tag {
+            font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 20px;
+            background: #f3f3ee; color: #7a7a6e; font-weight: 500;
+        }
+        .test-card .desc { font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 0.8rem; }
+        .test-card .target-audience { 
+            font-size: 0.85rem; 
+            color: #64748b; 
+            background: #f8fafc; 
+            padding: 0.6rem 0.8rem; 
+            border-radius: 8px; 
+            border-left: 3px solid #cbd5e1;
+            line-height: 1.5;
+        }
+        
+        .footer-note { margin-top: 3rem; font-size: 0.8rem; color: #94a3b8; }
+        .footer-note a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
+        .footer-note a:hover { color: #64748b; text-decoration: underline; }
+        .badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 10px; background: #fef08a; color: #854d0e; margin-left: 0.4rem; vertical-align: middle; }
 
         @media (max-width: 768px) {
             .nav-container { padding: 10px 20px; gap: 16px; }
             .nav-item { font-size: 0.85rem; }
-            .hero-title { font-size: 2rem; }
-            .btn-start { width: 100%; padding: 14px 0; }
+            body { padding-top: 110px; }
         }
     </style>
 </head>
@@ -159,7 +163,7 @@
 
     <header class="site-header">
         <nav class="nav-container">
-            <a href="/career/" class="nav-item active">沙盒探测</a>
+            <a href="/" class="nav-item active">沙盒探测</a>
             
             <div class="nav-item">动力学百科 ∨
                 <div class="dropdown">
@@ -180,173 +184,50 @@
             
             <div class="nav-item">洞察与生态 ∨
                 <div class="dropdown">
-                    <a href="#comparison" class="dropdown-item">📊 视界融合 (理论对比)</a>
-                    <a href="#audience" class="dropdown-item">👥 适用探索人群</a>
+                    <a href="/about/comparison" class="dropdown-item">📊 视界融合 (理论对比)</a>
+                    <a href="/about/audience" class="dropdown-item">👥 适用探索人群</a>
                 </div>
             </div>
             
-            <a href="#contact" class="nav-item">商业部署</a>
+            <a href="/contact" class="nav-item">商业部署</a>
         </nav>
     </header>
 
-    <section class="section-hero">
-        <h1 class="hero-title">测绘你的内在<span>“能量地图”</span></h1>
-        <p class="hero-desc">
-            很多时候你感到内耗、卡死、甚至想掀桌子摆烂，极少是因为你能力不够，而是你内心的能量引擎，在不同的生活沙盒里发生了长期的摩擦与过载。强行剥离假装努力，找到重组现实的最小位移支点。
-        </p>
-        <a href="/career/" class="btn-start">开始沙盘探测 (0/71题)</a>
-    </section>
+    <div class="container">
+        <p class="subtitle">SYSTEM DYNAMICS & ARCHITECTURE</p>
+        <h1>心力架构测试平台</h1>
+        <p class="welcome">两套客观测绘工具，从职场生态位到底层能量流转，扫描你的心力分配网络。<br>请根据当前的系统耗损状态选择入口。</p>
+        
+        <div class="test-grid">
+            <a href="/career/" class="test-card">
+                <h2>🧭 职业性格测试 <span class="badge">免费</span></h2>
+                <div class="tags">
+                    <span class="tag">引擎配置</span>
+                    <span class="tag">职业方向</span>
+                    <span class="tag">协作角色</span>
+                </div>
+                <p class="desc">71题 · 约18分钟 · 回答“你是谁”——获取你的核心驱动力、力量主战场，以及最适合的职业发展方向与团队定位。</p>
+                <div class="target-audience">
+                    <strong>💡 适用场景：</strong>寻找就业方向的学生、职场迷茫期的人群、需要了解团队成员配置的HR与管理者。
+                </div>
+            </a>
 
-    <section class="section section-alt">
-        <div class="container">
-            <h2 class="section-title">解构心智拓扑的客观原件</h2>
-            <p class="section-subtitle">我们拒绝虚无的性格标签，将复杂的体感拆解为看得见、摸得着的物理组件。</p>
-            
-            <div class="grid-cards">
-                <div class="card">
-                    <div class="card-icon">⚙️</div>
-                    <h3 class="card-title">五大天赋能量引擎</h3>
-                    <p class="card-text">揭示你对抗无序的底层发力方式：是结晶收束的结构(O)、寻找承载的回声(V)、剧烈氧化的动力(D)、渗透吞噬的扩张(E)，还是垂直击穿的超越(T)。</p>
+            <a href="/psychology/" class="test-card">
+                <h2>🔮 心灵地图探测</h2>
+                <div class="tags">
+                    <span class="tag">断电节点探测</span>
+                    <span class="tag">代偿演化</span>
+                    <span class="tag">五行生克</span>
                 </div>
-                <div class="card">
-                    <div class="card-icon">🧩</div>
-                    <h3 class="card-title">六大生存容纳沙盒</h3>
-                    <p class="card-text">测绘你的电量投向了哪些现实场域。从底层的物理空间(PN)、能力进化(AN)，到社会舞台(IN)、乃至顶层提供止痛药的意义导航(MN)。</p>
+                <p class="desc">108题 · 约20–25分钟 · 回答“你怎么变成这样”——通过高密度的频率与迫选矩阵，精准定位你生命力断流的历史节点与当下的引擎消耗状态。</p>
+                <div class="target-audience">
+                    <strong>💡 适用场景：</strong>渴望深度解释自我行为模式、需要观测自身能量损耗状态、以及探索潜意识创伤与代偿机制的人群。
                 </div>
-                <div class="card">
-                    <div class="card-icon">🔋</div>
-                    <h3 class="card-title">跨膜代谢与相变防线</h3>
-                    <p class="card-text">预测你在临界高压下的终极变形：是高弹性的变色龙(σ1)、刚到底的硬陶瓷(σ0)，还是生存至上的壁虎断尾，精准定位拖垮你的致命消耗窄口。</p>
-                </div>
-            </div>
+            </a>
         </div>
-    </section>
 
-    <section id="comparison" class="section">
-        <div class="container">
-            <h2 class="section-title">为什么我们不一样？</h2>
-            <p class="section-subtitle">建立在荣格八维、九型、大五理论地基之上，向动态现实空间延伸的视界融合。</p>
-
-            <div class="table-wrapper">
-                <table class="compare-table">
-                    <thead>
-                        <tr>
-                            <th>对比维度</th>
-                            <th>经典心理学测评视界 (八维/九型/大五)</th>
-                            <th style="color: var(--primary);">动态沙盒探测系统</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>它在测什么</strong></td>
-                            <td>
-                                <strong>测量你天生的性格分类与天赋倾向</strong>
-                                <br><span style="color: var(--text-muted); font-size: 0.9rem;">像一张静态的“心智切片”，完成人格类型的定型。</span>
-                            </td>
-                            <td class="col-highlight">
-                                测量你的内在能量如何在具体生活里做功
-                                <p>将认知、动机和现实状态完全融合。引擎是发力方式，沙盒是盛装能量的容器。</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>状态变不变</strong></td>
-                            <td>
-                                <strong>假设人格是相对一成不变的</strong>
-                                <br><span style="color: var(--text-muted); font-size: 0.9rem;">倾向于在相对平和、没有强烈干扰的环境下测绘默认习惯。</span>
-                            </td>
-                            <td class="col-highlight">
-                                认知到人的体感与能量是流动变化的
-                                <p>在确立默认偏好的基础上，重点推导你遭遇高压、资源截断时的极化变异。</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>输出的价值</strong></td>
-                            <td>
-                                <strong>获得一个明确的身份类型标签</strong>
-                                <br><span style="color: var(--text-muted); font-size: 0.9rem;">提供框架叙事，容易让人对号入座，但也容易画地为牢。</span>
-                            </td>
-                            <td class="col-highlight">
-                                看清引擎在现实场景里的互耗因果链
-                                <p>不贴死标签，让你看清哪个驱动力超载了，并输出组织治理的刚性C授权红线。</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>如何改变现实</strong></td>
-                            <td>
-                                <strong>提供“接纳自身局限”的精神安抚</strong>
-                                <br><span style="color: var(--text-muted); font-size: 0.9rem;">止步于告知天赋边界，往往缺乏直接的干预路径。</span>
-                            </td>
-                            <td class="col-highlight">
-                                强行输出立刻就能执行的现实修复解药
-                                <p>剥离假装努力，精准定位致命消耗窄口，给出一个反本能的最小物理位移动作。</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <section id="audience" class="section section-alt">
-        <div class="container">
-            <h2 class="section-title">谁在寻找现实解药？</h2>
-            <p class="section-subtitle">拒绝宽泛的泛心理学安慰，专为在真实世界里高频承重、跨膜代谢的深度探索者设计。</p>
-            
-            <div class="audience-list">
-                <div class="audience-item">
-                    <div class="audience-icon">🔮</div>
-                    <div class="audience-content">
-                        <h4>深度MBTI与荣格八维玩家</h4>
-                        <p>厌倦了市面上流于表面、千篇一律的4字母标签，渴望真正打通八维、九型与大五特质的底层脉络，看清自己引擎打架与生克互耗的硬核密码。</p>
-                    </div>
-                </div>
-                <div class="audience-item">
-                    <div class="audience-icon">💼</div>
-                    <div class="audience-content">
-                        <h4>处于职场内耗与瓶颈期的个体</h4>
-                        <p>隐隐感觉自己在形式上“假装努力”，或处于超频盲动状态。需要精准定位到底是物理底盘过载还是意义导航断线，强行砌出最小现实位移路径。</p>
-                    </div>
-                </div>
-                <div class="audience-item">
-                    <div class="audience-icon">👑</div>
-                    <div class="audience-content">
-                        <h4>团队管理者、HR 与 组织发展(OD)专家</h4>
-                        <p>需要跳出传统的低维考评，寻找能够免于人治干扰、科学对齐的“心腹角色判定”及“刚性C授权红线”，实现团队资源与底层工况的精准卡位。</p>
-                    </div>
-                </div>
-                <div class="audience-item">
-                    <div class="audience-icon">🚀</div>
-                    <div class="audience-content">
-                        <h4>创业者、IP操盘手与边缘游荡者</h4>
-                        <p>不愿在单一主流评价里削足适履。面临路径重组的重大选择，需要实时监测自身的四核电量余额，并提前评估极限压力下的防线账单。</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer id="contact" class="site-footer">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h3>动态沙盒探测系统</h3>
-                <p>从基准线到极化变异的连续谱，将认知、动机与行为表现合流，客观测绘个体的能量拓扑网格。</p>
-            </div>
-            <div class="footer-col">
-                <h3>商业部署与共创</h3>
-                <p><strong>组织授权：</strong>支持接入企业人才盘点、资源配置优化、高管选拔及诊断辅助。</p>
-                <p><strong>专有定制：</strong>支持根据特定行业、赛道的真实抗压阈值需求，定制专属后端路由算法。</p>
-            </div>
-            <div class="footer-col">
-                <h3>联系我们</h3>
-                <p>📧 官方邮箱：partner@landuoduo-test.vercel.app</p>
-                <p>📱 小红书官方账号：<strong>兰哆哆</strong> (号: 374739115)</p>
-                <p style="font-size: 0.8rem; margin-top: 8px;">（商务联络请备注：沙盒授权 / 定制开发 / 团队盘点）</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; 2026 兰哆哆心力架构平台. All rights reserved. System Dynamics & Architecture.
-        </div>
-    </footer>
+        <p class="footer-note">📖 <a href="/theory/engines">关于本测试 · 理论依据</a> &nbsp;|&nbsp; 建议优先完成【职业性格测试】建立基础坐标系</p>
+    </div>
 
 </body>
 </html>
