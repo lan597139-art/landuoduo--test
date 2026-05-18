@@ -95,10 +95,49 @@
         .dynamic-item.health .metaphor-badge { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
         .dynamic-desc { font-size: 0.95rem; color: #475569; line-height: 1.6; }
 
+        /* ====================================================
+           【响应式与手机端终极适配】
+           ==================================================== */
+        
+        /* 保持双栏在900px时堆叠，完美适配平板或较窄屏幕 */
         @media (max-width: 900px) {
             .wiki-layout { flex-direction: column; }
             .wiki-sidebar { width: 100%; position: static; margin-bottom: 24px; }
-            body { padding-top: 100px; }
+        }
+
+        /* 手机端专项极致优化：修复拥挤、减小留白、优化导航栏 */
+        @media (max-width: 768px) {
+            /* 1. 极限压缩导航栏体积 */
+            .site-header { padding: 8px 10px; }
+            .nav-container { 
+                padding: 6px 12px; 
+                gap: 4px 12px; 
+                flex-wrap: wrap; 
+                justify-content: center;
+                border-radius: 12px; 
+            }
+            .nav-item { font-size: 0.8rem; padding: 4px 0; }
+            
+            /* 2. 释放屏幕空间：减小页面两边留白 */
+            body { padding-top: 100px; padding-left: 12px; padding-right: 12px; } 
+            .wiki-layout { padding: 16px 0; }
+            
+            /* 3. 压缩卡片内边距：把空间还给文字内容 */
+            .theory-card, .test-card, .advanced-guide-box, .biz-card, .contact-box { 
+                padding: 1.25rem 1rem !important; 
+            }
+            .theory-card .card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .theory-card .card-header h2 { font-size: 1.2rem; }
+            
+            /* 4. 下拉菜单适配与防长按样式 */
+            .dropdown { width: 160px; }
+            .dropdown-item { padding: 10px 14px; font-size: 0.8rem; }
+            .nav-item:hover .dropdown { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px); }
+            .nav-item.mobile-open .dropdown { 
+                opacity: 1; 
+                visibility: visible; 
+                transform: translateX(-50%) translateY(5px); 
+            }
         }
     </style>
 </head>
@@ -639,5 +678,62 @@
         </div>
     </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // ==========================================
+            // 1. 移动端菜单“防长按”点击展开修复
+            // ==========================================
+            const navItems = document.querySelectorAll('.nav-item');
+            document.body.addEventListener('touchstart', function() {}, {passive: true});
+
+            navItems.forEach(item => {
+                if (item.querySelector('.dropdown')) {
+                    item.addEventListener('click', (e) => {
+                        if (window.innerWidth <= 768) {
+                            if (e.target.classList.contains('dropdown-item')) return;
+                            e.preventDefault();
+                            navItems.forEach(other => {
+                                if (other !== item) other.classList.remove('mobile-open');
+                            });
+                            item.classList.toggle('mobile-open');
+                        }
+                    });
+                }
+            });
+
+            // 点击空白处收起菜单
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && !e.target.closest('.nav-item')) {
+                    navItems.forEach(item => item.classList.remove('mobile-open'));
+                }
+            });
+
+            // ==========================================
+            // 2. 导航栏智能滚动显隐 (下滑隐藏，上滑显示)
+            // ==========================================
+            const header = document.querySelector('.site-header');
+            let lastScrollY = window.scrollY;
+            
+            // 注入丝滑过渡动画
+            header.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease';
+
+            window.addEventListener('scroll', () => {
+                const currentScrollY = window.scrollY;
+                
+                // 向下滚动，且滚出一定距离后 -> 隐藏导航栏
+                if (currentScrollY > lastScrollY && currentScrollY > 80) {
+                    header.style.transform = 'translateY(-100%)';
+                    // 滚动时自动收起下拉菜单
+                    navItems.forEach(item => item.classList.remove('mobile-open'));
+                } 
+                // 向上滚动 -> 显示导航栏
+                else if (currentScrollY < lastScrollY) {
+                    header.style.transform = 'translateY(0)';
+                }
+                
+                lastScrollY = currentScrollY;
+            }, { passive: true });
+        });
+    </script>
 </body>
 </html>
