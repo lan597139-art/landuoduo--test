@@ -46,7 +46,7 @@
         }
         .nav-item { font-weight: 600; font-size: 0.95rem; color: #475569; position: relative; cursor: pointer; transition: color 0.2s; padding: 4px 0; }
         .nav-item:hover, .nav-item.active { color: var(--primary); }
-        .dropdown { position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); opacity: 0; visibility: hidden; transition: all 0.2s ease; padding: 8px 0; }
+        .dropdown { position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); opacity: 0; visibility: hidden; transition: all 0.2s ease; padding: 8px 0; text-align: left; }
         .nav-item::after { content: ''; position: absolute; bottom: -15px; left: 0; width: 100%; height: 15px; }
         .nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(5px); }
         .dropdown-item { display: block; padding: 10px 20px; font-size: 0.85rem; color: #1e293b; transition: background 0.2s, color 0.2s; }
@@ -95,10 +95,42 @@
         .audience-title { font-weight: 700; color: var(--border-dark); margin-bottom: 6px; font-size: 1.05rem; }
         .audience-desc { font-size: 0.95rem; color: #475569; line-height: 1.6; }
 
-        @media (max-width: 900px) {
-            .wiki-layout { flex-direction: column; }
-            .wiki-sidebar { width: 100%; position: static; margin-bottom: 24px; }
-            body { padding-top: 100px; }
+        /* ====================================================
+           【手机端终极适配】修复排版拥挤、减小留白、智能显隐
+           ==================================================== */
+        @media (max-width: 768px) {
+            /* 1. 极限压缩导航栏体积 */
+            .site-header { padding: 8px 10px; }
+            .nav-container { 
+                padding: 6px 12px; 
+                gap: 4px 12px; 
+                flex-wrap: wrap; 
+                justify-content: center;
+                border-radius: 12px; 
+            }
+            .nav-item { font-size: 0.8rem; padding: 4px 0; }
+            
+            /* 2. 释放屏幕空间：减小页面两边留白 */
+            body { padding-top: 100px; padding-left: 12px; padding-right: 12px; } 
+            .wiki-layout { padding: 16px 0; flex-direction: column; }
+            .wiki-sidebar { width: 100%; position: static; margin-bottom: 24px; padding: 20px; }
+            
+            /* 3. 压缩卡片内边距：把空间还给文字内容 */
+            .theory-card { padding: 1.25rem 1rem !important; }
+            .theory-card .card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .theory-card .card-header h2 { font-size: 1.2rem; }
+            .compare-table th, .compare-table td { padding: 12px 10px; font-size: 0.85rem; }
+            .audience-item { padding: 16px 12px; }
+            
+            /* 4. 下拉菜单适配与防长按样式 */
+            .dropdown { width: 160px; }
+            .dropdown-item { padding: 10px 14px; font-size: 0.8rem; }
+            .nav-item:hover .dropdown { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px); }
+            .nav-item.mobile-open .dropdown { 
+                opacity: 1; 
+                visibility: visible; 
+                transform: translateX(-50%) translateY(5px); 
+            }
         }
     </style>
 </head>
@@ -132,7 +164,7 @@
                 </div>
             </div>
             
-            <a href="./about.html#contact" class="nav-item">商业部署</a>
+            <a href="./business.html" class="nav-item">商业部署</a>
         </nav>
     </header>
 
@@ -187,7 +219,7 @@
                                     <p>在确立中性平衡态（默认出厂配置）的基础上，重点推导系统在遭遇环境高压、变量截断时的非线性变形与极化变异。</p>
                                 </td>
                             </tr>
-                          <tr>
+                            <tr>
                                 <td style="font-weight: 600;">拿到什么结果</td>
                                 <td style="color: #475569;">
                                     <strong>提供基于「恒定特质假定」的性格画像</strong>
@@ -195,7 +227,7 @@
                                 </td>
                                 <td class="col-highlight">
                                     映射基于「情境信度与动态效度」的实时工况
-                                  <p>放弃恒定标签，高敏感地扫描个体在当前环境下的真实承压状态：直接点透系统内哪股驱动力正在无意义内耗（引擎干烧），哪个现实领域正濒临崩溃（沙盒过载）。并据此向团队管理者输出一份极其明确的用人底线——当前该个体绝对不能被分配去处理何种任务（刚性授权红线）。估计本产品也会被当成精神奶头乐，制造新的流量消费。毕竟人需要。</p>
+                                    <p>放弃恒定标签，高敏感地扫描个体在当前环境下的真实承压状态：直接点透系统内哪股驱动力正在无意义内耗（引擎干烧），哪个现实领域正濒临崩溃（沙盒过载）。并据此向团队管理者输出一份极其明确的用人底线——当前该个体绝对不能被分配去处理何种任务（刚性授权红线）。估计本产品也会被当成精神奶头乐，制造新的流量消费。毕竟人需要。</p>
                                 </td>
                             </tr>
                             <tr>
@@ -248,7 +280,61 @@
                     </div>
                 </div>
             </div>
+            
+        </div>
     </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // ==========================================
+            // 1. 移动端菜单“防长按”点击展开修复
+            // ==========================================
+            const navItems = document.querySelectorAll('.nav-item');
+            document.body.addEventListener('touchstart', function() {}, {passive: true});
+
+            navItems.forEach(item => {
+                if (item.querySelector('.dropdown')) {
+                    item.addEventListener('click', (e) => {
+                        if (window.innerWidth <= 768) {
+                            if (e.target.classList.contains('dropdown-item')) return;
+                            e.preventDefault();
+                            navItems.forEach(other => {
+                                if (other !== item) other.classList.remove('mobile-open');
+                            });
+                            item.classList.toggle('mobile-open');
+                        }
+                    });
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && !e.target.closest('.nav-item')) {
+                    navItems.forEach(item => item.classList.remove('mobile-open'));
+                }
+            });
+
+            // ==========================================
+            // 2. 导航栏智能滚动显隐 (下滑隐藏，上滑显示)
+            // ==========================================
+            const header = document.querySelector('.site-header');
+            let lastScrollY = window.scrollY;
+            
+            header.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease';
+
+            window.addEventListener('scroll', () => {
+                const currentScrollY = window.scrollY;
+                
+                if (currentScrollY > lastScrollY && currentScrollY > 80) {
+                    header.style.transform = 'translateY(-100%)';
+                    navItems.forEach(item => item.classList.remove('mobile-open'));
+                } 
+                else if (currentScrollY < lastScrollY) {
+                    header.style.transform = 'translateY(0)';
+                }
+                
+                lastScrollY = currentScrollY;
+            }, { passive: true });
+        });
+    </script>
 </body>
 </html>
