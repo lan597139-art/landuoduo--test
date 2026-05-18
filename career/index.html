@@ -1253,7 +1253,20 @@ let feedbackHtml = `
         }
     }, 100);
 
-    // ── 异步发射主数据到云端黑盒接口 ──
+   // ── 异步发射主数据到云端黑盒接口 ──
+    // 1. 在这里直接提取计算好的核心标签
+    var compactTags = {
+        "主副引擎": S2 ? eName[S1] + " + " + eName[S2] : eName[S1],
+        "主副战场": N2 ? nName[N1] + " + " + nName[N2] : nName[N1],
+        "拓扑结构": archeCode + " ｜ " + complexityLabel,
+        "协作角色": confidant,
+        "抗压模式": sigDom + " ｜ " + (sigmaDesc[sigDom] ? sigmaDesc[sigDom].split('\n')[0] : ""),
+        "归因倾向": eName[L1],
+        "面对压力": metaNegRaw,
+        "面对机会": metaPosRaw,
+        "身心电量": epsTotal + "分 ｜ " + epsZone
+    };
+
     var cleanAnswers = {};
     for (var qid in userAnswers) { cleanAnswers[qid] = userAnswers[qid]; }
 
@@ -1261,7 +1274,8 @@ let feedbackHtml = `
     fetch('https://landuoduo-test.vercel.app/api/submit', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: null, userAnswers: cleanAnswers }) 
+        // 2. 将 reportTags 随答案包一同发射给后端
+        body: JSON.stringify({ userId: null, userAnswers: cleanAnswers, reportTags: compactTags }) 
     })
     .then(function(res) { return res.json(); })
     .then(function(resData) {
