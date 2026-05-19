@@ -15,44 +15,201 @@
             --radius: 16px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg-page); color: var(--text-main); line-height: 1.8; padding-top: 100px; }
-        a { text-decoration: none; color: inherit; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.8;
+            padding-top: 100px;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
 
         /* 顶部导航 */
-        .site-header { position: fixed; top: 0; width: 100%; background: rgba(250, 250, 248, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; padding: 24px 20px; }
-        .nav-container { display: flex; align-items: center; gap: 32px; padding: 12px 40px; border: 2px solid #1e293b; border-radius: 99px; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
-        .nav-item { font-weight: 600; font-size: 0.95rem; color: #475569; position: relative; cursor: pointer; transition: color 0.2s; padding: 4px 0; }
-        .nav-item:hover, .nav-item.active { color: #2563eb; }
-        .dropdown { position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); opacity: 0; visibility: hidden; transition: all 0.2s ease; padding: 8px 0; }
-        .nav-item::after { content: ''; position: absolute; bottom: -15px; left: 0; width: 100%; height: 15px; }
-        .nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(5px); }
-        .dropdown-item { display: block; padding: 10px 20px; font-size: 0.85rem; color: #1e293b; transition: background 0.2s, color 0.2s; }
-        .dropdown-item:hover { background: #f1f5f9; color: #2563eb; font-weight: 600; }
+        .site-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(250, 250, 248, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            padding: 24px 20px;
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            padding: 12px 40px;
+            border: 2px solid #1e293b;
+            border-radius: 99px;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+        .nav-item {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #475569;
+            position: relative;
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 4px 0;
+        }
+        .nav-item:hover,
+        .nav-item.active {
+            color: #2563eb;
+        }
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            width: 220px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            padding: 8px 0;
+        }
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            height: 15px;
+        }
+        .nav-item:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(5px);
+        }
+        .dropdown-item {
+            display: block;
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            color: #1e293b;
+            transition: background 0.2s, color 0.2s;
+        }
+        .dropdown-item:hover {
+            background: #f1f5f9;
+            color: #2563eb;
+            font-weight: 600;
+        }
 
         /* 布局 */
-        .wiki-layout { max-width: 1200px; margin: 0 auto; display: flex; gap: 40px; padding: 40px 20px; }
-        .wiki-sidebar { width: 260px; flex-shrink: 0; position: sticky; top: 120px; height: fit-content; background: var(--bg-card); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        .wiki-sidebar h3 { font-size: 1.1rem; color: var(--primary); margin-bottom: 16px; font-weight: 700; }
-        .sidebar-link { display: block; padding: 8px 0; font-size: 0.95rem; color: var(--text-nav); transition: color 0.2s; border-bottom: 1px dashed var(--border-color); }
-        .sidebar-link:last-child { border-bottom: none; }
-        .sidebar-link:hover { color: var(--primary); font-weight: 600; padding-left: 5px; }
+        .wiki-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 40px;
+            padding: 40px 20px;
+        }
+        .wiki-sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        }
+        .wiki-sidebar h3 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        .sidebar-link {
+            display: block;
+            padding: 8px 0;
+            font-size: 0.95rem;
+            color: var(--text-nav);
+            transition: color 0.2s;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .sidebar-link:last-child {
+            border-bottom: none;
+        }
+        .sidebar-link:hover {
+            color: var(--primary);
+            font-weight: 600;
+            padding-left: 5px;
+        }
 
-        .wiki-content { flex-grow: 1; max-width: 800px; }
-        .page-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 16px; color: var(--text-main); }
-        .page-desc { font-size: 1.1rem; color: var(--text-nav); margin-bottom: 48px; line-height: 1.8; }
+        .wiki-content {
+            flex-grow: 1;
+            max-width: 800px;
+        }
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+        .page-desc {
+            font-size: 1.1rem;
+            color: var(--text-nav);
+            margin-bottom: 48px;
+            line-height: 1.8;
+        }
 
         /* 卡片与文本框 */
-        .theory-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 32px; margin-bottom: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        .card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 16px; }
-        .card-icon { font-size: 2rem; }
-        .card-header h2 { font-size: 1.4rem; font-weight: 700; color: var(--text-main); }
-        
-        .theory-section { margin-bottom: 20px; }
-        .theory-section h4 { font-size: 1rem; color: var(--primary); margin-bottom: 8px; font-weight: 600; }
-        .theory-section p { font-size: 0.95rem; color: #334155; margin-bottom: 12px; }
-        
+        .theory-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 16px;
+        }
+        .card-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .theory-section {
+            margin-bottom: 20px;
+        }
+        .theory-section h4 {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .theory-section p {
+            font-size: 0.95rem;
+            color: #334155;
+            margin-bottom: 12px;
+        }
+
         /* 中态分布 (健康态) 绿色框 */
         .success-box {
             background: rgba(16, 185, 129, 0.05);
@@ -63,7 +220,11 @@
             color: #1e293b;
             margin-top: 16px;
         }
-        .success-box strong { color: #047857; display: block; margin-bottom: 6px; }
+        .success-box strong {
+            color: #047857;
+            display: block;
+            margin-bottom: 6px;
+        }
 
         /* 极化变异 (过载态) 红色框 */
         .alert-box {
@@ -75,17 +236,43 @@
             color: #1e293b;
             margin-top: 12px;
         }
-        .alert-box strong { color: #b91c1c; display: block; margin-bottom: 6px; }
+        .alert-box strong {
+            color: #b91c1c;
+            display: block;
+            margin-bottom: 6px;
+        }
 
         /* 蓝色信息框 */
-        .highlight-box { background: rgba(37, 99, 235, 0.05); border-left: 4px solid var(--primary); padding: 16px 20px; border-radius: 0 8px 8px 0; font-size: 0.95rem; color: #1e293b; margin-top: 16px; }
+        .highlight-box {
+            background: rgba(37, 99, 235, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            color: #1e293b;
+            margin-top: 16px;
+        }
 
-        .anchor-offset { scroll-margin-top: 130px; }
+        .anchor-offset {
+            scroll-margin-top: 130px;
+        }
+
+        /* 内容分隔线：用于用户阅读提示与正文之间 */
+        .content-separator {
+            border-top: 2px dashed #cbd5e1;
+            margin: 28px 0 24px 0;
+        }
 
         /* 平板端布局调整 */
-        @media (max-width: 900px) { 
-            .wiki-layout { flex-direction: column; } 
-            .wiki-sidebar { width: 100%; position: static; margin-bottom: 24px; } 
+        @media (max-width: 900px) {
+            .wiki-layout {
+                flex-direction: column;
+            }
+            .wiki-sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 24px;
+            }
         }
 
         /* ====================================================
@@ -93,35 +280,65 @@
            ==================================================== */
         @media (max-width: 768px) {
             /* 1. 极限压缩导航栏体积 */
-            .site-header { padding: 8px 10px; }
-            .nav-container { 
-                padding: 6px 12px; 
-                gap: 4px 12px; 
-                flex-wrap: wrap; 
+            .site-header {
+                padding: 8px 10px;
+            }
+            .nav-container {
+                padding: 6px 12px;
+                gap: 4px 12px;
+                flex-wrap: wrap;
                 justify-content: center;
-                border-radius: 12px; /* 取消巨大的纯圆角，改用微圆角更省空间 */
+                border-radius: 12px;
             }
-            .nav-item { font-size: 0.8rem; padding: 4px 0; }
-            
+            .nav-item {
+                font-size: 0.8rem;
+                padding: 4px 0;
+            }
+
             /* 2. 释放屏幕空间：减小页面两边留白 */
-            body { padding-top: 100px; padding-left: 12px; padding-right: 12px; } 
-            .wiki-layout { padding: 16px 0; }
-            
-            /* 3. 压缩卡片内边距：把空间还给文字内容 */
-            .theory-card, .test-card, .advanced-guide-box, .biz-card, .contact-box { 
-                padding: 1.25rem 1rem !important; 
+            body {
+                padding-top: 100px;
+                padding-left: 12px;
+                padding-right: 12px;
             }
-            .theory-card .card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-            .theory-card .card-header h2 { font-size: 1.2rem; }
-            
+            .wiki-layout {
+                padding: 16px 0;
+            }
+
+            /* 3. 压缩卡片内边距：把空间还给文字内容 */
+            .theory-card,
+            .test-card,
+            .advanced-guide-box,
+            .biz-card,
+            .contact-box {
+                padding: 1.25rem 1rem !important;
+            }
+            .theory-card .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .theory-card .card-header h2 {
+                font-size: 1.2rem;
+            }
+
             /* 4. 下拉菜单适配与防长按样式 */
-            .dropdown { width: 160px; }
-            .dropdown-item { padding: 10px 14px; font-size: 0.8rem; }
-            .nav-item:hover .dropdown { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px); }
-            .nav-item.mobile-open .dropdown { 
-                opacity: 1; 
-                visibility: visible; 
-                transform: translateX(-50%) translateY(5px); 
+            .dropdown {
+                width: 160px;
+            }
+            .dropdown-item {
+                padding: 10px 14px;
+                font-size: 0.8rem;
+            }
+            .nav-item:hover .dropdown {
+                opacity: 0;
+                visibility: hidden;
+                transform: translateX(-50%) translateY(10px);
+            }
+            .nav-item.mobile-open .dropdown {
+                opacity: 1;
+                visibility: visible;
+                transform: translateX(-50%) translateY(5px);
             }
         }
     </style>
@@ -131,25 +348,25 @@
     <header class="site-header">
         <nav class="nav-container">
             <a href="./index.html" class="nav-item">沙盒探测</a>
-            <div class="nav-item active">类型 
+            <div class="nav-item active">类型
                 <div class="dropdown">
-                    <a href="./encyclopedia.html#engines" class="dropdown-item">⚙️ 五大天赋能量引擎</a>
-                    <a href="./encyclopedia.html#sandboxes" class="dropdown-item">🧩 六大生存沙盒</a>
-                    <a href="./encyclopedia.html#metabolism" class="dropdown-item">🔋 跨膜代谢与极限抗压</a>
-                    <a href="./encyclopedia.html#telemetry" class="dropdown-item">📉 实时工况遥测四核</a>
+                    <a href="./encyclopedia.html#engines" class="dropdown-item">五大天赋能量引擎</a>
+                    <a href="./encyclopedia.html#sandboxes" class="dropdown-item">六大生存沙盒</a>
+                    <a href="./encyclopedia.html#metabolism" class="dropdown-item">跨膜代谢与极限抗压</a>
+                    <a href="./encyclopedia.html#telemetry" class="dropdown-item">实时工况遥测四核</a>
                 </div>
             </div>
-            <div class="nav-item">应用 
+            <div class="nav-item">应用
                 <div class="dropdown">
-                    <a href="./org.html#topology" class="dropdown-item">🧠 算力拓扑分层 (筹备中)</a>
-                    <a href="./org.html#roles" class="dropdown-item">🤝 11型心腹与C授权 (筹备中)</a>
-                    <a href="./org.html#dynamics" class="dropdown-item">⛓️ 极化生克与动态互锁 (筹备中)</a>
+                    <a href="./org.html#topology" class="dropdown-item">算力拓扑分层 (筹备中)</a>
+                    <a href="./org.html#roles" class="dropdown-item">11型心腹与C授权 (筹备中)</a>
+                    <a href="./org.html#dynamics" class="dropdown-item">极化生克与动态互锁 (筹备中)</a>
                 </div>
             </div>
-            <div class="nav-item">认识 
+            <div class="nav-item">认识
                 <div class="dropdown">
-                    <a href="./about.html#comparison" class="dropdown-item">📊 视界融合 (理论对比)</a>
-                    <a href="./about.html#audience" class="dropdown-item">👥 适用探索人群</a>
+                    <a href="./about.html#comparison" class="dropdown-item">视界融合 (理论对比)</a>
+                    <a href="./about.html#audience" class="dropdown-item">适用探索人群</a>
                 </div>
             </div>
             <a href="./business.html" class="nav-item">合作与联系</a>
@@ -157,13 +374,13 @@
     </header>
 
     <main class="wiki-layout">
-        
+
         <aside class="wiki-sidebar">
-            <h3>📖 目录索引</h3>
-            <a href="#engines" class="sidebar-link">⚙️ 1. 五大天赋能量引擎</a>
-            <a href="#sandboxes" class="sidebar-link">🧩 2. 六大生存容纳沙盒</a>
-            <a href="#metabolism" class="sidebar-link">🔋 3. 跨膜代谢与防线账单</a>
-            <a href="#telemetry" class="sidebar-link">📉 4. 实时工况与四核遥测</a>
+            <h3>目录索引</h3>
+            <a href="#engines" class="sidebar-link">1. 五大天赋能量引擎</a>
+            <a href="#sandboxes" class="sidebar-link">2. 六大生存容纳沙盒</a>
+            <a href="#metabolism" class="sidebar-link">3. 跨膜代谢与防线账单</a>
+            <a href="#telemetry" class="sidebar-link">4. 实时工况与四核遥测</a>
         </aside>
 
         <div class="wiki-content">
@@ -171,253 +388,242 @@
             <p class="page-desc">我们将人类复杂、流动的体感，拆解为物理学意义上的做功方式（引擎）、现实承载空间（沙盒）以及能量代谢速率。先确立平衡基准，再推导压力下的极化变异。</p>
 
             <div id="engines" class="anchor-offset">
-                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">⚙️ 五大天赋能量引擎（习惯怎么做功）</h2>
-              
+                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">五大天赋能量引擎（习惯怎么做功）</h2>
+
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">💎</span>
                         <h2>O-结构 ｜ 金：结晶本能 · 肃降结构</h2>
                     </div>
                     <div class="theory-section">
-                        <p>其机制为逆熵与边界确立。金主收敛、切割与定型，代表系统内部的“降温结晶”过程。在热力学中，结晶是降低系统自由度、排出杂质以形成有序高密度网格的逆熵行为。它构成了系统抵御外部混沌侵蚀的最坚硬护甲，其本质是通过切割冗余变量，维持系统输出结果的绝对可预测性。</p>
+                        <p>其机制为逆熵与边界确立。金主收敛、切割与定型，代表系统内部的「降温结晶」过程。在热力学中，结晶是降低系统自由度、排出杂质以形成有序高密度网格的逆熵行为。它构成了系统抵御外部混沌侵蚀的最坚硬护甲，其本质是通过切割冗余变量，维持系统输出结果的绝对可预测性。</p>
                     </div>
                     <div class="success-box">
-                        <strong>🟢 基准平衡态（中态分布）</strong>
+                        <strong>基准平衡态（中态分布）</strong>
                         你习惯定计划、理流程、建规则，让一切进入可控的轨道。混乱是你最想消灭的东西，确定的结果让你感到安全。通过高效建立闭环，你用清晰的秩序为外界降温。
                     </div>
                     <div class="alert-box">
-                        <strong>🔴 极化变异态（超压失守）</strong>
-                        极易陷入规则强迫症与教条主义。在极端压力下，往往表现为“只管流程进度，不管系统死活”的冷酷。当别人需要当下的情绪安抚或安全感时，你可能已经跳到了冷峻的判定中，导致系统缓冲空间彻底崩溃。
+                        <strong>极化变异态（超压失守）</strong>
+                        极易陷入规则强迫症与教条主义。在极端压力下，往往表现为「只管流程进度，不管系统死活」的冷酷。当别人需要当下的情绪安抚或安全感时，你可能已经跳到了冷峻的判定中，导致系统缓冲空间彻底崩溃。
                     </div>
                 </div>
 
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">⛰️</span>
                         <h2>V-锚定 ｜ 土：回声本能 · 承载基准</h2>
                     </div>
                     <div class="theory-section">
                         <p>其机制为引力与参考系锚定。土主承载、受纳与中心稳固。在物理学中，缺乏参照物便无法定义运动。系统必须通过捕获环境反馈（无论是正向支撑还是负向阻力）来实现时空坐标系中的实体化着陆，避免能量在缺乏承载的虚空中耗散。</p>
                     </div>
                     <div class="success-box">
-                        <strong>🟢 基准平衡态（中态分布）</strong>
+                        <strong>基准平衡态（中态分布）</strong>
                         追求被看见与被反馈，以此确认自身的真实坐标。外界对你的回应——不管是来自人、动物还是任何你信任的实体——都像一面镜子，让你知道自己的位置在哪，不至于悬浮。
                     </div>
                     <div class="alert-box">
-                        <strong>🔴 极化变异态（超压失守）</strong>
+                        <strong>极化变异态（超压失守）</strong>
                         若失去外部参照系或深陷负面噪音，系统会陷入悬空失重。你极易为了维持表面的安全与关系而选择无限的妥协，任由系统陷入低效空转；或者反向激发出条文教条防御，死抠字眼来推卸现实摩擦。
                     </div>
                 </div>
 
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">🔥</span>
                         <h2>D-动力 ｜ 火：燃烧本能 · 氧化爆发</h2>
                     </div>
                     <div class="theory-section">
-                        <p>其机制为活化能与相变突破。火主炎上、燃烧与剧烈消耗，代表系统的“高能激发态”。其底层机制是通过输入活化能（新鲜刺激），瞬间打破系统现有的热力学平衡。这是一种以结构性破坏为代价、将化学能转化为机械动能的进程，旨在通过暴力冲刷完成状态跃迁。</p>
+                        <p>其机制为活化能与相变突破。火主炎上、燃烧与剧烈消耗，代表系统的「高能激发态」。其底层机制是通过输入活化能（新鲜刺激），瞬间打破系统现有的热力学平衡。这是一种以结构性破坏为代价、将化学能转化为机械动能的进程，旨在通过暴力冲刷完成状态跃迁。</p>
                     </div>
                     <div class="success-box">
-                        <strong>🟢 基准平衡态（中态分布）</strong>
+                        <strong>基准平衡态（中态分布）</strong>
                         追求变化与新鲜感，寻找点燃热情的燃料。停滞让你窒息，你会主动寻找新的刺激、冲开阻力、点燃状态。热血和突破是你的燃料。
                     </div>
                     <div class="alert-box">
-                        <strong>🔴 极化变异态（超压失守）</strong>
+                        <strong>极化变异态（超压失守）</strong>
                         在极端压力下沦为破坏性、无方向的盲目推进与系统干烧。你往往只顾着冲锋陷阵而无力善后，极易忽略长期的系统维护成本以及他人的承受极限，最终导致系统像保险丝烧断一样突然停摆。
                     </div>
                 </div>
 
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">🌊</span>
                         <h2>E-扩张 ｜ 水：狩猎本能 · 渗透吞噬</h2>
                     </div>
                     <div class="theory-section">
-                        <p>其机制为流体动力与变量收编。水主润下、无孔不入与包容万象，表现出极强的“流体动力学”特征。水不拘泥于固定形态，其扩张不靠硬性撞击，而是通过渗透、包围、溶解并吞噬外部变量，将其纳入自身的循环系统。这是系统获取外部资源最高效的降维覆盖模式。</p>
+                        <p>其机制为流体动力与变量收编。水主润下、无孔不入与包容万象，表现出极强的「流体动力学」特征。水不拘泥于固定形态，其扩张不靠硬性撞击，而是通过渗透、包围、溶解并吞噬外部变量，将其纳入自身的循环系统。这是系统获取外部资源最高效的降维覆盖模式。</p>
                     </div>
                     <div class="success-box">
-                        <strong>🟢 基准平衡态（中态分布）</strong>
-                        吞噬变量，对无限可能性极度饥渴，通过持续狩猎换取绝对自由与反控制。你的演化路径为：嗅探夺取 → 建立规则 → 掌握Root权限。追求“我的地盘我说了算”的自由。
+                        <strong>基准平衡态（中态分布）</strong>
+                        吞噬变量，对无限可能性极度饥渴，通过持续狩猎换取绝对自由与反控制。你的演化路径为：嗅探夺取 → 建立规则 → 掌握Root权限。追求「我的地盘我说了算」的自由。
                     </div>
                     <div class="alert-box">
-                        <strong>🔴 极化变异态（超压失守）</strong>
+                        <strong>极化变异态（超压失守）</strong>
                         在极端高压下陷入盲目的版图扩张，摊子铺得太大。由于极其忽略内部现有资源的消化率以及核心目标的深度聚焦，导致主线任务过度发散而失去控制，整个局面因为贪多而变得一团糟。
                     </div>
                 </div>
 
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">🌲</span>
                         <h2>T-超越 ｜ 木：聚变本能 · 垂直穿透</h2>
                     </div>
                     <div class="theory-section">
-                        <p>其机制为绝对指向与第一性穿透。木主生发、破土与垂直向上的绝对趋光性，体现为无视横向扩散的“垂直击穿力”。如同树根咬碎地下岩层探寻水源，枝干刺破树冠夺取恒星光芒，它负责剥离一切世俗表象的繁杂，展现出直击本源、剔除伪变量的第一性驱动力。</p>
+                        <p>其机制为绝对指向与第一性穿透。木主生发、破土与垂直向上的绝对趋光性，体现为无视横向扩散的「垂直击穿力」。如同树根咬碎地下岩层探寻水源，枝干刺破树冠夺取恒星光芒，它负责剥离一切世俗表象的繁杂，展现出直击本源、剔除伪变量的第一性驱动力。</p>
                     </div>
                     <div class="success-box">
-                        <strong>🟢 基准平衡态（中态分布）</strong>
-                        追求神性与永恒，渴望与绝对真理融合。像核聚变产生极高能量，冷酷追问本质，拆解焚毁虚伪表象，看清底层逻辑。你不满足于表面的热闹，会一直追问“为什么”，直到触达最根本的逻辑。
+                        <strong>基准平衡态（中态分布）</strong>
+                        追求神性与永恒，渴望与绝对真理融合。像核聚变产生极高能量，冷酷追问本质，拆解焚毁虚伪表象，看清底层逻辑。你不满足于表面的热闹，会一直追问「为什么」，直到触达最根本的逻辑。
                     </div>
                     <div class="alert-box">
-                        <strong>🔴 极化变异态（超压失守）</strong>
+                        <strong>极化变异态（超压失守）</strong>
                         极易陷入宏大叙事的幻象与精神虚无中。在极端变异下，由于高估底层逻辑重构的修复效力，你会对眼前的物理世界、落地琐事与基础情绪维护采取完全悬置、冷漠的态度，导致理念与现实彻底脱节。
                     </div>
                 </div>
             </div>
 
             <div id="sandboxes" class="anchor-offset" style="margin-top: 60px;">
-                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;"> 六大生存沙盒（电量用在了哪里）</h2>
-                
+                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">六大生存沙盒（电量用在了哪里）</h2>
+
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">🏠</span>
                         <h2>PN 物理底盘：生理叙事</h2>
                     </div>
                     <div class="theory-section">
-                        <p>这是你作为生物体存在的物质基础。包括你的作息、饮食、睡眠、居所、金钱、现金流和所有看得见摸得着的资源。它回答“我有没有足够的东西活下去，并且活得踏实”。你的身体记忆、避险本能、对地盘和资源的守护意识，都在这里扎根。</p>
+                        <p>这是你作为生物体存在的物质基础。包括你的作息、饮食、睡眠、居所、金钱、现金流和所有看得见摸得着的资源。它回答「我有没有足够的东西活下去，并且活得踏实」。你的身体记忆、避险本能、对地盘和资源的守护意识，都在这里扎根。</p>
                     </div>
                     <div class="success-box">
-                        <strong>🟢 基准稳态运行（中态分布）</strong>
+                        <strong>基准稳态运行（中态分布）</strong>
                         物理底盘健康、稳固。现金流与现实资源处于绝对掌控状态，生活空间井然有序，为高级算力输出提供坚实的生物学防护基座。
                     </div>
                     <div class="alert-box">
-                        <strong>⚠️ 脆弱过载红线（极端异化）</strong>
+                        <strong>脆弱过载红线（极端异化）</strong>
                         当它出问题时，你会感到持续的疲惫、身体报警、资源紧张，或者生活空间失控。你会变得敏感、易怒，对任何额外消耗都会本能地抗拒，因为底盘已经兜不住了。
                     </div>
                 </div>
 
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">🚀</span>
                         <h2>AN 能力进化：自我叙事 · 单机系统</h2>
                     </div>
                     <div class="theory-section">
-                        <p>这是你个人能力的沉淀层。它记录了你学过什么、做成过什么、有哪些项目和履历，以及你对自己“能不能搞定”的底气和边界感。当你脱去所有外部标签，这些经验、方法论和持续成长的惯性，就是你独立生存的确定性。它将人生看作一场升级游戏，致力于将自我打造成一个不可替代的进化体。</p>
+                        <p>这是你个人能力的沉淀层。它记录了你学过什么、做成过什么、有哪些项目和履历，以及你对自己「能不能搞定」的底气和边界感。当你脱去所有外部标签，这些经验、方法论和持续成长的惯性，就是你独立生存的确定性。它将人生看作一场升级游戏，致力于将自我打造成一个不可替代的进化体。</p>
                     </div>
                     <div class="success-box">
-                        <strong>🟢 基准稳态运行（中态分布）</strong>
+                        <strong>基准稳态运行（中态分布）</strong>
                         技能沉淀稳定向前推进。不依赖外部组织或虚无的承诺，依靠自身的方法论惯性，源源不断地从现实中抓取确定的技能复用反馈。
                     </div>
                     <div class="alert-box">
-                        <strong>⚠️ 脆弱过载红线（极端异化）</strong>
-                        当它出问题时，你会感到能力焦虑、履历断层，或者怀疑自己“其实什么都不会”。长期没有正反馈时，你会陷入自我否定，甚至开始本能地逃避任何需要证明自己、需要公开承重的场合。
+                        <strong>脆弱过载红线（极端异化）</strong>
+                        当它出问题时，你会感到能力焦虑、履历断层，或者怀疑自己「其实什么都不会」。长期没有正反馈时，你会陷入自我否定，甚至开始本能地逃避任何需要证明自己、需要公开承重的场合。
                     </div>
                 </div>
 
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">🤝</span>
                         <h2>RN 深度连接：关系叙事 · 局域网</h2>
                     </div>
                     <div class="theory-section">
-                        <p>这是你与他人之间的深度信任网络。包括伴侣、密友、长期合伙人等那些你愿意托付后背的人。它通过陪伴、共情和双向承诺来维系，回答“在这世界上，谁真正理解我，谁不会轻易离开”。你在人与人的契约与共振中实现价值的最大化。</p>
+                        <p>这是你与他人之间的深度信任网络。包括伴侣、密友、长期合伙人等那些你愿意托付后背的人。它通过陪伴、共情和双向承诺来维系，回答「在这世界上，谁真正理解我，谁不会轻易离开」。你在人与人的契约与共振中实现价值的最大化。</p>
                     </div>
                     <div class="success-box">
-                        <strong>🟢 基准稳态运行（中态分布）</strong>
+                        <strong>基准稳态运行（中态分布）</strong>
                         深度信任网络运转顺畅。拥有高纯度、低摩擦的亲密依附或长期合伙关系，边界清晰，能够高效分享防御余量和情感支持。
                     </div>
                     <div class="alert-box">
-                        <strong>⚠️ 脆弱过载红线（极端异化）</strong>
+                        <strong>脆弱过载红线（极端异化）</strong>
                         当它出问题时，你会感到孤独、被误解，或者被困在一段消耗型关系里。你可能会由于极度缺乏安全感而过度付出却得不到回应，或者在具体冲突中为了保全形式而被迫选择沉默。
                     </div>
                 </div>
 
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">🎭</span>
                         <h2>IN 社会舞台：社会叙事 · 广域网</h2>
                     </div>
                     <div class="theory-section">
-                        <p>这是你在群体中的坐标和影响力。包括你的身份标签、话语权、人脉圈层和公众评价。它回答“我在人群里站在哪，别人怎么看我”。你对组织占位、阶梯等级、话语权位置和舆论评价的敏感度，都在这个场域里运作。</p>
+                        <p>这是你在群体中的坐标和影响力。包括你的身份标签、话语权、人脉圈层和公众评价。它回答「我在人群里站在哪，别人怎么看我」。你对组织占位、阶梯等级、话语权位置和舆论评价的敏感度，都在这个场域里运作。</p>
                     </div>
                     <div class="success-box">
-                        <strong>🟢 基准稳态运行（中态分布）</strong>
+                        <strong>基准稳态运行（中态分布）</strong>
                         在错综复杂的社会洋流中精准导航。在组织中占据核心生态位，有效塑造群体评价，成功将个人的姓名转化为一种具备社会重权的符号。
                     </div>
                     <div class="alert-box">
-                        <strong>⚠️ 脆弱过载红线（极端异化）</strong>
+                        <strong>脆弱过载红线（极端异化）</strong>
                         当它出问题时，你会感到被边缘化、被贴错标签，或者被舆论裹挟。你可能会过度在意别人的眼光而反复修正行为、陷入精神自耗，或者反过来——因为受过评价伤害而完全拒绝融入任何群体。
                     </div>
                 </div>
 
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">🧭</span>
                         <h2>MN 意义导航：宏大叙事 · 统摄层</h2>
                     </div>
                     <div class="theory-section">
-                        <p>这是你精神世界的顶层设计。包括你最看重的价值观、人生的终极目标、什么值得做、什么不能妥协。它在你最苦最累的时候提供“为什么还要撑下去”的理由，是你对抗现实摩擦与日常损耗的终极精神止痛药。</p>
+                        <p>这是你精神世界的顶层设计。包括你最看重的价值观、人生的终极目标、什么值得做、什么不能妥协。它在你最苦最累的时候提供「为什么还要撑下去」的理由，是你对抗现实摩擦与日常损耗的终极精神止痛药。</p>
                     </div>
                     <div class="success-box">
-                        <strong>🟢 基准稳态运行（中态分布）</strong>
+                        <strong>基准稳态运行（中态分布）</strong>
                         精神范式高度自洽。高海拔地带的人生愿景清晰，为底层的沙盒做功提供源源不断的方向指引，不为短期的官僚内耗或诱惑迷失航向。
                     </div>
                     <div class="alert-box">
-                        <strong>⚠️ 脆弱过载红线（极端异化）</strong>
+                        <strong>脆弱过载红线（极端异化）</strong>
                         当它出问题时，你会感到空虚、迷茫（空心病大爆发），或者突然发现自己一直在追逐的东西其实毫无意义。信念空窗期会非常难熬，你可能会饥不择食地抓住任何能暂时填满空洞的消费、垃圾目标，哪怕你知道它不对。
                     </div>
                 </div>
 
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">⚙️</span>
                         <h2>FN 系统运转：功能叙事 · 共识层</h2>
                     </div>
                     <div class="theory-section">
-                        <p>这是你建立起来的规则和流程。包括高效的工作方法、协作机制、商业模式、日常生活习惯等一旦建好就能自动运行的客观结构。它回答“怎样做才不会乱，怎样做才能让结果稳定产出”，致力于免于人治干扰，确保系统像钟表一样运行。</p>
+                        <p>这是你建立起来的规则和流程。包括高效的工作方法、协作机制、商业模式、日常生活习惯等一旦建好就能自动运行的客观结构。它回答「怎样做才不会乱，怎样做才能让结果稳定产出」，致力于免于人治干扰，确保系统像钟表一样运行。</p>
                     </div>
                     <div class="success-box">
-                        <strong>🟢 基准稳态运行（中态分布）</strong>
+                        <strong>基准稳态运行（中态分布）</strong>
                         功能结构低损耗运转。复杂的现实经验被成功编码为隐形的机制，反馈闭环运转精准，能在大规模并发事务中保持主线有条不紊。
                     </div>
                     <div class="alert-box">
-                        <strong>⚠️ 脆弱过载红线（极端异化）</strong>
+                        <strong>脆弱过载红线（极端异化）</strong>
                         当它出问题时，你会感到混乱、低效，或者被自己当年建立的死板规则反向困死（作茧自缚）。旧有机制失效时，你可能明知该改却因重建的系统成本和不确定性而迟迟迈不出第一步。
                     </div>
                 </div>
             </div>
-<div id="metabolism" class="anchor-offset" style="margin-top: 60px;">
-                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">🔋 跨膜代谢与相变防线（你的系统底线）</h2>
-                
+
+            <div id="metabolism" class="anchor-offset" style="margin-top: 60px;">
+                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">跨膜代谢与相变防线（你的系统底线）</h2>
+
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">🛡️</span>
                         <h2>跨膜代谢机制 (W vs N)</h2>
                     </div>
                     <div class="theory-section">
                         <p><strong>W (World) 代表外部判断，N (Nature) 代表内部判断。</strong></p>
-                        <p>跨膜代谢机制，本质上就是你的心智系统“如何消化外界的声音与压力”。它决定了你在面对外界夸奖（正向反馈）时会不会迷失，以及在面对外界打压（负向压强）时能不能扛住。根据你内心依赖外部规则（W）还是内部逻辑（N）的比例，我们会分化出四种截然不同的生存防御模式：</p>
-                        
+                        <p>跨膜代谢机制，本质上就是你的心智系统「如何消化外界的声音与压力」。它决定了你在面对外界夸奖（正向反馈）时会不会迷失，以及在面对外界打压（负向压强）时能不能扛住。根据你内心依赖外部规则（W）还是内部逻辑（N）的比例，我们会分化出四种截然不同的生存防御模式：</p>
+
                         <h4 style="margin-top: 32px; font-size: 1.1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">一、 强内源型 (N > W)：自带干粮</h4>
                         <p style="margin-top: 12px; color: #475569;">你的内核极其刚性，稳定性全靠内心的那杆秤。外界的评价很难真正穿透你，你只认理，不认脸色。但在事实层面上，如果个体的内部逻辑存在盲区，强内源型就会走向硬币的另一面。</p>
                         <div class="highlight-box">
                             <strong>【面对压力】遭遇不合理的强压、甩锅或越界时，分化为两类防御路径：</strong>
                             <ul style="margin-top: 8px; margin-left: 20px; color: #334155;">
                                 <li style="margin-bottom: 8px;"><strong>刚直城堡型表现：</strong>内心主轴清晰，毫不犹豫地正面迎击，通过就事论事的抗辩明确划定彼此的权责边界，用理性的刚性保全底盘。</li>
-                                <li><strong>偏执封闭型表现：</strong>当内部逻辑存在硬伤时，压力会激发极端的认知闭合。表现为极度的傲慢与防御性攻击，完全切断外部事实的输入（“不论你们拿出什么证据，我绝不承认自己有错”）。</li>
+                                <li><strong>偏执封闭型表现：</strong>当内部逻辑存在硬伤时，压力会激发极端的认知闭合。表现为极度的傲慢与防御性攻击，完全切断外部事实的输入（「不论你们拿出什么证据，我绝不承认自己有错」）。</li>
                             </ul>
                         </div>
                         <div class="highlight-box">
                             <strong>【面对机会】越是面对巨大的诱惑和夸奖，系统将启动内部校验，分化为：</strong>
                             <ul style="margin-top: 8px; margin-left: 20px; color: #334155;">
                                 <li style="margin-bottom: 8px;"><strong>清醒克制型表现：</strong>保持高度警觉，宁可放慢速度、错过眼前的风口，也要死死守住自己的核心地盘与节奏，绝不被外界的宏大叙事忽悠。</li>
-                                <li><strong>自大排他型表现：</strong>由于极度迷信自身的内部标准，面对真正的时代红利或高质量外部协作时，表现为傲慢的排他性（“这不是我自己推导出来的逻辑”），从而完美错失增量跳板。</li>
+                                <li><strong>自大排他型表现：</strong>由于极度迷信自身的内部标准，面对真正的时代红利或高质量外部协作时，表现为傲慢的排他性（「这不是我自己推导出来的逻辑」），从而完美错失增量跳板。</li>
                             </ul>
                         </div>
-                        
+
                         <h4 style="margin-top: 40px; font-size: 1.1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">二、 强外源型 (W > N)：标准外置</h4>
                         <p style="margin-top: 12px; color: #475569;">你的系统边界通透度极高，非常依赖外部给定的框架、标准、反馈或身份标签来确立存在坐标。大环境的明文规则或夸奖能让你瞬间充满电，失去外部支点则容易陷入失重状态。</p>
                         <div class="highlight-box">
                             <strong>【面对压力】遭遇不合理的要求、突发冲突或低压消耗时，分化为：</strong>
                             <ul style="margin-top: 8px; margin-left: 20px; color: #334155;">
                                 <li style="margin-bottom: 8px;"><strong>反馈依赖型表现：</strong>对环境中的负面噪音极度敏感，倾向于通过退让、安抚和妥协来换取表面的安全与和谐，甚至不惜委屈自身去配合大环境的期望。</li>
-                              <li style="margin-bottom: 8px;"><strong>程序至上与教条型表现：</strong>本能地将既定规则、KPI、法定程序或权威指令作为绝对的安全底座。这种特质的动机是多维的：在特定场景（如法官、审计等需要绝对合规的岗位）中，它是维持系统客观公正的专业底线；但在日常高压下，它往往会异化为一种防御机制——通过对框架的“盲目迷信”、性格上的绝对服从、或死抠字眼，来充当逃避复杂人际摩擦与决策风险的护盾。这能强行关停个人的情绪内耗，但也极易让人沦为僵硬、冷酷的执行机器，忽略现实个体的真实体感。</li>
+                                <li style="margin-bottom: 8px;"><strong>程序至上与教条型表现：</strong>本能地将既定规则、KPI、法定程序或权威指令作为绝对的安全底座。这种特质的动机是多维的：在特定场景（如法官、审计等需要绝对合规的岗位）中，它是维持系统客观公正的专业底线；但在日常高压下，它往往会异化为一种防御机制——通过对框架的「盲目迷信」、性格上的绝对服从、或死抠字眼，来充当逃避复杂人际摩擦与决策风险的护盾。这能强行关停个人的情绪内耗，但也极易让人沦为僵硬、冷酷的执行机器，忽略现实个体的真实体感。</li>
                             </ul>
                         </div>
-                     <div class="highlight-box">
-                            <strong>【面对机会】当诱人的机会、高评价、考核指标或主流叙事出现时，系统极易被外部给定的“标准答案”带起节奏，分化为：</strong>
+                        <div class="highlight-box">
+                            <strong>【面对机会】当诱人的机会、高评价、考核指标或主流叙事出现时，系统极易被外部给定的「标准答案」带起节奏，分化为：</strong>
                             <ul style="margin-top: 8px; margin-left: 20px; color: #334155;">
-                                <li style="margin-bottom: 8px;"><strong>敏锐借势型表现：</strong>具备极强的环境嗅觉与适应力。能迅速捕捉到外部的主流趋势或红利通道，并高效套用已验证的发展模板（如成熟的商业模式、清晰的晋升阶梯）。他们是极致的“顺风局玩家”，擅长借助大环境的推力来实现自身利益的最大化，绝不把精力浪费在自我纠结或“重新发明轮子”上。</li>
-                                <li><strong>盲目全量型表现：</strong>由于缺乏内部的过滤锚点，容易陷入对外部红利的“错失恐惧（FOMO）”。倾向于来者不拒、机械化地追随所有被外界看好的机会。这种缺乏核心主线的跟风，短期虽能四处开花收割红利，但长期极易导致系统带宽被过度拉扯，使个人的核心价值变得散乱与模糊。</li>
+                                <li style="margin-bottom: 8px;"><strong>敏锐借势型表现：</strong>具备极强的环境嗅觉与适应力。能迅速捕捉到外部的主流趋势或红利通道，并高效套用已验证的发展模板（如成熟的商业模式、清晰的晋升阶梯）。他们是极致的「顺风局玩家」，擅长借助大环境的推力来实现自身利益的最大化，绝不把精力浪费在自我纠结或「重新发明轮子」上。</li>
+                                <li><strong>盲目全量型表现：</strong>由于缺乏内部的过滤锚点，容易陷入对外部红利的「错失恐惧（FOMO）」。倾向于来者不拒、机械化地追随所有被外界看好的机会。这种缺乏核心主线的跟风，短期虽能四处开花收割红利，但长期极易导致系统带宽被过度拉扯，使个人的核心价值变得散乱与模糊。</li>
                             </ul>
                         </div>
 
@@ -439,7 +645,7 @@
                         </div>
 
                         <h4 style="margin-top: 40px; font-size: 1.1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">四、 高损耗空转型 (Displacement 极高)：能量漏斗</h4>
-                        <p style="margin-top: 12px; color: #475569;">你目前的系统处于一种对外界信号“半脱机”的状态。系统无法有效吸收营养，同时也推不开周围的烂事，整个人处于一种被动消耗中。</p>
+                        <p style="margin-top: 12px; color: #475569;">你目前的系统处于一种对外界信号「半脱机」的状态。系统无法有效吸收营养，同时也推不开周围的烂事，整个人处于一种被动消耗中。</p>
                         <div class="highlight-box">
                             <strong>【面对压力】遭遇不合理要求或低压消耗时，由于系统脱机，分化为：</strong>
                             <ul style="margin-top: 8px; margin-left: 20px; color: #334155;">
@@ -460,77 +666,76 @@
 
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">⚡</span>
                         <h2>极限压力相变 (σ 防线账单)</h2>
                     </div>
                     <div class="theory-section">
                         <p>当外界压强逼近系统临界承载力时，内部结构将发生不可逆的刚性断裂或相变防御。这直接决定了你在利益面前是选择断尾求生，还是被彻底融化。</p>
-                        
+
                         <h4 style="margin-top: 24px; font-size: 1.05rem;">σ1（高弹性转译型）：变色龙与弹力带</h4>
                         <p>拥有极强的韧性。就算遇到再大的冲击，也能一边护住核心底盘，一边灵活退让次要利益换取生存。适合处理高度模糊与和光同尘的高难度任务。</p>
-                        
+
                         <h4 style="margin-top: 24px; font-size: 1.05rem;">σ0（原教旨刚性型）：硬骨头与陶瓷</h4>
-                        <p>在原则问题上宁折不弯，完全不接受“灰色地带”。宁可硬扛损失甚至掀桌子，也不在规则上退后半步。极易在“没人管、来钱快”的诱惑面前发生结构失守。</p>
+                        <p>在原则问题上宁折不弯，完全不接受「灰色地带」。宁可硬扛损失甚至掀桌子，也不在规则上退后半步。极易在「没人管、来钱快」的诱惑面前发生结构失守。</p>
 
                         <h4 style="margin-top: 24px; font-size: 1.05rem;">σ2_switch（现实割肉重组型）：壁虎断尾</h4>
-                        <p>纯粹的生存主义者。不在乎面子或传统，只要能换取活命，随时可以像切手指一样把原有的系统和伙伴甩掉，在废墟上换个活法。极易发生为了攀爬而切断所有旧感情的“锚定失守”。</p>
+                        <p>纯粹的生存主义者。不在乎面子或传统，只要能换取活命，随时可以像切手指一样把原有的系统和伙伴甩掉，在废墟上换个活法。极易发生为了攀爬而切断所有旧感情的「锚定失守」。</p>
 
                         <h4 style="margin-top: 24px; font-size: 1.05rem;">σ2_collapse（无序溃散型）：系统宕机</h4>
-                        <p>心理防线薄弱，一旦压力过载，原有的底线就会像雪一样融化。很难在冲突中保持清醒，容易被环境彻底带偏，最终陷入随波逐流的流放状态。极易陷入系统烧穿的“动力罢工”。</p>
+                        <p>心理防线薄弱，一旦压力过载，原有的底线就会像雪一样融化。很难在冲突中保持清醒，容易被环境彻底带偏，最终陷入随波逐流的流放状态。极易陷入系统烧穿的「动力罢工」。</p>
                     </div>
                 </div>
             </div>
 
             <div id="telemetry" class="anchor-offset" style="margin-top: 60px; margin-bottom: 80px;">
-                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">📉 实时工况遥测 (ε 电量与四核脆弱漏斗)</h2>
-                
+                <h2 style="font-size: 1.8rem; margin-bottom: 24px; color:#1e293b;">实时工况遥测 (ε 电量与四核脆弱漏斗)</h2>
+
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">📊</span>
                         <h2>ε 五区动态电量监控</h2>
                     </div>
                     <div class="theory-section">
                         <p>对个体当前运行时算力带宽的即时远程遥测。不同电量区间直接决定了当前系统可开放的授权等级。</p>
                         <ul style="margin-top: 16px; margin-left: 20px;">
-                            <li style="margin-bottom: 12px;"><strong>🔴 红区 (宕机濒危态)：</strong> 电量仅剩1%。物理机能和心理承压在崩溃边缘。高级处理能力强制下线，只能应付单线任务。需立刻物理隔离。</li>
-                            <li style="margin-bottom: 12px;"><strong>🟠 橙区 (低带宽高耗态)：</strong> 省电模式。勉强维持基本运转，对外界信号极度缺乏耐心。千万别碰复杂沟通或高难度多线挑战。</li>
-                            <li style="margin-bottom: 12px;"><strong>🟢 绿区 (基准稳态)：</strong> 收支平衡。不亢奋也不抗拒，能稳定推进已有事项，但不适合安排超出职权的模糊重担。</li>
-                            <li style="margin-bottom: 12px;"><strong>🔵 蓝区 (高能推进态)：</strong> 电量满格。运行极其丝滑，有余力帮人兜底风险。最适合处理突发危机与带领新项目破局。</li>
-                            <li style="margin-bottom: 12px;"><strong>🟣 紫区 (狂热扩张态)：</strong> 超载狂热。极度渴望打破旧规矩，但这属于大脑透支，随时会遭遇“断崖式断电”直接虚脱回红区。</li>
+                            <li style="margin-bottom: 12px;"><strong>红区 (宕机濒危态)：</strong> 电量仅剩1%。物理机能和心理承压在崩溃边缘。高级处理能力强制下线，只能应付单线任务。需立刻物理隔离。</li>
+                            <li style="margin-bottom: 12px;"><strong>橙区 (低带宽高耗态)：</strong> 省电模式。勉强维持基本运转，对外界信号极度缺乏耐心。千万别碰复杂沟通或高难度多线挑战。</li>
+                            <li style="margin-bottom: 12px;"><strong>绿区 (基准稳态)：</strong> 收支平衡。不亢奋也不抗拒，能稳定推进已有事项，但不适合安排超出职权的模糊重担。</li>
+                            <li style="margin-bottom: 12px;"><strong>蓝区 (高能推进态)：</strong> 电量满格。运行极其丝滑，有余力帮人兜底风险。最适合处理突发危机与带领新项目破局。</li>
+                            <li style="margin-bottom: 12px;"><strong>紫区 (狂热扩张态)：</strong> 超载狂热。极度渴望打破旧规矩，但这属于大脑透支，随时会遭遇「断崖式断电」直接虚脱回红区。</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="theory-card">
                     <div class="card-header">
-                        <span class="card-icon">🕳️</span>
                         <h2>四核脆弱窄口 (Critical Drain)</h2>
                     </div>
                     <div class="alert-box" style="margin-top: 16px;">
-                        <strong>💪 Load (物理承载) 见底：</strong>身体已经开始报警，体力严重跟不上算力。需立刻降低任务密度，保证高质量睡眠。<br><br>
-                        <strong>🧠 Stress (心理承压) 见底：</strong>神经绷得很紧，任何计划外的变故或不确定性都会让你瞬间爆炸。需设置强力的“信息屏蔽时段”。<br><br>
-                        <strong>🗣️ Emotion (情绪极性) 见底：</strong>没有任何情绪余额分给别人，关系互动在剧烈消耗你。必须暂时停止人事管理或高频对外联络。<br><br>
-                        <strong>🔥 Motive (动机烈度) 见底：</strong>心里觉得干什么都没劲，意义断线导致行动枯竭。这种“心累”比体力消耗更折磨你，需重新审视核心目标。
+                        <strong>Load (物理承载) 见底：</strong>身体已经开始报警，体力严重跟不上算力。需立刻降低任务密度，保证高质量睡眠。<br><br>
+                        <strong>Stress (心理承压) 见底：</strong>神经绷得很紧，任何计划外的变故或不确定性都会让你瞬间爆炸。需设置强力的「信息屏蔽时段」。<br><br>
+                        <strong>Emotion (情绪极性) 见底：</strong>没有任何情绪余额分给别人，关系互动在剧烈消耗你。必须暂时停止人事管理或高频对外联络。<br><br>
+                        <strong>Motive (动机烈度) 见底：</strong>心里觉得干什么都没劲，意义断线导致行动枯竭。这种「心累」比体力消耗更折磨你，需重新审视核心目标。
                     </div>
 
-                        <div style="background: rgba(37, 99, 235, 0.04); border-left: 4px solid #2563eb; padding: 20px; border-radius: 0 8px 8px 0; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
-                            <h4 style="color: #2563eb; margin-bottom: 8px; font-size: 1.05rem;"> 核心前置认知：引擎是“气”，不是阵营</h4>
-                            <p style="font-size: 0.95rem; color: #475569; line-height: 1.6;">
-                                在阅览具体引擎之前，请彻底抛弃传统测评“贴死标签”的思维惯性。<br><br>
-                                O、V、D、E、T 绝对不是将你划分进五个孤立的“阵营”，更不是定死你的宿命身份。它们本质上是你生命中的一股<strong>“气”</strong>，一种底层流动的<strong>生命力</strong>与物理做功倾向。<br><br>
-                                每个人的体内都同时流淌着这五股生命力，只是流量大小、管网粗细不同。系统测出你的主导引擎，仅仅是标出了你当前生命能量喷涌最顺畅、阻力最小的那个“输出端口”。请务必将其视为你调取自身生命力的《接口说明书》，而非束缚、圈养你潜能的《判决书》。
-                            </p>
-                        </div>
-                        <div style="background: #f8fafc; border-left: 4px solid #475569; padding: 20px; border-radius: 0 8px 8px 0; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
-                            <h4 style="color: #1e293b; margin-bottom: 8px; font-size: 1.05rem;"> 兰哆哆留言：致深度思考者的灰度声明</h4>
-                            <p style="font-size: 0.95rem; color: #475569; line-height: 1.6;">
-                                坦诚地说，五大引擎（O/V/D/E/T）与五行（金木水火土）的锚定，在科学哲学上属于一种<strong>「启发式建模（Heuristic Modeling）」</strong>。它并非不可撼动的绝对真理，而是为了实现工程落地所作出的“同构性借用”。<br><br>
-                                我们深知这种映射天然具有多维解读的可能性：例如，扩张（E）亦可被解读为木的无限繁衍；超越（T）亦可被解构为金的极致提纯。但在系统工程中，为了让后端的 40 条极化生克链能够输出刚性的因果判定，我们必须在底层算法上对当前的映射关系进行<strong>「版本死锁」</strong>。之所以选择目前的版本，是因为它是所有模型中大众直觉感知度最高、社会化解释成本最低的切面。<br><br>
-                                地图不等于疆域本身。如果你看透了这层设定，并推导出了另一套逻辑自洽的生克拓扑，我们为你预留了绝对的灰度空间——欢迎通过底部的「理论共创」通道与我们博弈。但在当下的测试环境中，请暂时接受这套被降维固化的规则，以完成你在现实中的算力落盘。
-                            </p>
-                        </div>
+                    <!-- 内容分隔线：将正文与用户阅读提示清晰分开 -->
+                    <div class="content-separator"></div>
+
+                    <div style="background: rgba(37, 99, 235, 0.04); border-left: 4px solid #2563eb; padding: 20px; border-radius: 0 8px 8px 0; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                        <h4 style="color: #2563eb; margin-bottom: 8px; font-size: 1.05rem;">提示：引擎是「气」，不是阵营</h4>
+                        <p style="font-size: 0.95rem; color: #475569; line-height: 1.6;">
+                            在阅览具体引擎时，请彻底抛弃传统测评「贴死标签」的思维惯性。<br><br>
+                            O、V、D、E、T 绝对不是将你划分进五个孤立的「阵营」，更不是定死你的宿命身份。它们本质上是你生命中的一股<strong>「气」</strong>，一种底层流动的<strong>生命力</strong>与物理做功倾向。<br><br>
+                            每个人的体内都同时流淌着这五股生命力，只是流量大小、管网粗细不同。系统测出你的主导引擎，仅仅是标出了你当前生命能量喷涌最顺畅、阻力最小的那个「输出端口」。请务必将其视为你调取自身生命力的《接口说明书》，而非束缚、圈养你潜能的《判决书》。
+                        </p>
                     </div>
+                    <div style="background: #f8fafc; border-left: 4px solid #475569; padding: 20px; border-radius: 0 8px 8px 0; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                        <h4 style="color: #1e293b; margin-bottom: 8px; font-size: 1.05rem;">兰哆哆留言：致深度思考者的灰度声明</h4>
+                        <p style="font-size: 0.95rem; color: #475569; line-height: 1.6;">
+                            坦诚地说，五大引擎（O/V/D/E/T）与五行（金木水火土）的锚定，在科学哲学上属于一种<strong>「启发式建模（Heuristic Modeling）」</strong>。它并非不可撼动的绝对真理，而是为了实现工程落地所作出的「同构性借用」。<br><br>
+                            我们深知这种映射天然具有多维解读的可能性：例如，扩张（E）亦可被解读为木的无限繁衍；超越（T）亦可被解构为金的极致提纯。但在系统工程中，为了让后端的 40 条极化生克链能够输出刚性的因果判定，我们必须在底层算法上对当前的映射关系进行<strong>「版本死锁」</strong>。之所以选择目前的版本，是因为它是所有模型中大众直觉感知度最高、社会化解释成本最低的切面。<br><br>
+                            地图不等于疆域本身。如果你看透了这层设定，并推导出了另一套逻辑自洽的生克拓扑，我们为你预留了绝对的灰度空间——欢迎通过底部的「理论共创」通道与我们博弈。但在当下的测试环境中，请暂时接受这套被降维固化的规则，以完成你在现实中的算力落盘。
+                        </p>
                     </div>
+                </div>
             </div>
 
         </div>
@@ -539,10 +744,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // ==========================================
-            // 1. 移动端菜单“防长按”点击展开修复
+            // 1. 移动端菜单"防长按"点击展开修复
             // ==========================================
             const navItems = document.querySelectorAll('.nav-item');
-            document.body.addEventListener('touchstart', function() {}, {passive: true});
+            document.body.addEventListener('touchstart', function() {}, { passive: true });
 
             navItems.forEach(item => {
                 if (item.querySelector('.dropdown')) {
@@ -571,24 +776,24 @@
             // ==========================================
             const header = document.querySelector('.site-header');
             let lastScrollY = window.scrollY;
-            
+
             // 注入丝滑过渡动画
             header.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease';
 
             window.addEventListener('scroll', () => {
                 const currentScrollY = window.scrollY;
-                
+
                 // 向下滚动，且滚出一定距离后 -> 隐藏导航栏
                 if (currentScrollY > lastScrollY && currentScrollY > 80) {
                     header.style.transform = 'translateY(-100%)';
                     // 滚动时自动收起下拉菜单
                     navItems.forEach(item => item.classList.remove('mobile-open'));
-                } 
+                }
                 // 向上滚动 -> 显示导航栏
                 else if (currentScrollY < lastScrollY) {
                     header.style.transform = 'translateY(0)';
                 }
-                
+
                 lastScrollY = currentScrollY;
             }, { passive: true });
         });
